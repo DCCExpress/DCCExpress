@@ -1,23 +1,13 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2015", // JavaScript verzió
-    "module": "AMD", // Modul típus (RequireJS támogatás)
-    "outDir": "../dist/js", // Kimeneti könyvtár
-    "rootDir": "./../", // Forráskód könyvtár
-    "strict": true, // Strict TypeScript beállítások
-    "esModuleInterop": true, // Egyszerűbb interop ES modulokkal
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "moduleResolution": "node",
-    "baseUrl": ".",
-    "paths": {
-      "*": ["../../node_modules/*"],
-      
-    },
-  
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+    "noEmit": true
   },
-  "include": [
-    "./src/**/*.ts", // Minden TypeScript fájl a src könyvtárban
-    "./common/src/*"
+  "include": ["src"],
+   "exclude": [
+    "**/*.bak"
   ]
 }

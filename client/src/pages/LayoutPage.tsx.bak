@@ -1,0 +1,196 @@
+// import { useEffect, useState } from "react";
+// import { AppShell, Box, Button, Card, Group, Stack, Text, Title } from "@mantine/core";
+// import {
+//   IconEdit,
+//   IconInfoCircle,
+//   IconLayoutSidebarRight,
+//   IconRoute,
+//   IconSwitch2,
+// } from "@tabler/icons-react";
+// import TrackCanvas from "../components/TrackCanvas";
+// import LocoDialog from "../components/LocoDialog";
+// import TopMenuBar from "../layout/TopMenuBar";
+// import RightPropertyPanel from "../layout/RightPropertyPanel";
+// import StatusBar from "../layout/StatusBar";
+// import LocoPanel from "../layout/LocoPanel";
+// import { getLocos } from "../api/http";
+// import type { Loco } from "../types/loco";
+
+// type LayoutPageProps = {
+//   onGoHome: () => void;
+// };
+
+// export default function LayoutPage({ onGoHome }: LayoutPageProps) {
+//   const [editMode, setEditMode] = useState(false);
+//   const [locoDialogOpened, setLocoDialogOpened] = useState(false);
+//   const [locos, setLocos] = useState<Loco[]>([]);
+//   const [locoPanelCollapsed, setLocoPanelCollapsed] = useState(false);
+//   const [propertyPanelCollapsed, setPropertyPanelCollapsed] = useState(false);
+
+//   useEffect(() => {
+//     refreshLocos();
+//   }, []);
+
+//   const refreshLocos = async () => {
+//     try {
+//       const data = await getLocos();
+//       setLocos(data);
+//     } catch (error) {
+//       console.error("Nem sikerült betölteni a mozdonyokat:", error);
+//       setLocos([]);
+//     }
+//   };
+
+//   return (
+//     <>
+//       <LocoDialog
+//         opened={locoDialogOpened}
+//         onClose={() => setLocoDialogOpened(false)}
+//         onSaved={async () => {
+//           await refreshLocos();
+//         }}
+//       />
+
+//       <AppShell
+//         header={{ height: 60 }}
+//         footer={{ height: 34 }}
+//         padding="md"
+//       >
+//         <AppShell.Header>
+//           <TopMenuBar
+//             editMode={editMode}
+//             onEditModeChange={setEditMode}
+//             onGoHome={onGoHome}
+//             onOpenLocos={() => setLocoDialogOpened(true)}
+//             locoPanelCollapsed={locoPanelCollapsed}
+//             onToggleLocoPanel={() => setLocoPanelCollapsed((v) => !v)}
+//             propertyPanelCollapsed={propertyPanelCollapsed}
+//             onTogglePropertyPanel={() =>
+//               setPropertyPanelCollapsed((v) => !v)
+//             }
+//           />
+//         </AppShell.Header>
+
+//         <AppShell.Main>
+//           <Stack gap="md" h="calc(100vh - 60px - 34px - 32px)">
+
+//             {editMode && (
+//               <>
+//                 <Card withBorder radius="sm" p="sm" >
+//                   <Group gap="xs">
+
+
+//                     <Button
+//                       size="xs"
+//                       variant="light"
+//                       leftSection={<IconSwitch2 size={14} />}
+//                     >
+//                       Váltó
+//                     </Button>
+
+//                     <Button
+//                       size="xs"
+//                       variant="light"
+//                       leftSection={<IconRoute size={14} />}
+//                     >
+//                       Route
+//                     </Button>
+
+//                     <Button
+//                       size="xs"
+//                       variant="light"
+//                       leftSection={<IconInfoCircle size={14} />}
+//                     >
+//                       Info
+//                     </Button>
+//                   </Group>
+//                 </Card>
+
+//               </>
+//             )}
+
+
+
+//             <Group
+//               gap="md"
+//               wrap="nowrap"
+//               align="stretch"
+//               style={{ flex: 1, minHeight: 0 }}
+//             >
+//               <Box
+//                 style={{
+//                   width: locoPanelCollapsed ? 0 : 380,
+//                   transition: "width 0.2s ease",
+//                   overflow: "hidden",
+//                 }}
+//               >
+//                 {!locoPanelCollapsed && (
+//                   <LocoPanel locos={locos} />
+//                 )}
+//               </Box>
+
+//               <Box style={{ flex: 1, minWidth: 0 }} h="100%">
+//                 <Card withBorder radius="sm" p="md" h="100%">
+//                   <Box
+//                     h="100%"
+//                     style={{
+//                       borderRadius: 12,
+//                       overflow: "hidden",
+//                       border: "1px solid var(--mantine-color-dark-4)",
+//                     }}
+//                   >
+//                     <TrackCanvas editMode={editMode} />
+//                   </Box>
+//                 </Card>
+//               </Box>
+
+//               {/* <Box w={320} h="100%">
+//                 <Card withBorder radius="sm" p="md" h="100%">
+//                   <RightPropertyPanel />
+//                 </Card>
+//               </Box> */}
+
+//               <Box
+//                 style={{
+//                   width: propertyPanelCollapsed ? 0 : 320,
+//                   transition: "width 0.2s ease",
+//                   overflow: "hidden",
+//                 }}
+//               >
+//                 {!propertyPanelCollapsed && (
+//                   <>
+//                     <div
+//                       style={{
+//                         position: "absolute",
+//                         right: 0,
+//                         top: "50%",
+//                         transform: "translateY(-50%)",
+//                         width: 16,
+//                         height: 80,
+//                         background: "var(--mantine-color-dark-6)",
+//                         borderRadius: "6px 0 0 6px",
+//                         cursor: "pointer",
+//                         zIndex: 10,
+//                       }}
+//                       onClick={() => setPropertyPanelCollapsed(false)}
+//                     />
+
+//                     <Card withBorder radius="lg" p="md" h="100%">
+//                       <RightPropertyPanel />
+//                     </Card>
+//                   </>
+//                 )}
+//               </Box>
+
+              
+//             </Group>
+//           </Stack>
+//         </AppShell.Main>
+
+//         <AppShell.Footer>
+//           <StatusBar />
+//         </AppShell.Footer>
+//       </AppShell>
+//     </>
+//   );
+// }

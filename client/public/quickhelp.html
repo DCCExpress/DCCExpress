@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Quick Help</title>
+
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --text: #222;
+      --border: #ddd;
+      --key-bg: #e9ecef;
+      --note: #666;
+      --button-bg: #ffffff;
+      --button-border: #ccc;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1f1f1f;
+        --text: #f1f3f5;
+        --border: #444;
+        --key-bg: #2c2e33;
+        --note: #adb5bd;
+        --button-bg: #2c2e33;
+        --button-border: #555;
+      }
+    }
+
+    html[data-theme="light"] {
+      --bg: #f8f9fa;
+      --text: #222;
+      --border: #ddd;
+      --key-bg: #e9ecef;
+      --note: #666;
+      --button-bg: #ffffff;
+      --button-border: #ccc;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #1f1f1f;
+      --text: #f1f3f5;
+      --border: #444;
+      --key-bg: #2c2e33;
+      --note: #adb5bd;
+      --button-bg: #2c2e33;
+      --button-border: #555;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      padding: 24px;
+      line-height: 1.6;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    h2 {
+      margin-top: 24px;
+      font-size: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+
+    .key {
+      background: var(--key-bg);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 13px;
+      min-width: 140px;
+      text-align: center;
+    }
+
+    .desc {
+      flex: 1;
+      margin-left: 16px;
+    }
+
+    .note {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--note);
+    }
+
+    .theme-toggle {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--button-border);
+      background: var(--button-bg);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .theme-toggle:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>🚆 Quick Help</h1>
+    <button class="theme-toggle" id="themeToggle" type="button">Toggle theme</button>
+  </div>
+
+  <div class="section">
+    <h2>General Controls</h2>
+
+    <div class="item">
+      <div class="key">Left Click</div>
+      <div class="desc">Select element or place new element (draw mode)</div>
+    </div>
+
+    <div class="item">
+      <div class="key">Ctrl + Drag</div>
+      <div class="desc">Pan (move) the canvas</div>
+    </div>
+
+    <div class="item">
+      <div class="key">Mouse Wheel</div>
+      <div class="desc">Zoom in / out</div>
+    </div>
+
+    <div class="item">
+      <div class="key">ESC</div>
+      <div class="desc">Switch back to cursor mode</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Editing</h2>
+
+    <div class="item">
+      <div class="key">Click</div>
+      <div class="desc">Select element</div>
+    </div>
+
+    <div class="item">
+      <div class="key">Drag</div>
+      <div class="desc">Move selected element</div>
+    </div>
+
+    <div class="item">
+      <div class="key">Delete / Backspace</div>
+      <div class="desc">Delete selected element</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Rotation</h2>
+
+    <div class="item">
+      <div class="key">R</div>
+      <div class="desc">Rotate selected element</div>
+    </div>
+
+    <div class="item">
+      <div class="key">R (Draw Mode)</div>
+      <div class="desc">Rotate preview (ghost element)</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Undo / Redo</h2>
+
+    <div class="item">
+      <div class="key">Ctrl + Z</div>
+      <div class="desc">Undo last action</div>
+    </div>
+
+    <div class="item">
+      <div class="key">Ctrl + Y</div>
+      <div class="desc">Redo last undone action</div>
+    </div>
+
+    <div class="item">
+      <div class="key">Ctrl + Shift + Z</div>
+      <div class="desc">Redo (alternative shortcut)</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Modes</h2>
+
+    <div class="item">
+      <div class="key">Cursor Mode</div>
+      <div class="desc">Select and move elements</div>
+    </div>
+
+    <div class="item">
+      <div class="key">Draw Mode</div>
+      <div class="desc">Place new elements on the grid</div>
+    </div>
+  </div>
+
+  <div class="note">
+    Tip: Use zoom + pan for precise placement. Undo/Redo helps experimenting safely.
+  </div>
+
+  <script>
+    const storageKey = "dcc-express.quickhelp.theme";
+    const html = document.documentElement;
+    const button = document.getElementById("themeToggle");
+
+    const savedTheme = localStorage.getItem(storageKey);
+    if (savedTheme === "light" || savedTheme === "dark") {
+      html.setAttribute("data-theme", savedTheme);
+    }
+
+    button.addEventListener("click", () => {
+      const current = html.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      html.setAttribute("data-theme", next);
+      localStorage.setItem(storageKey, next);
+    });
+  </script>
+</body>
+</html>

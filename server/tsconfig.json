@@ -1,24 +1,13 @@
 {
-    "compilerOptions": {
-        "target": "ES2015",
-        "module": "CommonJS",
-        "rootDir": "./../", // "./src",
-        "outDir": "../dist/server/js",
-        "strict": true,
-        "esModuleInterop": true,
-        "moduleResolution": "node",
-        "sourceMap": true, 
-    },
-    "paths": {
-        "*": ["../../node_modules/*"], // A modulok relatív útvonala
-        "@common/*": [
-            "../../common/src/*"
-        ],
-    },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "../node_modules"
-    ]
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "rootDir": "src",
+    "outDir": "../dist/server",
+    "noEmit": false
+  },
+  "include": ["src"]
 }

@@ -1,0 +1,17 @@
+{
+  "name": "My Z21",
+  "type": "z21",
+  "z21": {
+    "host": "192.168.1.111",
+    "port": 21105
+  },
+  "dccexTcp": {
+    "host": "192.168.1.143",
+    "port": 2560
+  },
+  "dccexSerial": {
+    "serialPort": "COM3",
+    "baudRate": 115200
+  },
+  "autoConnect": false
+}

@@ -1,0 +1,11 @@
+{
+  "i18n-ally.localesPaths": [
+    "client/src/i18n"
+  ],
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.enabledFrameworks": ["react-i18next"],
+  "i18n-ally.sourceLanguage": "en",
+  "i18n-ally.displayLanguage": "en",
+  "i18n-ally.sortKeys": true,
+  "i18n-ally.namespace": true
+}

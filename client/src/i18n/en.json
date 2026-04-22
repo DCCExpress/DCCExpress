@@ -1,0 +1,24 @@
+{
+  "CommandCenter": "Command Center",
+  "File": "File",
+  "Home": "Home",
+  "Load": "Load",
+  "Locomotives": "Locomotives",
+  "Railway": "Railway",
+  "Routes": "Routes",
+  "Save": "Save",
+  "Trains": "Trains",
+  "UI": "UI",
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "settings": {
+    "language": "Language",
+    "languages": {
+      "en": "English",
+      "hu": "Hungarian"
+    },
+    "title": "Settings"
+  }
+}
