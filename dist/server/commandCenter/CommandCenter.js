@@ -18,27 +18,15 @@ export class CommandCenter {
     constructor(name) {
         this.name = name;
     }
-    /**
-     * Get current power state
-     */
     getPowerInfo() {
         return this.powerInfo;
     }
-    /**
-     * Get stored loco info
-     */
     getLocoInfo(address) {
         return this.locos.get(address);
     }
-    /**
-     * Get stored turnout info
-     */
     getTurnoutInfo(address) {
         return this.turnouts.get(address);
     }
-    /**
-     * Get name
-     */
     getName() {
         return this.name;
     }
