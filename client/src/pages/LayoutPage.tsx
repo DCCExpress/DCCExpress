@@ -278,8 +278,8 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
 
       if (isCtrl && ev.key.toLowerCase() === "s") {
         ev.preventDefault();
-        void saveLayoutToServer();
-        void saveCommandCentersToServer();
+        saveLayoutToServer();
+        //void saveCommandCentersToServer();
       }
     };
 

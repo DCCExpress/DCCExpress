@@ -146,7 +146,7 @@ export class BlockElement extends BaseElement implements IBlockElement {
             return {
                 x: this.x - 1, //this.posLeft,
                 y: this.y,
-                width: this.w + 1,
+                width: this.w ,
                 height: this.h
             }
         }
@@ -155,7 +155,7 @@ export class BlockElement extends BaseElement implements IBlockElement {
                 x: this.x , //this.posLeft,
                 y: this.y - 1,
                 width: this.h,
-                height: this.w + 1
+                height: this.w
             }
 
 

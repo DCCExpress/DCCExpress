@@ -253,18 +253,66 @@ export default function LocoDialog({ opened, onClose, onSaved }: LocoDialogProps
                           loco.id === selectedId
                             ? "var(--mantine-color-blue-5)"
                             : undefined,
+                        backgroundColor:
+                          loco.id === selectedId
+                            ? "var(--mantine-color-blue-0)"
+                            : undefined,
                       }}
                       onClick={() => setSelectedId(loco.id)}
                     >
-                      <Text fw={600}>{loco.name || "Névtelen mozdony"}</Text>
-                      <Text size="sm" c="dimmed">
-                        Cím: {loco.address}
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        Max seb.: {loco.maxSpeed}
-                      </Text>
-                    </Card>
-                  ))}
+                      <Group
+                        align="stretch"
+                        gap="sm"
+                        style={{ width: "100%", flexWrap: "nowrap" }}
+                      >
+                        {/* 🔵 BAL: KÉP (50%) */}
+                        <Box
+                          style={{
+                            width: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {loco.image ? (
+                            <img
+                              src={loco.image}
+                              alt={loco.name || "Loco"}
+                              style={{
+                                height: 48,
+                                width: "auto",
+                                maxWidth: "100%",
+                                objectFit: "contain",
+                                display: "block",
+                              }}
+                            />
+                          ) : (
+                            <IconPhoto size={24} style={{ opacity: 0.5 }} />
+                          )}
+                        </Box>
+
+                        {/* 🟢 JOBB: SZÖVEG (50%) */}
+                        <Stack
+                          gap={2}
+                          style={{
+                            width: "50%",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text fw={600} truncate>
+                            {loco.name || "Névtelen mozdony"}
+                          </Text>
+
+                          <Text size="sm" c="dimmed">
+                            Cím: {loco.address}
+                          </Text>
+
+                          <Text size="sm" c="dimmed">
+                            Max: {loco.maxSpeed}
+                          </Text>
+                        </Stack>
+                      </Group>
+                    </Card>))}
 
                   {locos.length === 0 && (
                     <Text size="sm" c="dimmed">
@@ -510,9 +558,9 @@ export default function LocoDialog({ opened, onClose, onSaved }: LocoDialogProps
             <Button onClick={handleSave} loading={saving}>
               Mentés
             </Button>
-          <Button variant="light" onClick={onClose}>
-            Bezárás
-          </Button>
+            <Button variant="light" onClick={onClose}>
+              Bezárás
+            </Button>
 
           </Group>
         </Group>

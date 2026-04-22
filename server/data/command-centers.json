@@ -1,6 +1,6 @@
 {
   "name": "CC",
-  "type": "dcc-ex-tcp",
+  "type": "z21",
   "z21": {
     "host": "192.168.1.70",
     "port": 21105
