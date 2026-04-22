@@ -1,42 +1,38 @@
 {
-  "name": "dccexpress",
-  "version": "0.1.1",
-  "main": "index.js",
-  "sourceMaps": true,
-  "type": "module",
+  "name": "dcc-express",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
-    "start": "cd dist && node ./server/js/server/src/index.js",
-    "build:server": "tsc --project server/tsconfig.json",
-    "build:client": "tsc --project client/tsconfig.json",
-    "build": "npm run build:server && npm run build:client",
-    "build:app": "esbuild client/src/app.ts --bundle --platform=browser --minify --outfile=dist/appbundle.min.js",
-    "build:loco": "esbuild client/src/locoapp.ts --bundle --platform=browser --minify --outfile=dist/locobundle.min.js"
+    "dev:client": "npm --workspace client run dev",
+    "dev:server": "npm --workspace server run dev",
+    "build:client": "npm --workspace client run build",
+    "build:server": "npm --workspace server run build",
+    "build": "npm run build:client && npm run build:server"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "@popperjs/core": "^2.11.8",
-    "@types/bootstrap": "^5.2.10",
-    "@types/socket.io": "^3.0.2",
-    "@types/typescript": "^2.0.0",
-    "bootstrap": "^5.3.3",
-    "express": "^4.21.1",
-    "multer": "^1.4.5-lts.1",
-    "requirejs": "^2.3.7",
-    "serialport": "^12.0.0",
-    "uuid": "^8.3.2",
-    "ws": "^8.18.0",
-    "esbuild": "^0.20.0"
+    "@mantine/form": "^9.0.1",
+    "@tabler/icons-react": "^3.41.1",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "multer": "^2.1.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.14.0",
+    "ws": "^8.20.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/express": "^5.0.0",
-    "@types/multer": "^1.4.12",
-    "@types/node": "^22.9.1",
-    "@types/uuid": "^10.0.0",
-    "@types/ws": "^8.5.13",
-    "esbuild": "^0.25.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^25.5.2",
+    "@types/ws": "^8.18.1",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.7"
   }
 }
