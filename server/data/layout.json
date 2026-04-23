@@ -99,7 +99,7 @@
           "name": "element",
           "layerName": "blocks",
           "x": 12,
-          "y": 5,
+          "y": 3,
           "rotation": 0,
           "rotationStep": 90,
           "bg": "black",
@@ -282,7 +282,7 @@
           "rotationStep": 45,
           "bg": "black",
           "fg": "white",
-          "aspect": 4
+          "aspect": 2
         },
         {
           "id": "9cb3d36-da7a-4451-b905-5922e2c6",
@@ -295,7 +295,7 @@
           "rotationStep": 45,
           "bg": "black",
           "fg": "white",
-          "aspect": 4
+          "aspect": 2
         },
         {
           "id": "b684a9b-f704-4daf-8045-1d19eadb",
@@ -308,7 +308,7 @@
           "rotationStep": 45,
           "bg": "black",
           "fg": "white",
-          "aspect": 4
+          "aspect": 2
         },
         {
           "id": "76c885c-7e82-43cb-838a-d442e5fa",
@@ -321,7 +321,7 @@
           "rotationStep": 45,
           "bg": "black",
           "fg": "white",
-          "aspect": 4
+          "aspect": 2
         },
         {
           "id": "657ea08-11b2-498b-bea4-883e9833",
@@ -461,7 +461,6 @@
           "bg": "black",
           "fg": "white",
           "address": 1,
-          "turnouAddress": 10,
           "turnoutClosedValue": true
         },
         {
@@ -476,7 +475,6 @@
           "bg": "black",
           "fg": "white",
           "address": 0,
-          "turnouAddress": 11,
           "turnoutClosedValue": true
         },
         {
@@ -907,7 +905,6 @@
           "bg": "black",
           "fg": "white",
           "address": 0,
-          "turnouAddress": 12,
           "turnoutClosedValue": false
         },
         {
@@ -922,7 +919,6 @@
           "bg": "black",
           "fg": "white",
           "address": 0,
-          "turnouAddress": 13,
           "turnoutClosedValue": false
         },
         {

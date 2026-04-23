@@ -17,9 +17,10 @@ import {
   IconPlayerTrackNext,
   IconPlayerTrackPrev,
 } from "@tabler/icons-react";
-import type { Loco } from "../types/loco";
+
 import LocoImage from "../components/loco/LocoImage";
 import LocoPicker from "../components/loco/LocoPicker";
+import { Loco } from "../../../common/src/types";
 
 type Direction = "forward" | "reverse";
 

@@ -8,7 +8,7 @@ import RightPropertyPanel from "../layout/PropertyPanel";
 import StatusBar from "../layout/StatusBar";
 import LocoPanel from "../layout/LocoPanel";
 import { getLayout, getLocos, saveLayout } from "../api/http";
-import type { Loco } from "../types/loco";
+
 import { ELEMENT_TYPES, type EditorTool } from "../models/editor/types/EditorTypes";
 import ElementPickerDialog from "../components/editor/ElementPickerDialog";
 import { isTouchDevice, showOkMessage } from "../helpers";
@@ -21,7 +21,9 @@ import { TrackSensorElement } from "../models/editor/elements/TrackSensorElement
 import { TrackTurnoutLeftElement } from "../models/editor/elements/TrackTurnoutLeftElement";
 import { TrackTurnoutRightElement } from "../models/editor/elements/TrackTurnoutRightElement";
 import CommandCenterDialog from "../components/CommandCenterDialog";
-import { CommandCenter, ICommandCenter, loadCommandCenters, saveCommandCenters } from "../api/commandCentersApi";
+import { CommandCenter, loadCommandCenters, saveCommandCenters } from "../api/commandCentersApi";
+import { ICommandCenter, Loco } from "../../../common/src/types";
+import { WsEvents } from "../../../common/src/wsEvents";
 
 type LayoutPageProps = {
   onGoHome: () => void;
@@ -315,7 +317,7 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
 
     wsApi.connect(url);
 
-    const unsubscribeSensor = wsClient.on<{ address: number; on: boolean }>(
+    const unsubscribeSensor = wsClient.on(
       "sensorChanged",
       (data) => {
         console.log("bejött sensor:", data);
@@ -345,7 +347,7 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
       }
     );
 
-    const unsubscribeTurnout = wsClient.on<{ address: number; closed: boolean }>(
+    const unsubscribeTurnout = wsClient.on(
       "turnoutChanged",
       (data) => {
         console.log("turnoutChanged:", data);
@@ -362,14 +364,14 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
           if (e.type === ELEMENT_TYPES.TRACK_TURNOUT_LEFT) {
             const turnout = e as TrackTurnoutLeftElement;
 
-            if (turnout.turnouAddress === data.address) {
+            if (turnout.turnoutAddress === data.address) {
               turnout.turnoutClosed = data.closed === turnout.turnoutClosedValue;
               changed = true;
             }
           } else if (e.type === ELEMENT_TYPES.TRACK_TURNOUT_RIGHT) {
             const turnout = e as TrackTurnoutRightElement;
 
-            if (turnout.turnouAddress === data.address) {
+            if (turnout.turnoutAddress === data.address) {
               turnout.turnoutClosed = data.closed === turnout.turnoutClosedValue;
               changed = true;
             }

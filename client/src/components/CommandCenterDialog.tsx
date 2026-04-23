@@ -10,10 +10,11 @@ import {
   TextInput,
 } from "@mantine/core";
 import {
-  CommandCenterType,
+  
   CommandCenter,
   saveCommandCenters,
 } from "../api/commandCentersApi";
+import { CommandCenterType } from "../../../common/src/types";
 
 type CommandCenterDialogProps = {
   opened: boolean;

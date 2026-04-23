@@ -1,31 +1,6 @@
+import { CommandCenterType, ICommandCenter } from "../../../common/src/types";
 import { showErrorMessage, showOkMessage } from "../helpers";
 
-export type CommandCenterType = "z21" | "dcc-ex-tcp" | "dcc-ex-serial";
-
-// export interface CommandCenterConfig {
-//   id: string;
-//   name: string;
-//   type: CommandCenterType;
-
-//   host?: string;
-//   port?: number;
-
-//   serialPort?: string;
-//   baudRate?: number;
-
-//   autoConnect?: boolean;
-//   notes?: string;
-// }
-
-export interface ICommandCenter {
-  name: string;
-  type: CommandCenterType;
-  z21: { host?: string; port?: number; }
-  dccexTcp: { host?: string; port?: number; }
-  dccexSerial: { serialPort?: string; baudRate?: number; }
-  autoConnect?: boolean;
-  //notes?: string;
-}
 
 export class CommandCenter implements ICommandCenter {
   name: string;

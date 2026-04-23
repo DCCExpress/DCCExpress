@@ -18,9 +18,9 @@ import {
   Title,
 } from "@mantine/core";
 import { IconPhoto, IconPlus, IconTrash } from "@tabler/icons-react";
-import type { Loco, LocoFunction } from "../types/loco";
 import { getLocos, saveLocos } from "../api/http";
 import { generateId } from "../helpers";
+import { Loco, LocoFunction } from "../../../common/src/types";
 
 type LocoDialogProps = {
   opened: boolean;

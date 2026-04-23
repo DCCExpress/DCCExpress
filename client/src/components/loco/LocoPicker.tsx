@@ -1,7 +1,8 @@
 import { Button, Card, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
-import type { Loco } from "../../types/loco";
+
 import LocoImage from "./LocoImage";
+import { Loco } from "../../../../common/src/types";
 
 type LocoPickerProps = {
     opened: boolean;

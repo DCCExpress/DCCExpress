@@ -1,0 +1,23 @@
+{
+    "CommandCenter": "Parancsközpont",
+    "File": "Fájl",
+    "Home": "Főoldal",
+    "Load": "Betöltés",
+    "Locomotives": "Mozdonyok",
+    "Railway": "Vasút",
+    "Routes": "Útvonalak",
+    "Save": "Mentés",
+    "Trains": "Vonatok",
+    "common": {
+        "cancel": "Mégsem",
+        "save": "Mentés"
+    },
+    "settings": {
+        "language": "Nyelv",
+        "languages": {
+            "en": "Angol",
+            "hu": "Magyar"
+        },
+        "title": "Beállítások"
+    }
+}

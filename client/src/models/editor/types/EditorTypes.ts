@@ -99,13 +99,13 @@ export interface ITrackCrossingElement extends IAddressedElement {
 
 export interface ITrackTurnoutLeftElement extends IAddressedElement {
   type: typeof ELEMENT_TYPES.TRACK_TURNOUT_LEFT;
-  turnouAddress: number;
+  turnoutAddress: number;
   turnoutClosedValue: boolean;
 }
 
 export interface ITrackTurnoutRightElement extends IAddressedElement {
   type: typeof ELEMENT_TYPES.TRACK_TURNOUT_RIGHT;
-  turnouAddress: number;
+  turnoutAddress: number;
   turnoutClosedValue: boolean;
 }
 

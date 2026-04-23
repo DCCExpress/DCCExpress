@@ -1,36 +1,37 @@
 import type http from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
+import { CommandCenterInfo, WsMessage } from "../../../common/src/types.js";
 
-type SetTurnoutMessage = {
-  type: "setTurnout";
-  data: {
-    address: number;
-    closed: boolean;
-  };
-};
+// type SetTurnoutMessage = {
+//   type: "setTurnout";
+//   data: {
+//     address: number;
+//     closed: boolean;
+//   };
+// };
 
-type SetSensorMessage = {
-  type: "setSensor";
-  data: {
-    address: number;
-    on: boolean;
-  };
-};
+// type SetSensorMessage = {
+//   type: "setSensor";
+//   data: {
+//     address: number;
+//     on: boolean;
+//   };
+// };
 
-type CommandCenterInfo = {
-  type: "commandCenterInfo";
-  data: {
-    type: string;
-    alive: boolean;
-  }
-}
-type WsMessage =
-  | SetTurnoutMessage
-  | SetSensorMessage
-  | {
-      type: string;
-      data?: any;
-    };
+// type CommandCenterInfo = {
+//   type: "commandCenterInfo";
+//   data: {
+//     type: string;
+//     alive: boolean;
+//   }
+// }
+// type WsMessage =
+//   | SetTurnoutMessage
+//   | SetSensorMessage
+//   | {
+//       type: string;
+//       data?: any;
+//     };
 
 function sendToClient(ws: WebSocket, message: unknown) {
   if (ws.readyState === WebSocket.OPEN) {

@@ -1,8 +1,9 @@
+import { Loco } from "../../../common/src/types";
 import { BaseElement } from "../models/editor/core/BaseElement";
 import { Layout } from "../models/editor/core/Layout";
 
 import { ELEMENT_TYPES, ElementType, ITrackLayoutFile } from "../models/editor/types/EditorTypes";
-import type { Loco } from "../types/loco";
+
 
 export async function getLocos(): Promise<Loco[]> {
   const response = await fetch("/api/locos");

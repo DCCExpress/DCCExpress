@@ -1,4 +1,5 @@
 
+import { SetTurnoutMessage } from "../../../../../common/src/types";
 import { drawTextWithRoundedBackground } from "../../../graphics";
 import { generateId } from "../../../helpers";
 import { wsApi } from "../../../services/wsApi";
@@ -13,7 +14,7 @@ export class TrackTurnoutRightElement extends ClickableBaseElement implements IT
     turnoutLocked: string | CanvasGradient | CanvasPattern = "yellow";
     turnoutUnLocked: string | CanvasGradient | CanvasPattern = "red";
 
-    turnouAddress: number = 0;
+    turnoutAddress: number = 0;
     turnoutClosedValue: boolean = false;
     turnoutClosed: boolean = false;
 
@@ -35,7 +36,7 @@ export class TrackTurnoutRightElement extends ClickableBaseElement implements IT
 
         this.beginDraw(ctx);
         if (options?.showTurnoutAddress) {
-            drawTextWithRoundedBackground(ctx, this.posLeft, this.posBottom - 10, "#" + this.turnouAddress.toString())
+            drawTextWithRoundedBackground(ctx, this.posLeft, this.posBottom - 10, "#" + this.turnoutAddress.toString())
         }
         this.endDraw(ctx);
 
@@ -231,7 +232,8 @@ export class TrackTurnoutRightElement extends ClickableBaseElement implements IT
 
     mouseDown(ev: MouseEvent) {
         const closed = this.turnoutClosed == this.turnoutClosedValue;
-        const data = { address: this.turnouAddress, closed: !closed }
+        //const data = { address: this.turnouAddress, closed: !closed }
+        const data: SetTurnoutMessage = {type: "setTurnout", data: { address: this.turnoutAddress, closed: !this.turnoutClosedValue }};
         wsApi.setTurnout(data)
     }
 
@@ -246,7 +248,7 @@ export class TrackTurnoutRightElement extends ClickableBaseElement implements IT
             ...super.toJSON(),
             type: ELEMENT_TYPES.TRACK_TURNOUT_RIGHT,
             address: this.address,
-            turnouAddress: this.turnouAddress,
+            turnoutAddress: this.turnoutAddress,
             turnoutClosedValue: this.turnoutClosedValue
         };
     }
@@ -257,7 +259,7 @@ export class TrackTurnoutRightElement extends ClickableBaseElement implements IT
         copy.rotation = this.rotation;
         copy.rotationStep = this.rotationStep;
         copy.selected = this.selected;
-        copy.turnouAddress = this.turnouAddress;
+        copy.turnoutAddress = this.turnoutAddress;
         copy.turnoutClosedValue = this.turnoutClosedValue;
         return copy;
     }

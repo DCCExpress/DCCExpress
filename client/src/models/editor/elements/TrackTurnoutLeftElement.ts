@@ -1,4 +1,5 @@
 
+import { SetTurnoutMessage } from "../../../../../common/src/types";
 import Api from "../../../api/Api";
 import { drawTextWithRoundedBackground } from "../../../graphics";
 import { generateId } from "../../../helpers";
@@ -14,7 +15,7 @@ export class TrackTurnoutLeftElement extends ClickableBaseElement implements ITr
     override type: typeof ELEMENT_TYPES.TRACK_TURNOUT_LEFT = ELEMENT_TYPES.TRACK_TURNOUT_LEFT;
     turnoutLocked: string | CanvasGradient | CanvasPattern = "yellow";
     turnoutUnLocked: string | CanvasGradient | CanvasPattern = "red";
-    turnouAddress: number = 0;
+    turnoutAddress: number = 0;
     turnoutClosedValue: boolean = false;
     turnoutClosed: boolean = false;
 
@@ -34,7 +35,7 @@ export class TrackTurnoutLeftElement extends ClickableBaseElement implements ITr
         
         this.beginDraw(ctx);
         if (options?.showTurnoutAddress) {
-            drawTextWithRoundedBackground(ctx, this.posLeft, this.posBottom - 10, "#" + this.turnouAddress.toString())
+            drawTextWithRoundedBackground(ctx, this.posLeft, this.posBottom - 10, "#" + this.turnoutAddress.toString())
         }
         this.endDraw(ctx);
 
@@ -231,7 +232,8 @@ export class TrackTurnoutLeftElement extends ClickableBaseElement implements ITr
     // }
     mouseDown(ev: MouseEvent) {
         const closed = this.turnoutClosed == this.turnoutClosedValue;
-        const data = { address: this.turnouAddress, closed: !closed }
+        //const data = { address: this.turnoutAddress, closed: !closed }
+        const data: SetTurnoutMessage = {type: "setTurnout", data: { address: this.turnoutAddress, closed: !this.turnoutClosedValue }};
         wsApi.setTurnout(data)
     }
 
@@ -245,7 +247,7 @@ export class TrackTurnoutLeftElement extends ClickableBaseElement implements ITr
             ...super.toJSON(),
             type: ELEMENT_TYPES.TRACK_TURNOUT_LEFT,
             address: this.address,
-            turnouAddress: this.turnouAddress,
+            turnoutAddress: this.turnoutAddress,
             turnoutClosedValue: this.turnoutClosedValue
         };
     }
@@ -257,7 +259,7 @@ export class TrackTurnoutLeftElement extends ClickableBaseElement implements ITr
         copy.rotationStep = this.rotationStep;
         copy.selected = this.selected;
         copy.address = this.address;
-        copy.turnouAddress = this.turnouAddress;
+        copy.turnoutAddress = this.turnoutAddress;
         copy.turnoutClosedValue = this.turnoutClosedValue;
         return copy;
     }

@@ -9,6 +9,7 @@ import ElementPreview from "../models/editor/rendering/ElementPreviewRenderer";
 import { ELEMENT_TYPES } from "../models/editor/types/EditorTypes";
 import { wsApi } from "../services/wsApi";
 import { useEditorSettings } from "../context/EditorSettingsContext";
+import { SetTurnoutMessage } from "../../../common/src/types";
 
 
 type PropertyPanelProps = {
@@ -312,7 +313,8 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
                     <Group>
                       <ElementPreview element={getPreviewTurnout(selectedElement, true)} label="Closed" width={40} height={40} onClick={() => {
                         const t = selectedElement as TrackTurnoutLeftElement
-                        const data = { address: t.turnouAddress, closed: t.turnoutClosedValue }
+                        //const data: SetTurnoutMessage = { address: t.turnoutAddress, closed: t.turnoutClosedValue };
+                        const data: SetTurnoutMessage = {type: "setTurnout", data: { address: t.turnoutAddress, closed: t.turnoutClosedValue }};
                         console.log("WSAPI:", data)
                         wsApi.setTurnout(data)
                       }}
@@ -325,7 +327,7 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
                     <Group>
                       <ElementPreview element={getPreviewTurnout(selectedElement, false)} label="Opened" width={40} height={40} onClick={() => {
                         const t = selectedElement as TrackTurnoutLeftElement
-                        const data = { address: t.turnouAddress, closed: !t.turnoutClosedValue }
+                        const data: SetTurnoutMessage = {type: "setTurnout", data: { address: t.turnoutAddress, closed: !t.turnoutClosedValue }};
                         wsApi.setTurnout(data)
                       }}
                       />

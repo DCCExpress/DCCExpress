@@ -2,6 +2,8 @@ import http from "node:http";
 import { app, clientDir, distDir } from "./app.js";
 import { setupWebSocketServer } from "./ws/wsServer.js";
 
+
+
 const PORT = 3000;
 
 const server = http.createServer(app);

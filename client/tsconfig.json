@@ -6,7 +6,7 @@
     "types": ["vite/client"],
     "noEmit": true
   },
-  "include": ["src"],
+  "include": ["src", "../common/src"],
    "exclude": [
     "**/*.bak"
   ]

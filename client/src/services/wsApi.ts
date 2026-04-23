@@ -1,5 +1,6 @@
 // src/services/wsApi.ts
 
+import { SetTurnoutMessage } from "../../../common/src/types";
 import { wsClient } from "./wsClient";
 
 export const wsApi = {
@@ -37,8 +38,11 @@ export const wsApi = {
     return wsClient.send({ type: "setLocoFunction", data });
   },
 
-  setTurnout(data: {address: number, closed: boolean }) {
-    return wsClient.send({ type: "setTurnout", data });
-  },
+  // setTurnout(data: {address: number, closed: boolean }) {
+  //   return wsClient.send({ type: "setTurnout", data });
+  // },
 
+  setTurnout(t: SetTurnoutMessage) {
+    return wsClient.send(t);
+  }
 };
