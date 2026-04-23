@@ -1,69 +1,65 @@
+import { Console } from "node:console";
 import { Loco, LocoState, SetLocoFunctionMessage, SetLocoMessage, WsMessage } from "../../../common/src/types.js";
+import { CommandCenter, LocoInfo, SensorInfo, TurnoutInfo } from "./CommandCenter.js";
 
-export class CommandCenterSimulator {
-  private power = false;
-  private alive = true;
-
-  private locos = new Map<number, LocoState>();
-  private turnouts = new Map<number, boolean>();
-  private sensors = new Map<number, boolean>();
-
+export class CommandCenterSimulator extends CommandCenter{
+  start(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  stop(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  getConnectionString(): string {
+    throw new Error("Method not implemented.");
+  }
+  clientConnected(): void {
+    throw new Error("Method not implemented.");
+  }
+  setTurnout(address: number, closed: boolean): Promise<boolean> {
+    console.log("Sim: setTurnout", { address, closed });
+    //throw new Error("Method not implemented.");
+    return Promise.resolve(true);
+  }
+  getTurnout(address: number): Promise<TurnoutInfo | null> {
+    throw new Error("Method not implemented.");
+  }
+  setLoco(address: number, speed: number, direction: "forward" | "reverse"): Promise<boolean> {
+    throw new Error("Method not implemented.");
+  }
+  setLocoFunction(address: number, fn: number, active: boolean): Promise<boolean> {
+    throw new Error("Method not implemented.");
+  }
+  getLoco(address: number): Promise<LocoInfo | null> {
+    throw new Error("Method not implemented.");
+  }
+  setTrackPower(on: boolean): Promise<boolean> {
+    throw new Error("Method not implemented.");
+  }
+  emergencyStop(): Promise<boolean> {
+    throw new Error("Method not implemented.");
+  }
+  getSensor(address: number): Promise<SensorInfo | null> {
+    throw new Error("Method not implemented.");
+  }
+  private power: boolean = false;
   private sensorTimer: NodeJS.Timeout | null = null;
 
 //   constructor(private broadcaster: BroadcastFn) {}
 
-  start() {
-    this.broadcastInfo();
+  // start() {
+  //   this.broadcastInfo();
 
-    this.sensorTimer = setInterval(() => {
-      this.randomSensorTick();
-    }, 5000);
-  }
+  //   this.sensorTimer = setInterval(() => {
+  //     this.randomSensorTick();
+  //   }, 5000);
+  // }
 
-  stop() {
-    if (this.sensorTimer) {
-      clearInterval(this.sensorTimer);
-      this.sensorTimer = null;
-    }
-  }
-
-  handleMessage(message: WsMessage) {
-    switch (message.type) {
-      case "powerOn":
-        this.power = true;
-        this.broadcastInfo();
-        return;
-
-      case "powerOff":
-        this.power = false;
-        this.broadcastInfo();
-        return;
-
-      case "setLoco":
-        this.handleSetLoco(message.data);
-        return;
-
-      case "setLocoFunction":
-        this.handleSetLocoFunction(message.data);
-        return;
-
-      case "setTurnout":
-        this.turnouts.set(message.data.address, message.data.closed);
-        this.emit("turnoutChanged", {
-          address: message.data.address,
-          closed: message.data.closed,
-        });
-        return;
-
-      case "setSensor":
-        this.sensors.set(message.data.address, message.data.on);
-        this.emit("sensorChanged", {
-          address: message.data.address,
-          on: message.data.on,
-        });
-        return;
-    }
-  }
+  // stop() {
+  //   if (this.sensorTimer) {
+  //     clearInterval(this.sensorTimer);
+  //     this.sensorTimer = null;
+  //   }
+  // }
 
   sendInitialState() {
     this.broadcastInfo();
@@ -95,58 +91,58 @@ export class CommandCenterSimulator {
     }
   }
 
-  private handleSetLoco(msg: SetLocoMessage) {
-    const loco = this.getOrCreateLoco(msg.data.address);
-    loco.speed = msg.data.speed;
-    loco.direction = msg.data.direction;
+  // private handleSetLoco(msg: SetLocoMessage) {
+  //   const loco = this.getOrCreateLoco(msg.data.address);
+  //   loco.speed = msg.data.speed;
+  //   loco.direction = msg.data.direction;
 
-    this.emit("locoChanged", {
-      address: msg.data.address,
-      speed: msg.data.speed,
-      direction: msg.data.direction,
-    });
-  }
+  //   this.emit("locoChanged", {
+  //     address: msg.data.address,
+  //     speed: msg.data.speed,
+  //     direction: msg.data.direction,
+  //   });
+  // }
 
-  private handleSetLocoFunction(msg: SetLocoFunctionMessage) {
-    const loco = this.getOrCreateLoco(msg.data.fn);
-    //loco.functions[data.functionNumber] = msg.data.on;
+  // private handleSetLocoFunction(msg: SetLocoFunctionMessage) {
+  //   //const loco = this.getOrCreateLoco(msg.data.fn);
+  //   //loco.functions[data.functionNumber] = msg.data.on;
 
-    // this.emit("locoFunctionChanged", {
-    //   locoId: data.locoId,
-    //   address: data.address,
-    //   functionNumber: data.functionNumber,
-    //   active: data.active,
-    //   momentary: data.momentary,
-    // });
+  //   // this.emit("locoFunctionChanged", {
+  //   //   locoId: data.locoId,
+  //   //   address: data.address,
+  //   //   functionNumber: data.functionNumber,
+  //   //   active: data.active,
+  //   //   momentary: data.momentary,
+  //   // });
 
-    // if (data.momentary && data.active) {
-    //   setTimeout(() => {
-    //     loco.functions[data.functionNumber] = false;
+  //   // if (data.momentary && data.active) {
+  //   //   setTimeout(() => {
+  //   //     loco.functions[data.functionNumber] = false;
 
-    //     this.emit("locoFunctionChanged", {
-    //       locoId: data.locoId,
-    //       address: data.address,
-    //       functionNumber: data.functionNumber,
-    //       active: false,
-    //       momentary: true,
-    //     });
-    //   }, 500);
-    // }
-  }
+  //   //     this.emit("locoFunctionChanged", {
+  //   //       locoId: data.locoId,
+  //   //       address: data.address,
+  //   //       functionNumber: data.functionNumber,
+  //   //       active: false,
+  //   //       momentary: true,
+  //   //     });
+  //   //   }, 500);
+  //   // }
+  // }
 
-  private getOrCreateLoco(address: number): LocoState {
-    let loco = this.locos.get(address);
-    // if (!loco) {
-    //   loco = {
-    //     address,
-    //     speed: 0,
-    //     direction: true,
-    //     functions: {},
-    //   };
-    //   this.locos.set(address, loco);
-    // }
-    return loco!;
-  }
+  // private getOrCreateLoco(address: number): LocoState {
+  //   let loco = this.locos.get(address);
+  //   if (!loco) {
+  //     loco = {
+  //       address,
+  //       speed: 0,
+  //       direction: "forward",
+  //       functions: {},
+  //     };
+  //     this.locos.set(address, loco);
+  //   }
+  //   return loco!;
+  // }
 
   private randomSensorTick() {
     if (!this.power) return;
@@ -155,7 +151,7 @@ export class CommandCenterSimulator {
     const current = this.sensors.get(address) ?? false;
     const next = !current;
 
-    this.sensors.set(address, next);
+    //this.sensors.set(address, next);
 
     // this.emit("sensorChanged", {
     //   address,

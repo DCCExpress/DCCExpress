@@ -8,22 +8,32 @@ function resolveCommandCentersFilePath() {
     const candidate2 = path.resolve(cwd, "server", "data", "command-centers.json");
     return { candidate1, candidate2 };
 }
+export let CurrentCommandCenterConfig = null;
+let cbCommandCenterConfigLoaded;
+export function setCommandCenterConfigLoadedCallback(cb) {
+    cbCommandCenterConfigLoaded = cb;
+}
 async function readCommandCenter() {
     const { candidate1, candidate2 } = resolveCommandCentersFilePath();
     try {
         console.log("COMMAND CENTER:", candidate1);
         const content = await fs.readFile(candidate1, "utf8");
-        return JSON.parse(content);
+        CurrentCommandCenterConfig = JSON.parse(content);
     }
     catch {
         try {
             const content = await fs.readFile(candidate2, "utf8");
-            return JSON.parse(content);
+            CurrentCommandCenterConfig = JSON.parse(content);
+            return CurrentCommandCenterConfig;
         }
         catch {
-            return null;
+            CurrentCommandCenterConfig = null;
         }
     }
+    if (cbCommandCenterConfigLoaded) {
+        cbCommandCenterConfigLoaded(CurrentCommandCenterConfig);
+    }
+    return CurrentCommandCenterConfig;
 }
 async function writeCommandCenter(item) {
     const { candidate1, candidate2 } = resolveCommandCentersFilePath();

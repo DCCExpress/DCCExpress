@@ -1,6 +1,10 @@
 import type http from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
 import { CommandCenterInfo, WsMessage } from "../../../common/src/types.js";
+import { CommandCenterConfig, setCommandCenterConfigLoadedCallback } from "../routes/commandCenterRoutes.js";
+import { CommandCenter } from "../commandCenter/CommandCenter.js";
+import { CommandCenterSimulator } from "../commandCenter/simulator.js";
+
 
 // type SetTurnoutMessage = {
 //   type: "setTurnout";
@@ -49,7 +53,14 @@ function broadcast(wss: WebSocketServer, message: unknown, exclude?: WebSocket) 
   }
 }
 
+let commandCenter: CommandCenter | null = new CommandCenterSimulator("Simulator");
+setCommandCenterConfigLoadedCallback((conf: CommandCenterConfig | null) => {
+  console.log("Command center config loaded:", conf);
+});
+
 export function setupWebSocketServer(server: http.Server) {
+
+
   const wss = new WebSocketServer({
     server,
     path: "/ws",
@@ -65,7 +76,7 @@ export function setupWebSocketServer(server: http.Server) {
 
     sendToClient(ws, {
       type: "commandCenterInfo",
-      data: {alive: false}
+      data: { alive: false }
     } as CommandCenterInfo)
 
     ws.on("message", (message) => {
@@ -90,13 +101,31 @@ export function setupWebSocketServer(server: http.Server) {
 
             // Itt később majd valódi hardver/logika kezelés jöhet
             // pl. setTurnout(address, closed);
+                broadcast(wss, {
+                  type: "turnoutChanged",
+                  data: {
+                    address,
+                    closed,
+                  },
+                });
 
-            broadcast(wss, {
-              type: "turnoutChanged",
-              data: {
-                address,
-                closed,
-              },
+            commandCenter?.setTurnout(address, closed).then(success => {
+              console.log("Turnout set result:", success);
+              if (!success) {
+                broadcast(wss, {
+                  type: "error",
+                  data: { message: "Failed to set turnout" },
+                });
+              } else
+                 {
+                broadcast(wss, {
+                  type: "turnoutChanged",
+                  data: {
+                    address,
+                    closed,
+                  },
+                });
+              }
             });
 
             return;

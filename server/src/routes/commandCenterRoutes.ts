@@ -24,21 +24,35 @@ function resolveCommandCentersFilePath() {
   return { candidate1, candidate2 };
 }
 
+export let CurrentCommandCenterConfig: CommandCenterConfig | null = null;
+let cbCommandCenterConfigLoaded: (conf: CommandCenterConfig | null) => void;
+export function setCommandCenterConfigLoadedCallback(cb: (conf: CommandCenterConfig | null) => void) {
+  cbCommandCenterConfigLoaded = cb;
+}
+
 async function readCommandCenter(): Promise<CommandCenterConfig | null> {
   const { candidate1, candidate2 } = resolveCommandCentersFilePath();
 
   try {
     console.log("COMMAND CENTER:", candidate1);
     const content = await fs.readFile(candidate1, "utf8");
-    return JSON.parse(content) as CommandCenterConfig;
-  } catch {
+    CurrentCommandCenterConfig = JSON.parse(content) as CommandCenterConfig;
+
+  }
+  catch {
     try {
       const content = await fs.readFile(candidate2, "utf8");
-      return JSON.parse(content) as CommandCenterConfig;
-    } catch {
-      return null;
+      CurrentCommandCenterConfig = JSON.parse(content) as CommandCenterConfig;
+      return CurrentCommandCenterConfig;
+    }
+    catch {
+      CurrentCommandCenterConfig = null;
     }
   }
+  if (cbCommandCenterConfigLoaded) {
+    cbCommandCenterConfigLoaded(CurrentCommandCenterConfig);
+  }
+  return CurrentCommandCenterConfig;
 }
 
 async function writeCommandCenter(item: CommandCenterConfig) {

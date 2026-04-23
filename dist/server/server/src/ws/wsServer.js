@@ -1,4 +1,6 @@
 import { WebSocketServer, WebSocket } from "ws";
+import { setCommandCenterConfigLoadedCallback } from "../routes/commandCenterRoutes.js";
+import { CommandCenterSimulator } from "../commandCenter/simulator.js";
 // type SetTurnoutMessage = {
 //   type: "setTurnout";
 //   data: {
@@ -40,6 +42,10 @@ function broadcast(wss, message, exclude) {
         }
     }
 }
+let commandCenter = new CommandCenterSimulator("Simulator");
+setCommandCenterConfigLoadedCallback((conf) => {
+    console.log("Command center config loaded:", conf);
+});
 export function setupWebSocketServer(server) {
     const wss = new WebSocketServer({
         server,
@@ -79,6 +85,24 @@ export function setupWebSocketServer(server) {
                                 address,
                                 closed,
                             },
+                        });
+                        commandCenter?.setTurnout(address, closed).then(success => {
+                            console.log("Turnout set result:", success);
+                            if (!success) {
+                                broadcast(wss, {
+                                    type: "error",
+                                    data: { message: "Failed to set turnout" },
+                                });
+                            }
+                            else {
+                                broadcast(wss, {
+                                    type: "turnoutChanged",
+                                    data: {
+                                        address,
+                                        closed,
+                                    },
+                                });
+                            }
                         });
                         return;
                     }

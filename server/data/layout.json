@@ -461,7 +461,7 @@
           "bg": "black",
           "fg": "white",
           "address": 1,
-          "turnoutAddress": 0,
+          "turnoutAddress": 12,
           "turnoutClosedValue": true
         },
         {
@@ -476,6 +476,7 @@
           "bg": "black",
           "fg": "white",
           "address": 0,
+          "turnoutAddress": 13,
           "turnoutClosedValue": true
         },
         {
@@ -906,7 +907,7 @@
           "bg": "black",
           "fg": "white",
           "address": 0,
-          "turnoutAddress": 0,
+          "turnoutAddress": 11,
           "turnoutClosedValue": false
         },
         {
@@ -921,6 +922,7 @@
           "bg": "black",
           "fg": "white",
           "address": 0,
+          "turnoutAddress": 10,
           "turnoutClosedValue": false
         },
         {

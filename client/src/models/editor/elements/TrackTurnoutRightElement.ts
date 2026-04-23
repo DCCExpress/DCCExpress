@@ -233,7 +233,7 @@ export class TrackTurnoutRightElement extends ClickableBaseElement implements IT
     mouseDown(ev: MouseEvent) {
         const closed = this.turnoutClosed == this.turnoutClosedValue;
         //const data = { address: this.turnouAddress, closed: !closed }
-        const data: SetTurnoutMessage = {type: "setTurnout", data: { address: this.turnoutAddress, closed: !this.turnoutClosedValue }};
+        const data: SetTurnoutMessage = {type: "setTurnout", data: { address: this.turnoutAddress, closed: !closed }};
         wsApi.setTurnout(data)
     }
 
@@ -267,7 +267,7 @@ export class TrackTurnoutRightElement extends ClickableBaseElement implements IT
     override getEditableProperties(): IEditableProperty[] {
         return [
             ...super.getEditableProperties(),
-            { label: "Turnout Address", key: "turnouAddress", type: "number", readonly: false, validate: (v) => { return v > 10 } },
+            { label: "Turnout Address", key: "turnoutAddress", type: "number", readonly: false, validate: (v) => { return v > 10 } },
             { label: "Closed Value", key: "turnoutClosedValue", type: "bittoggle", readonly: false, validate: (v) => { return true } },
 
         ];
