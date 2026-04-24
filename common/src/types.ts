@@ -26,6 +26,14 @@ export type SetTurnoutMessage = {
   };
 };
 
+export type TurnoutChangedMessage = {
+  type: "turnoutChanged";
+  data: {
+    address: number;
+    closed: boolean;
+  };
+};
+
 export type SetSensorMessage = {
   type: "setSensor";
   data: {
@@ -44,6 +52,7 @@ export type CommandCenterInfo = {
 export type WsMessage =
   | SetTurnoutMessage
   | SetSensorMessage
+  | TurnoutChangedMessage
   | {
       type: string;
       data?: any;

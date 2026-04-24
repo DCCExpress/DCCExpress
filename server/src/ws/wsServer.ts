@@ -5,6 +5,7 @@ import { CommandCenterConfig, readCommandCenter, setCommandCenterConfigLoadedCal
 import { CommandCenter } from "../commandCenter/CommandCenter.js";
 import { CommandCenterSimulator } from "../commandCenter/simulator.js";
 import { Z21CommandCenter } from "../commandCenter/z21CommandCenter.js";
+import { log, logError } from "../utility.js";
 
 
 // type SetTurnoutMessage = {
@@ -54,31 +55,34 @@ function broadcast(wss: WebSocketServer, message: unknown, exclude?: WebSocket) 
   }
 }
 
+
+
+
 let commandCenter: CommandCenter | null = null; //new CommandCenterSimulator("Simulator");
 
 setCommandCenterConfigLoadedCallback((conf: CommandCenterConfig | null) => {
-  console.log("Command center config loaded:", conf);
+
+  log("Command center config loaded:", conf);
 
   if (commandCenter) {
     commandCenter.stop().then(() => {
-      console.log("Previous command center stopped");
+      log("Previous command center stopped");
     });
   }
 
-
   switch (conf?.type) {
     case "simulator":
-      console.log("Starting command center:", conf.type);
-      commandCenter = new CommandCenterSimulator(conf.name);
+      log("Starting command center:", conf.type);
+      commandCenter = new CommandCenterSimulator("Simulator");
       commandCenter.start().then(() => {
-        console.log("Command center started:", conf.type);
+        log("Command center started:", conf.type);
       }).catch(err => {
         console.error("Failed to start command center:", err);
       });
       break;
     case "z21":
-      console.log("Starting command center:", conf.type);
-      commandCenter = new Z21CommandCenter(conf.name, conf.z21.host!, conf.z21.port!);
+      console.log("Starting command center:", "Z21");
+      commandCenter = new Z21CommandCenter("Z21", conf.z21.host!, conf.z21.port!);
       commandCenter.start().then(() => {
         console.log("Command center started:", conf?.type);
       }).catch(err => {
@@ -91,15 +95,21 @@ setCommandCenterConfigLoadedCallback((conf: CommandCenterConfig | null) => {
   }
 });
 
+let wss: WebSocketServer;
+export function broadcastAll(message: unknown, exclude?: WebSocket) {
+  broadcast(wss, message, exclude);
+}
+
+
 export function setupWebSocketServer(server: http.Server) {
 
   readCommandCenter().then(conf => {
-    console.log("Initial command center config:", conf);
+    log("Initial command center config:", conf);
   }).catch(err => {
-    console.error("Failed to read initial command center config:", err);
+    logError("Failed to read initial command center config:", err);
   });
-  
-  const wss = new WebSocketServer({
+
+  wss = new WebSocketServer({
     server,
     path: "/ws",
   });
@@ -119,6 +129,8 @@ export function setupWebSocketServer(server: http.Server) {
 
     ws.on("message", (message) => {
       if (commandCenter) {
+        log("Current command center:", commandCenter.getName());
+        log("Received message from client:", message);
         try {
           const text = message.toString();
           console.log("WS message:", text);
@@ -140,13 +152,13 @@ export function setupWebSocketServer(server: http.Server) {
 
               // Itt később majd valódi hardver/logika kezelés jöhet
               // pl. setTurnout(address, closed);
-              broadcast(wss, {
-                type: "turnoutChanged",
-                data: {
-                  address,
-                  closed,
-                },
-              });
+              // broadcast(wss, {
+              //   type: "turnoutChanged",
+              //   data: {
+              //     address,
+              //     closed,
+              //   },
+              // });
 
               commandCenter?.setTurnout(address, closed).then(success => {
                 console.log("Turnout set result:", success);
@@ -156,13 +168,13 @@ export function setupWebSocketServer(server: http.Server) {
                     data: { message: "Failed to set turnout" },
                   });
                 } else {
-                  broadcast(wss, {
-                    type: "turnoutChanged",
-                    data: {
-                      address,
-                      closed,
-                    },
-                  });
+                  // broadcast(wss, {
+                  //   type: "turnoutChanged",
+                  //   data: {
+                  //     address,
+                  //     closed,
+                  //   },
+                  // });
                 }
               });
 

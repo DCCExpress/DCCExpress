@@ -1,9 +1,10 @@
 import { Console } from "node:console";
-import { Loco, LocoState, SetLocoFunctionMessage, SetLocoMessage, WsMessage } from "../../../common/src/types.js";
+import { Loco, LocoState, SetLocoFunctionMessage, SetLocoMessage, TurnoutChangedMessage, WsMessage } from "../../../common/src/types.js";
 import { CommandCenter, LocoInfo, SensorInfo, TurnoutInfo } from "./CommandCenter.js";
 import { log } from "../utility.js";
+import { broadcastAll } from "../ws/wsServer.js";
 
-export class CommandCenterSimulator extends CommandCenter{
+export class CommandCenterSimulator extends CommandCenter {
   start(): Promise<boolean> {
     log("Starting command center simulator...");
     return Promise.resolve(true);
@@ -20,7 +21,16 @@ export class CommandCenterSimulator extends CommandCenter{
   }
   setTurnout(address: number, closed: boolean): Promise<boolean> {
     console.log("Sim: setTurnout", { address, closed });
-    //throw new Error("Method not implemented.");
+    const msg: TurnoutChangedMessage = {
+      type: "turnoutChanged",
+      data: {
+        address,
+        closed,
+      },
+    };
+
+    broadcastAll(msg);
+
     return Promise.resolve(true);
   }
   getTurnout(address: number): Promise<TurnoutInfo | null> {
@@ -47,7 +57,7 @@ export class CommandCenterSimulator extends CommandCenter{
   private power: boolean = false;
   private sensorTimer: NodeJS.Timeout | null = null;
 
-//   constructor(private broadcaster: BroadcastFn) {}
+  //   constructor(private broadcaster: BroadcastFn) {}
 
   // start() {
   //   this.broadcastInfo();
@@ -75,14 +85,14 @@ export class CommandCenterSimulator extends CommandCenter{
         functions: loco.functions,
       });
 
-    //   for (const [fn, active] of Object.entries(loco.functions)) {
-    //     this.emit("locoFunctionChanged", {
-    //       locoId: `sim-${address}`,
-    //       address,
-    //       functionNumber: Number(fn),
-    //       active,
-    //     });
-    //   }
+      //   for (const [fn, active] of Object.entries(loco.functions)) {
+      //     this.emit("locoFunctionChanged", {
+      //       locoId: `sim-${address}`,
+      //       address,
+      //       functionNumber: Number(fn),
+      //       active,
+      //     });
+      //   }
     }
 
     for (const [address, closed] of this.turnouts.entries()) {
@@ -170,10 +180,10 @@ export class CommandCenterSimulator extends CommandCenter{
     // });
   }
 
-  private emit(t: any, data: any){
-//     type: K,
-//     data: ServerToClientEvents[K]
-//   ) {
-//     this.broadcaster(type, data);
+  private emit(t: any, data: any) {
+    //     type: K,
+    //     data: ServerToClientEvents[K]
+    //   ) {
+    //     this.broadcaster(type, data);
   }
 }
