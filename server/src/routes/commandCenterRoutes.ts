@@ -1,12 +1,14 @@
 import { Router } from "express";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { CommandCenterType } from "../../../common/src/types.js";
 
-export type CommandCenterType = "z21" | "dcc-ex-tcp" | "dcc-ex-serial";
+//export type CommandCenterType = "z21" | "dcc-ex-tcp" | "dcc-ex-serial" | "simulator";
 
 export interface CommandCenterConfig {
   name: string;
   type: CommandCenterType;
+  simulator: {};
   z21: { host?: string; port?: number };
   dccexTcp: { host?: string; port?: number };
   dccexSerial: { serialPort?: string; baudRate?: number };
@@ -68,15 +70,16 @@ async function writeCommandCenter(item: CommandCenterConfig) {
 }
 
 function isValidCommandCenterType(value: unknown): value is CommandCenterType {
-  return value === "z21" || value === "dcc-ex-tcp" || value === "dcc-ex-serial";
+  return value === "z21" || value === "dcc-ex-tcp" || value === "dcc-ex-serial" || value === "simulator";
 }
 
 function normalizeCommandCenter(input: Partial<CommandCenterConfig>): CommandCenterConfig {
   return {
     name: typeof input.name === "string" ? input.name : "",
-    type: isValidCommandCenterType(input.type) ? input.type : "z21",
+    type: isValidCommandCenterType(input.type) ? input.type : "simulator",
+    simulator: {},
     z21: {
-      host: typeof input.z21?.host === "string" ? input.z21.host : "",
+      host: typeof input.z21?.host === "string" ? input.z21.host : "192.168.1.100",
       port: typeof input.z21?.port === "number" ? input.z21.port : 21105,
     },
     dccexTcp: {
@@ -134,6 +137,10 @@ commandCenterRoutes.put("/", async (req, res) => {
     }
 
     await writeCommandCenter(item);
+
+    if (cbCommandCenterConfigLoaded) {
+      cbCommandCenterConfigLoaded(item);
+    }
 
     res.json({
       success: true,

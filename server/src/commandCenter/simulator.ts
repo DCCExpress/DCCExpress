@@ -1,13 +1,16 @@
 import { Console } from "node:console";
 import { Loco, LocoState, SetLocoFunctionMessage, SetLocoMessage, WsMessage } from "../../../common/src/types.js";
 import { CommandCenter, LocoInfo, SensorInfo, TurnoutInfo } from "./CommandCenter.js";
+import { log } from "../utility.js";
 
 export class CommandCenterSimulator extends CommandCenter{
   start(): Promise<boolean> {
-    throw new Error("Method not implemented.");
+    log("Starting command center simulator...");
+    return Promise.resolve(true);
   }
   stop(): Promise<boolean> {
-    throw new Error("Method not implemented.");
+    log("Stopping command center simulator...");
+    return Promise.resolve(true);
   }
   getConnectionString(): string {
     throw new Error("Method not implemented.");

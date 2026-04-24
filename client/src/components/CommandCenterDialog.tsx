@@ -8,9 +8,10 @@ import {
   Select,
   Stack,
   TextInput,
+  Text,
 } from "@mantine/core";
 import {
-  
+
   CommandCenter,
   saveCommandCenters,
 } from "../api/commandCentersApi";
@@ -89,7 +90,7 @@ export default function CommandCenterDialog(p: CommandCenterDialogProps) {
   const handleSave = async () => {
     await saveCommandCenters(commandCenter);
     p.onSave(commandCenter);
-    
+
     p.onClose();
   };
 
@@ -117,6 +118,7 @@ export default function CommandCenterDialog(p: CommandCenterDialogProps) {
         <Select
           label="Connection type"
           data={[
+            { value: "simulator", label: "Simulator" },
             { value: "z21", label: "Z21" },
             { value: "dcc-ex-tcp", label: "DCC-EX TCP" },
             { value: "dcc-ex-serial", label: "DCC-EX Serial" },
@@ -127,34 +129,43 @@ export default function CommandCenterDialog(p: CommandCenterDialogProps) {
           }}
         />
 
-        {(commandCenter.type === "z21" ||
-          commandCenter.type === "dcc-ex-tcp") && (
+        {(commandCenter.type === "simulator") && (
           <>
-            <TextInput
-              label="Host"
-              placeholder="127.0.0.1"
-              value={
-                commandCenter.type === "z21"
-                  ? commandCenter.z21.host ?? ""
-                  : commandCenter.dccexTcp.host ?? ""
-              }
-              onChange={(e) => setHost(e.currentTarget.value)}
-            />
-
-            <NumberInput
-              label="Port"
-              placeholder="2560"
-              min={1}
-              max={65535}
-              value={
-                commandCenter.type === "z21"
-                  ? commandCenter.z21.port ?? 0
-                  : commandCenter.dccexTcp.port ?? 0
-              }
-              onChange={(v) => setPort(Number(v) || 0)}
-            />
+            <Text>
+              The simulator command center is a built-in command center that simulates a connection. It can be used for testing and development purposes.
+            </Text>
           </>
         )}
+
+
+        {(commandCenter.type === "z21" ||
+          commandCenter.type === "dcc-ex-tcp") && (
+            <>
+              <TextInput
+                label="Host"
+                placeholder="127.0.0.1"
+                value={
+                  commandCenter.type === "z21"
+                    ? commandCenter.z21.host ?? ""
+                    : commandCenter.dccexTcp.host ?? ""
+                }
+                onChange={(e) => setHost(e.currentTarget.value)}
+              />
+
+              <NumberInput
+                label="Port"
+                placeholder="2560"
+                min={1}
+                max={65535}
+                value={
+                  commandCenter.type === "z21"
+                    ? commandCenter.z21.port ?? 0
+                    : commandCenter.dccexTcp.port ?? 0
+                }
+                onChange={(v) => setPort(Number(v) || 0)}
+              />
+            </>
+          )}
 
         {commandCenter.type === "dcc-ex-serial" && (
           <TextInput

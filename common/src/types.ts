@@ -76,7 +76,7 @@ export type LocoState = {
   functions: number;
 };
 
-export type CommandCenterType = "z21" | "dcc-ex-tcp" | "dcc-ex-serial";
+export type CommandCenterType = "z21" | "dcc-ex-tcp" | "dcc-ex-serial" | "simulator";
 
 export interface ICommandCenter {
   name: string;

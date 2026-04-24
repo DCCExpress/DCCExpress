@@ -1,6 +1,7 @@
 {
   "name": "Z21",
-  "type": "z21",
+  "type": "simulator",
+  "simulator": {},
   "z21": {
     "host": "192.168.1.111",
     "port": 21105

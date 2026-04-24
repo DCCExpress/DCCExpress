@@ -67,6 +67,15 @@ setCommandCenterConfigLoadedCallback((conf: CommandCenterConfig | null) => {
 
 
   switch (conf?.type) {
+    case "simulator":
+      console.log("Starting command center:", conf.type);
+      commandCenter = new CommandCenterSimulator(conf.name);
+      commandCenter.start().then(() => {
+        console.log("Command center started:", conf.type);
+      }).catch(err => {
+        console.error("Failed to start command center:", err);
+      });
+      break;
     case "z21":
       console.log("Starting command center:", conf.type);
       commandCenter = new Z21CommandCenter(conf.name, conf.z21.host!, conf.z21.port!);
@@ -109,7 +118,7 @@ export function setupWebSocketServer(server: http.Server) {
     } as CommandCenterInfo)
 
     ws.on("message", (message) => {
-      if (commandCenter && false) {
+      if (commandCenter) {
         try {
           const text = message.toString();
           console.log("WS message:", text);
