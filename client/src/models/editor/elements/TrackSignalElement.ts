@@ -376,6 +376,7 @@ export class TrackSignalElement extends BaseElement implements ITrackSignalEleme
             // { label: "Forgatás", key: "rotation", type: "number" },
             ...super.getEditableProperties(),
             { label: "Single", key: "dispalyAsSingleLamp", type: "checkbox", readonly: false },
+            { label: "Singnal", key: "aspect", type: "signal2", readonly: true },
         ];
     }
 

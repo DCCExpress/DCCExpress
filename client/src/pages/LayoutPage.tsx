@@ -509,7 +509,8 @@ const [commandCenterPower, setCommandCenterPower] = useState(false);
                   flexShrink: 0,
                 }}
               >
-                {!locoPanelCollapsed && <LocoPanel locos={locos} />}
+                {/* {!locoPanelCollapsed && <LocoPanel locos={locos} />} */}
+                <LocoPanel locos={locos} />
               </Box>
 
               <Box
