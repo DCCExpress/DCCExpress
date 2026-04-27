@@ -1,4 +1,4 @@
-import { Box, Group, Stack, Text, useMantineColorScheme, useMantineTheme } from "@mantine/core";
+import { Box, CSSProperties, Group, Stack, Text, useMantineColorScheme, useMantineTheme } from "@mantine/core";
 import { BaseElement } from "../core/BaseElement";
 import { DrawOptions } from "../types/EditorTypes";
 
@@ -63,6 +63,7 @@ type ElementPreviewProps = {
   scale?: number;
   className?: string;
   onClick?: () => void;
+  style?: CSSProperties;
 };
 
 export default function ElementPreview({

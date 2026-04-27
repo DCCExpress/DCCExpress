@@ -356,7 +356,11 @@ export class TrackSignalElement extends BaseElement implements ITrackSignalEleme
         return {
             ...super.toJSON(),
             type: ELEMENT_TYPES.TRACK_SIGNAL2,
-            aspect: this.aspect
+            aspect: this.aspect,
+            valueGreen: this.valueGreen,
+            valueRed: this.valueRed,
+            valueYellow: this.valueYellow,
+            valueWhite: this.valueWhite,
         };
     }
 
@@ -367,6 +371,10 @@ export class TrackSignalElement extends BaseElement implements ITrackSignalEleme
         copy.rotationStep = this.rotationStep;
         copy.selected = this.selected;
         copy.aspect = this.aspect;
+        copy.valueGreen = this.valueGreen;
+        copy.valueRed = this.valueRed;
+        copy.valueYellow = this.valueYellow;
+        copy.valueWhite = this.valueWhite;
         return copy;
     }
 

@@ -132,7 +132,11 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
         const t = new TrackSignalElement(0, 0)
         t.aspect = 2;
         t.rotation = 90; //selectedElement.rotation;
-        t.setGreen();
+        if(color === 1) {
+          t.setGreen();
+        } else if(color === 2) {
+          t.setRed();
+        } 
         return t as BaseElement;
       }
       else if (selectedElement.type === ELEMENT_TYPES.TRACK_SIGNAL3) {
@@ -369,56 +373,86 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
 
                 {prop.type === "signal2" && (
                   <Group>
-                    <Text>{prop.label}</Text>
-                    <Text>{(selectedElement as TrackSignalElement).aspect}</Text>
-                    <ElementPreview element={getPreviewSignal(selectedElement, 1)} label="Closed" width={40} height={40} onClick={() => {
-                      const t = selectedElement as TrackSignalElement;
-                      //wsApi.setTurnout(t.turnoutAddress, t.turnoutClosedValue);
-                    }}
-                    />
-                  </Group>
+                    {/* GREEN */}
+                    <Group>
+
+                      <ElementPreview style={{ width: "50%" }} element={getPreviewSignal(selectedElement, 1)} label="Green" width={40} height={40} onClick={() => {
+                        const t = selectedElement as TrackSignalElement;
+                        //wsApi.setTurnout(t.turnoutAddress, t.turnoutClosedValue);
+                      }}
+                      />
+
+                      <NumberInput w="50%"
+                        value={(selectedElement as TrackSignalElement).valueGreen}
+                        onChange={(e) => {
+                          const t = selectedElement as TrackSignalElement;
+                          t.valueGreen = Number(e) ?? 1;
+                          onUpdateSelectedElement(t);
+                        }}
+                      />
+                    </Group>
+
+                    {/* RED */}
+                    <Group>
+                      
+                        <ElementPreview style={{ width: "50%" }} element={getPreviewSignal(selectedElement, 2)} label="Red" width={40} height={40} onClick={() => {
+                          const t = selectedElement as TrackSignalElement;
+                          //wsApi.setTurnout(t.turnoutAddress, t.turnoutClosedValue);
+                        }}
+                        />
+
+                        <NumberInput w="50%"
+                          value={(selectedElement as TrackSignalElement).valueGreen}
+                          onChange={(e) => {
+                            const t = selectedElement as TrackSignalElement;
+                            t.valueGreen = Number(e) ?? 1;
+                            onUpdateSelectedElement(t);
+                          }}
+                        />
+                        </Group>
+                      </Group>
                 )}
-              </Card >
+                    </Card >
+
+                  </div>
+                ))}
+
+                {(
+                  <Accordion
+                    value={helpOpened}
+                    onChange={setHelpOpened}
+                    mr={0}
+                    mt={10} chevronPosition="right" variant="contained">
+                    <Accordion.Item value="help">
+                      <Accordion.Control style={(theme) => ({
+                        backgroundColor:
+                          colorScheme === "dark"
+                            ? theme.colors.dark[8]
+                            : theme.colors.gray[3],
+                      })}>
+                        <Group gap={0} >
+                          <Text>❓</Text>
+                          <Text>Help</Text>
+                        </Group>
+
+                      </Accordion.Control>
+                      <Accordion.Panel>
+                        <div
+
+                          dangerouslySetInnerHTML={{ __html: selectedElement ? selectedElement?.getHelp() : "GENERAL HELP" }}
+
+                        />
+                      </Accordion.Panel>
+                    </Accordion.Item>
+                  </Accordion>
+                )}
+
 
             </div>
-          ))}
-
-          {(
-            <Accordion
-              value={helpOpened}
-              onChange={setHelpOpened}
-              mr={0}
-              mt={10} chevronPosition="right" variant="contained">
-              <Accordion.Item value="help">
-                <Accordion.Control style={(theme) => ({
-                  backgroundColor:
-                    colorScheme === "dark"
-                      ? theme.colors.dark[8]
-                      : theme.colors.gray[3],
-                })}>
-                  <Group gap={0} >
-                    <Text>❓</Text>
-                    <Text>Help</Text>
-                  </Group>
-
-                </Accordion.Control>
-                <Accordion.Panel>
-                  <div
-
-                    dangerouslySetInnerHTML={{ __html: selectedElement ? selectedElement?.getHelp() : "GENERAL HELP" }}
-
-                  />
-                </Accordion.Panel>
-              </Accordion.Item>
-            </Accordion>
-          )}
-
-
-        </div>
 
 
 
-      </ScrollArea>
+                  </ScrollArea>
     );
   }
   return (

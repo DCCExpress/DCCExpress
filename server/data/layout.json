@@ -176,7 +176,11 @@
           "rotationStep": 45,
           "bg": "black",
           "fg": "white",
-          "aspect": 2
+          "aspect": 2,
+          "valueGreen": 0,
+          "valueRed": 0,
+          "valueYellow": 0,
+          "valueWhite": 0
         },
         {
           "id": "94ce7d14-b1cd-487f-a3f2-200681030504",
@@ -189,7 +193,11 @@
           "rotationStep": 45,
           "bg": "black",
           "fg": "white",
-          "aspect": 2
+          "aspect": 2,
+          "valueGreen": 2,
+          "valueRed": 0,
+          "valueYellow": 0,
+          "valueWhite": 0
         },
         {
           "id": "ac74d0fa-5202-46de-a510-a7ef1a4eafc9",
@@ -282,7 +290,11 @@
           "rotationStep": 45,
           "bg": "black",
           "fg": "white",
-          "aspect": 2
+          "aspect": 2,
+          "valueGreen": 0,
+          "valueRed": 0,
+          "valueYellow": 0,
+          "valueWhite": 0
         },
         {
           "id": "9cb3d36-da7a-4451-b905-5922e2c6",
@@ -295,7 +307,11 @@
           "rotationStep": 45,
           "bg": "black",
           "fg": "white",
-          "aspect": 2
+          "aspect": 2,
+          "valueGreen": 0,
+          "valueRed": 0,
+          "valueYellow": 0,
+          "valueWhite": 0
         },
         {
           "id": "b684a9b-f704-4daf-8045-1d19eadb",
@@ -308,7 +324,11 @@
           "rotationStep": 45,
           "bg": "black",
           "fg": "white",
-          "aspect": 2
+          "aspect": 2,
+          "valueGreen": 0,
+          "valueRed": 0,
+          "valueYellow": 0,
+          "valueWhite": 0
         },
         {
           "id": "76c885c-7e82-43cb-838a-d442e5fa",
@@ -321,7 +341,11 @@
           "rotationStep": 45,
           "bg": "black",
           "fg": "white",
-          "aspect": 2
+          "aspect": 2,
+          "valueGreen": 0,
+          "valueRed": 0,
+          "valueYellow": 0,
+          "valueWhite": 0
         },
         {
           "id": "657ea08-11b2-498b-bea4-883e9833",
@@ -374,7 +398,11 @@
           "rotationStep": 45,
           "bg": "black",
           "fg": "white",
-          "aspect": 2
+          "aspect": 2,
+          "valueGreen": 1,
+          "valueRed": 0,
+          "valueYellow": 0,
+          "valueWhite": 0
         },
         {
           "id": "be223052-210f-489d-bc46-6bd85c2c2af5",
@@ -387,7 +415,11 @@
           "rotationStep": 45,
           "bg": "black",
           "fg": "white",
-          "aspect": 2
+          "aspect": 2,
+          "valueGreen": 0,
+          "valueRed": 0,
+          "valueYellow": 0,
+          "valueWhite": 0
         }
       ]
     },
