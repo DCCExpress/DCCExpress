@@ -89,16 +89,20 @@ export default function ElementPreview({
 
   const bg =
     colorScheme === "dark"
-      ? theme.colors.dark[6]
-      : theme.colors.gray[0];
-  return (
+      ? theme.colors.dark[7]
+      : theme.colors.gray[4];
+  const bbg =
+    colorScheme === "dark"
+      ? "#666"
+      : "black"
+      return (
     <Box className=""
       onClick={onClick}
       bg={bg}
       style={{
         width: "76px",
         height: "76px",
-        border: "1px solid #ccc",
+        border: "1px solid " + bbg,
         borderRadius: "4px",
         cursor: onClick ? "pointer" : "default",
         display: "flex",

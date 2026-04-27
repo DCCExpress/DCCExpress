@@ -22,6 +22,10 @@ import { Loco, LocoState } from "../../../common/src/types";
 import { wsApi } from "../services/wsApi";
 import { wsClient } from "../services/wsClient";
 
+
+// TODO: Ha szerkesztve lett a mozdony újra le kell kérdezni a LocoState-t, 
+// hogy a cím és a funkciók is frissüljenek
+
 type Direction = "forward" | "reverse";
 
 type LocoPanelProps = {

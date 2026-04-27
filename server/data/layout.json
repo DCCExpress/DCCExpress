@@ -366,7 +366,7 @@
           "fg": "white",
           "address": 0,
           "kind": 1,
-          "colorOn": "lime",
+          "colorOn": "#ffffff",
           "colorOff": "green"
         },
         {
@@ -382,7 +382,7 @@
           "fg": "white",
           "address": 0,
           "kind": 1,
-          "colorOn": "lime",
+          "colorOn": "#82c91e",
           "colorOff": "green"
         },
         {
