@@ -3,14 +3,15 @@ import { generateId } from "../../../helpers";
 import { IEditableProperty } from "../elements/PropertyDescriptor";
 import { DrawOptions, IAddressedElement, IBaseElement } from "../types/EditorTypes";
 import { BaseElement } from "./BaseElement";
+import { TrackBaseElement } from "./TrackBaseElement";
 
-export class AddressedElement extends BaseElement {
+export class AddressedElement extends TrackBaseElement implements IAddressedElement {
     address: number = 0;
-
+    
     override toJSON(): IAddressedElement {
         return {
             ...super.toJSON(),
-            address: this.address
+            address: this.address,
         };
     }
 

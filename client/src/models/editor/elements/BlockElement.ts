@@ -14,8 +14,6 @@ export class BlockElement extends BaseElement implements IBlockElement {
     length: number = 1;
     sensorAddress: number = 0;
 
-
-
     constructor(x: number, y: number) {
         super(x, y);
         this.layerName = "blocks";

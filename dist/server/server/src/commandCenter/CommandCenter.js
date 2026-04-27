@@ -18,6 +18,22 @@ export class CommandCenter {
     constructor(name) {
         this.name = name;
     }
+    getOrCreateLoco(address) {
+        let loco = this.locos.get(address);
+        if (!loco) {
+            loco = {
+                address,
+                speed: 0,
+                direction: "forward",
+                functions: {},
+            };
+            this.locos.set(address, loco);
+        }
+        return loco;
+    }
+    getLocos() {
+        return Array.from(this.locos.values());
+    }
     getPowerInfo() {
         return this.powerInfo;
     }

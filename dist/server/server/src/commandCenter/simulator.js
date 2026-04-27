@@ -62,13 +62,18 @@ export class CommandCenterSimulator extends CommandCenter {
         throw new Error("Method not implemented.");
     }
     setLoco(address, speed, direction) {
-        throw new Error("Method not implemented.");
+        const loco = this.getOrCreateLoco(address);
+        loco.speed = speed;
+        loco.direction = direction;
+        return Promise.resolve(true);
     }
     setLocoFunction(address, fn, active) {
-        throw new Error("Method not implemented.");
+        const loco = this.getOrCreateLoco(address);
+        loco.functions[fn] = active;
+        return Promise.resolve(true);
     }
     getLoco(address) {
-        throw new Error("Method not implemented.");
+        return Promise.resolve(this.getOrCreateLoco(address) ?? null);
     }
     setTrackPower(on) {
         throw new Error("Method not implemented.");

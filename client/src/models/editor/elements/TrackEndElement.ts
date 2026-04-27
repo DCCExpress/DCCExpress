@@ -12,8 +12,6 @@ export class TrackEndElement extends AddressedElement implements ITrackEndElemen
         this.rotationStep = 45;
     }
 
-
-
     draw(ctx: CanvasRenderingContext2D, options?: DrawOptions): void {
         if (!this.visible) return;
 

@@ -29,6 +29,7 @@ export class ElementFactory {
         track.address = data.address;
         track.bg = data.bg;
         track.fg = data.fg;
+        track.length = data.length;
         return track;
       }
 
@@ -40,6 +41,7 @@ export class ElementFactory {
         end.address = data.address;
         end.bg = data.bg;
         end.fg = data.fg;
+        end.length = data.length;
         return end;
       }
 
@@ -51,6 +53,7 @@ export class ElementFactory {
         corner.address = data.address;
         corner.bg = data.bg;
         corner.fg = data.fg;
+        corner.length = data.length;
         return corner;
       }
 
@@ -62,6 +65,7 @@ export class ElementFactory {
         curve.address = data.address;
         curve.bg = data.bg;
         curve.fg = data.fg;
+        curve.length = data.length;
         return curve;
       }
 
@@ -73,6 +77,7 @@ export class ElementFactory {
         curve.address = data.address;
         curve.bg = data.bg;
         curve.fg = data.fg;
+        curve.length = data.length;
         return curve;
       }
 
@@ -83,9 +88,10 @@ export class ElementFactory {
         tleft.rotation = data.rotation;
         tleft.address = data.address;
         tleft.turnoutAddress = data.turnoutAddress ?? 0,
-        tleft.turnoutClosedValue = data.turnoutClosedValue,
-        tleft.bg = data.bg;
+          tleft.turnoutClosedValue = data.turnoutClosedValue,
+          tleft.bg = data.bg;
         tleft.fg = data.fg;
+        tleft.length = data.length;
         return tleft;
       }
 
@@ -96,9 +102,10 @@ export class ElementFactory {
         tright.rotation = data.rotation;
         tright.address = data.address;
         tright.turnoutAddress = data.turnoutAddress ?? 0,
-        tright.turnoutClosedValue = data.turnoutClosedValue,
-        tright.bg = data.bg;
+          tright.turnoutClosedValue = data.turnoutClosedValue,
+          tright.bg = data.bg;
         tright.fg = data.fg;
+        tright.length = data.length;
         return tright;
       }
 
@@ -110,7 +117,7 @@ export class ElementFactory {
         ttw.address = data.address;
         ttw.bg = data.bg;
         ttw.fg = data.fg;
-
+        ttw.length = data.length;
         return ttw;
       }
 
@@ -124,6 +131,7 @@ export class ElementFactory {
         td.fg = data.fg;
         td.turnout1Address = data.turnout1Address;
         td.turnout2Address = data.turnout2Address;
+        td.length = data.length;
         return td;
       }
 
@@ -154,11 +162,12 @@ export class ElementFactory {
         return sensor;
       }
 
-      case ELEMENT_TYPES.TRACK_SIGNAL2:      {
+      case ELEMENT_TYPES.TRACK_SIGNAL2: {
         const signal = new TrackSignalElement(data.x, data.y);
         signal.id = data.id;
         signal.name = data.name;
         signal.rotation = data.rotation;
+
         return signal;
       }
 
@@ -222,7 +231,7 @@ export class ElementFactory {
         block.fg = data.fg;
         block.length = data.length;
         block.sensorAddress = data.sensorAddress;
-
+        block.locoAddress = data.locoAddress;
         return block;
       }
 

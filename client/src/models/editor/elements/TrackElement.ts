@@ -1,6 +1,7 @@
 import { drawTextWithRoundedBackground } from "../../../graphics";
 import { generateId } from "../../../helpers";
 import { AddressedElement } from "../core/AddressedElement";
+import { TrackBaseElement } from "../core/TrackBaseElement";
 import { DrawOptions, ELEMENT_TYPES, ITrackElement } from "../types/EditorTypes";
 
 export class TrackElement extends AddressedElement implements ITrackElement {
@@ -9,6 +10,7 @@ export class TrackElement extends AddressedElement implements ITrackElement {
         super(x, y);
         this.type = ELEMENT_TYPES.TRACK;
         this.rotationStep = 45;
+        this.length = 200;
         //this.trackType = data.trackType;
         //this.length = data.length ?? 80;
     }
@@ -118,6 +120,8 @@ export class TrackElement extends AddressedElement implements ITrackElement {
         copy.rotationStep = this.rotationStep;
         copy.selected = this.selected;
         copy.address = this.address;
+        copy.length = this.length;
+
         return copy;
     }
 

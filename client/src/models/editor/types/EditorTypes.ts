@@ -6,6 +6,7 @@ export const ELEMENT_TYPES = {
   GENERAL: "general",
   ADDRESSED_ELEMENT: "addressedelement",
   TRACK: "track",
+  TRACK_BASE_ELEMENT: "trackbaseelement",
   TRACK_END: "trackend",
   TRACK_CORNER: "trackcorner",
   TRACK_CURVE: "trackcurve",
@@ -73,8 +74,12 @@ export interface IBaseElement {
   fg: string;
 }
 
-export interface IAddressedElement extends IBaseElement {
-  //type: typeof ELEMENT_TYPES.ADDRESSED_ELEMENT;
+export interface ITrackBaseElement extends IBaseElement   {
+  length: number;
+}
+
+export interface IAddressedElement extends ITrackBaseElement {
+  
   address: number,
 }
 
@@ -126,21 +131,23 @@ export interface ITrackTurnoutThreeWayElement extends IAddressedElement {
   turnout2Address: number;
 }
 
-export interface ITrackSensorElement extends IAddressedElement {
+export interface ITrackSensorElement extends IBaseElement {
   type: typeof ELEMENT_TYPES.TRACK_SENSOR;
   kind: SensorTypes;
   colorOn: string;
   colorOff: string;
+  address: number;
   // textOn: string;
   // textOff: string;
 }
 
-export interface IButtonElement extends IAddressedElement {
+export interface IButtonElement extends IBaseElement {
   type: typeof ELEMENT_TYPES.BUTTON;
   colorOn: string;
   colorOff: string;
   textOn: string;
   textOff: string;
+  address: number;
 }
 
 

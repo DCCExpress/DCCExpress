@@ -30,9 +30,9 @@ export async function readCommandCenter() {
             CurrentCommandCenterConfig = null;
         }
     }
-    if (cbCommandCenterConfigLoaded) {
-        cbCommandCenterConfigLoaded(CurrentCommandCenterConfig);
-    }
+    // if (cbCommandCenterConfigLoaded) {
+    //   cbCommandCenterConfigLoaded(CurrentCommandCenterConfig);
+    // }
     return CurrentCommandCenterConfig;
 }
 async function writeCommandCenter(item) {
