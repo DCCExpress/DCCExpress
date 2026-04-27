@@ -167,6 +167,8 @@ export class ElementFactory {
         signal.id = data.id;
         signal.name = data.name;
         signal.rotation = data.rotation;
+        signal.aspect = data.aspect ?? 2;
+        signal.dispalyAsSingleLamp = data.dispalyAsSingleLamp ?? false;
         signal.valueGreen = data.valueGreen  ?? 0;
         signal.valueRed = data.valueRed  ?? 0;
         signal.valueYellow = data.valueYellow  ?? 0;

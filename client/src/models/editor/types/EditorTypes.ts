@@ -185,6 +185,7 @@ export interface ITreeElement extends IBaseElement {
 export interface ITrackSignalElement extends IBaseElement {
   type: typeof ELEMENT_TYPES.TRACK_SIGNAL2;
   aspect: number;
+  dispalyAsSingleLamp: boolean;
   valueGreen: number;
   valueRed: number;
   valueYellow: number;

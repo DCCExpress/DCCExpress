@@ -253,6 +253,13 @@ const [commandCenterPower, setCommandCenterPower] = useState(false);
 
   useEffect(() => {
     const onKeyDown = (ev: KeyboardEvent) => {
+
+      const isCtrl = ev.ctrlKey || ev.metaKey;
+       if (isCtrl && ev.key.toLowerCase() === "s") {
+        ev.preventDefault();
+        saveLayoutToServer();
+        //void saveCommandCentersToServer();
+      }
       const target = ev.target as HTMLElement | null;
       const tagName = target?.tagName;
 
@@ -277,13 +284,9 @@ const [commandCenterPower, setCommandCenterPower] = useState(false);
         return;
       }
 
-      const isCtrl = ev.ctrlKey || ev.metaKey;
+      
 
-      if (isCtrl && ev.key.toLowerCase() === "s") {
-        ev.preventDefault();
-        saveLayoutToServer();
-        //void saveCommandCentersToServer();
-      }
+     
     };
 
     window.addEventListener("keydown", onKeyDown);
