@@ -129,14 +129,14 @@ const CursorClockElement = new ClockElement(0, 0);
 const CursorTreeElement = new TreeElement(0, 0);
 const CursorBlockElement = new BlockElement(0, 0);
 
-const PreviewSignal1 = new TrackSignalElement(0, 0);
-PreviewSignal1.setGreen();
-const PreviewSignal2 = new TrackSignalElement(0, 0);
-PreviewSignal2.setRed();
-const PreviewSignal3 = new TrackSignalElement(0, 0);
-PreviewSignal3.setYellow();
-const PreviewSignal4 = new TrackSignalElement(0, 0);
-PreviewSignal4.setWhite();
+// const PreviewSignal1 = new TrackSignalElement(0, 0);
+// PreviewSignal1.setGreen();
+// const PreviewSignal2 = new TrackSignalElement(0, 0);
+// PreviewSignal2.setRed();
+// const PreviewSignal3 = new TrackSignalElement(0, 0);
+// PreviewSignal3.setYellow();
+// const PreviewSignal4 = new TrackSignalElement(0, 0);
+// PreviewSignal4.setWhite();
 
 
 
@@ -193,6 +193,12 @@ type SignalAspectPopoverState = {
   x: number;
   y: number;
   signal: TrackSignalElement | null;
+  previews: {
+    green: TrackSignalElement;
+    red: TrackSignalElement;
+    yellow: TrackSignalElement;
+    white: TrackSignalElement;
+  } | null;
 };
 
 export default function TrackCanvas({
@@ -271,6 +277,7 @@ export default function TrackCanvas({
       x: 0,
       y: 0,
       signal: null,
+      previews: null,
     });
 
   const signalAspectPopoverRef = useRef(signalAspectPopover);
@@ -446,6 +453,10 @@ export default function TrackCanvas({
     const handleWheel = (ev: WheelEvent) => {
       ev.preventDefault();
 
+      if (signalAspectPopoverRef.current.opened) {
+        closeSignalAspectPopover();
+      }
+
       const rect = canvas.getBoundingClientRect();
       const mouseX = ev.clientX - rect.left;
       const mouseY = ev.clientY - rect.top;
@@ -467,6 +478,17 @@ export default function TrackCanvas({
       invalidate();
     };
 
+    const reopenSignalAspectPopover = (
+      signal: TrackSignalElement,
+      clientX: number,
+      clientY: number
+    ) => {
+      closeSignalAspectPopover();
+
+      window.setTimeout(() => {
+        openSignalAspectPopover(signal, clientX, clientY);
+      }, 100);
+    };
 
     const handleMouseDown = (ev: MouseEvent) => {
       const currentLayout = layoutRef.current;
@@ -478,6 +500,10 @@ export default function TrackCanvas({
       // Canvas mozgatása
       if (ev.button === 2) {
         ev.preventDefault();
+        if (signalAspectPopoverRef.current.opened) {
+          closeSignalAspectPopover();
+        }
+
         panRef.current.isPanning = true;
         panRef.current.lastX = ev.clientX;
         panRef.current.lastY = ev.clientY;
@@ -498,9 +524,19 @@ export default function TrackCanvas({
 
       const hitElement = currentLayout.getElement(grid.x, grid.y);
 
-      if (!editModeRef.current && hitElement instanceof TrackSignalElement) {
-        openSignalAspectPopover(hitElement, ev.clientX, ev.clientY);
-        return;
+      if (!editModeRef.current) {
+        if (hitElement instanceof TrackSignalElement) {
+          if (signalAspectPopoverRef.current.opened) {
+            reopenSignalAspectPopover(hitElement, ev.clientX, ev.clientY);
+          } else {
+            openSignalAspectPopover(hitElement, ev.clientX, ev.clientY);
+          }
+
+          return;
+        }
+      }
+      if (signalAspectPopoverRef.current.opened) {
+        closeSignalAspectPopover();
       }
 
       // A klikkelést lehet csak Control módban kellene engedélyezni!
@@ -817,11 +853,13 @@ export default function TrackCanvas({
           const occupied = currentLayout.getLayeredElement(el, nextX, nextY);
 
           if (occupied && !selectedIds.has(occupied.id)) {
-            setHoverGrid((prev) =>
-              prev?.x === nextX && prev?.y === nextY
-                ? prev
-                : { x: nextX, y: nextY }
-            );
+            // setHoverGrid((prev) =>
+            //   prev?.x === nextX && prev?.y === nextY
+            //     ? prev
+            //     : { x: nextX, y: nextY }
+            // );
+            
+            setHoverGrid({ x: grid.x, y: grid.y });
             canvas.style.cursor = "not-allowed";
             return;
           }
@@ -982,6 +1020,7 @@ export default function TrackCanvas({
         if (currentTool.mode === "cursor" && hitElement instanceof ClickableBaseElement) {
           hitElement.mouseDown(ev as any);
         }
+
       }
 
       const points = Array.from(touchPointsRef.current.entries());
@@ -1241,6 +1280,9 @@ export default function TrackCanvas({
         (el) => el.selected
       );
 
+      if(ev.key.toLowerCase() == "escape") {
+        closeSignalAspectPopover();
+      }
 
       if (ev.key.toLowerCase() === "f") {
         ev.preventDefault();
@@ -1329,18 +1371,35 @@ export default function TrackCanvas({
     clientY: number
   ) => {
 
-    PreviewSignal1.aspect =
-      PreviewSignal2.aspect =
-      PreviewSignal3.aspect =
-      PreviewSignal4.aspect = signal.aspect;
+    const green = new TrackSignalElement(0, 0);
+    green.aspect = signal.aspect;
+    green.setGreen();
 
+    const red = new TrackSignalElement(0, 0);
+    red.aspect = signal.aspect;
+    red.setRed();
+
+    const yellow = new TrackSignalElement(0, 0);
+    yellow.aspect = signal.aspect;
+    yellow.setYellow();
+
+    const white = new TrackSignalElement(0, 0);
+    white.aspect = signal.aspect;
+    white.setWhite();
 
     setSignalAspectPopover({
       opened: true,
       x: clientX,
       y: clientY,
       signal,
+      previews: {
+        green: green,
+        red: red,
+        yellow: yellow,
+        white: white,
+      }
     });
+
   };
 
   const closeSignalAspectPopover = () => {
@@ -1360,13 +1419,18 @@ export default function TrackCanvas({
         onChange={(opened) => {
           if (!opened) closeSignalAspectPopover();
         }}
-        
+
         withArrow
         shadow="xl"
-        closeOnClickOutside
+        closeOnClickOutside={false}
         closeOnEscape
         withinPortal
         offset={18}
+        transitionProps={{
+          transition: "scale",
+          duration: 200,
+          timingFunction: "ease-out",
+        }}
       >
         <Popover.Target>
           <Box p={4}
@@ -1383,7 +1447,7 @@ export default function TrackCanvas({
 
         <Popover.Dropdown
           p={4}
-          
+
           onPointerDown={(e) => {
             e.stopPropagation();
           }}
@@ -1394,6 +1458,7 @@ export default function TrackCanvas({
             e.stopPropagation();
           }}
         >
+
           <Stack gap="xs">
             {/* <Text p={2} bg={"blue"}>Signal aspect</Text> */}
             <Group gap={4}>
@@ -1404,7 +1469,7 @@ export default function TrackCanvas({
                 }}
               >
                 <ElementPreview style={{ cursor: "pointer" }}
-                  element={PreviewSignal1}
+                  element={signalAspectPopover.previews?.green!}
                   label="Green"
                   width={40}
                   height={40}
@@ -1419,7 +1484,7 @@ export default function TrackCanvas({
                 }}
               >
                 <ElementPreview
-                  element={PreviewSignal2}
+                  element={signalAspectPopover.previews?.red!}
                   label="Red"
                   width={40}
                   height={40}
@@ -1435,7 +1500,7 @@ export default function TrackCanvas({
                   }}
                 >
                   <ElementPreview
-                    element={PreviewSignal3}
+                    element={signalAspectPopover.previews?.yellow!}
                     label="Yellow"
                     width={40}
                     height={40}
@@ -1451,7 +1516,7 @@ export default function TrackCanvas({
                   }}
                 >
                   <ElementPreview
-                    element={PreviewSignal4}
+                    element={signalAspectPopover.previews?.white!}
                     label="White"
                     width={40}
                     height={40}
@@ -1562,15 +1627,16 @@ function drawScene(
   if (settings.showGrid) {
     drawGrid(ctx, width, height, layout.gridSize, isDark, view);
   }
+  
   if (hoverGrid) {
     const gs = layout.gridSize;
     ctx.strokeStyle = "#ef4444";
     ctx.fillStyle = "#ef444450";
     ctx.lineWidth = 2 / view.scale;
-
-    if (currentCursor) {
       ctx.fillRect(hoverGrid.x * gs, hoverGrid.y * gs, gs, gs);
       ctx.strokeRect(hoverGrid.x * gs, hoverGrid.y * gs, gs, gs);
+
+    if (currentCursor) {
 
       //  const rect = currentCursor.getBounds();
       //  ctx.fillRect(rect.x, rect.y , rect.width, rect.height);

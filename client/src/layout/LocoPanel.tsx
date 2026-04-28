@@ -43,8 +43,10 @@ export default function LocoPanel({ locos = [] }: LocoPanelProps) {
   const [activeFunctions, setActiveFunctions] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
+    
     if (!selectedLocoId && locos.length > 0) {
       setSelectedLocoId(locos[0]!.id);
+      
     }
 
     if (selectedLocoId && !locos.some((l) => l.id === selectedLocoId)) {
@@ -56,6 +58,7 @@ export default function LocoPanel({ locos = [] }: LocoPanelProps) {
   const currentLoco = useMemo(() => {
     if (selectedLocoId) {
       const found = locos.find((l) => l.id === selectedLocoId);
+      wsApi.getLoco(found?.address ?? 0);
       if (found) return found;
     }
 

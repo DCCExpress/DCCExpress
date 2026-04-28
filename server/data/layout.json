@@ -208,7 +208,7 @@
         {
           "id": "ac74d0fa-5202-46de-a510-a7ef1a4eafc9",
           "type": "tracksensor",
-          "name": "element",
+          "name": "Sensor1",
           "layerName": "sensors",
           "x": 15,
           "y": 5,
