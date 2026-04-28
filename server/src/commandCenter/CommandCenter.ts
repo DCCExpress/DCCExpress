@@ -84,6 +84,7 @@ export abstract class CommandCenter {
   }
 
   abstract getLoco(address: number): Promise<LocoState | null>;
+
   getLocos(): LocoState[] {
     return Array.from(this.locos.values());
   }
@@ -125,6 +126,11 @@ export abstract class CommandCenter {
     accessory.active = active;
     return Promise.resolve(true);
   }
+
+  getAccessories(): AccessoryInfo[] {
+    return Array.from(this.accessories.values());
+  }
+  
 
 
 

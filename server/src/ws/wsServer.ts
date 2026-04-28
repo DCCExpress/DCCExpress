@@ -1,6 +1,6 @@
 import type http from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
-import { CommandCenterInfo, WsMessage } from "../../../common/src/types.js";
+import { AccessoryChangedMessage, CommandCenterInfo, WsMessage } from "../../../common/src/types.js";
 import { CommandCenterConfig, readCommandCenter, setCommandCenterConfigLoadedCallback } from "../routes/commandCenterRoutes.js";
 import { CommandCenter } from "../commandCenter/CommandCenter.js";
 import { CommandCenterSimulator } from "../commandCenter/simulator.js";
@@ -130,12 +130,24 @@ export function setupWebSocketServer(server: http.Server) {
 
     if (commandCenter) {
       const locos = commandCenter.getLocos();
-
       for (const loco of locos) {
         sendToClient(ws, {
           type: "locoState",
           data: { loco },
         });
+      }
+
+      const accessories = commandCenter.getAccessories();
+      for (const accessory of accessories) {
+        
+         const msg: AccessoryChangedMessage = {
+              type: "accessoryChanged",
+              data: {
+                address: accessory.address,
+                active: accessory.active,
+              },
+            };
+        sendToClient(ws, msg);
       }
     }
 

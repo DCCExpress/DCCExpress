@@ -27,7 +27,7 @@ export class TrackSignalElement extends BaseElement implements ITrackSignalEleme
 
     address: number = 0;
     addressLength: number = 5; // Digitools signal decoder must be 5 address
-    max: number = 1
+    max: number = 10;
 
     isExtendedDecoder: boolean = false;
 

@@ -411,11 +411,12 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
         let changed = false;
 
         for (const e of elements) {
-          if (e.type === ELEMENT_TYPES.TRACK_SIGNAL2) {
+          if (e instanceof TrackSignalElement) {
             const signal = e as TrackSignalElement;
-            signal.setValue(data.address, data.active);
-            changed = true;
-            if (signal.address === data.address || signal.lastAddress <= data.address) {
+            //if (signal.address >= data.address && signal.lastAddress <= data.address)
+               {
+              signal.setValue(data.address, data.active);
+              changed = true;
             }
           }
         }
