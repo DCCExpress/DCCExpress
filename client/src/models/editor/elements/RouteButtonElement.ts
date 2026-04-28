@@ -2,19 +2,50 @@ import { drawPolarLine, getPolarXy } from "../../../graphics";
 import { generateId } from "../../../helpers";
 import { BaseElement } from "../core/BaseElement";
 import { DrawOptions, ELEMENT_TYPES, IRouteButtonElement } from "../types/EditorTypes";
+import { IEditableProperty } from "./PropertyDescriptor";
+
+export type RouteTurnoutItem = {
+  turnoutId: string;
+  closed: boolean;
+};
 
 export class RouteButtonElement extends BaseElement implements IRouteButtonElement {
     override type: typeof ELEMENT_TYPES.BUTTON_ROUTE = ELEMENT_TYPES.BUTTON_ROUTE;
     label: string = "Route";
     colorOn: string = "lime";
     active: boolean = false;
+
+    routeTurnouts: RouteTurnoutItem[] = [];
+
+
     constructor(x: number, y: number) {
         super(x, y);
         this.type = ELEMENT_TYPES.BUTTON_ROUTE;
         this.rotationStep = 45;
         this.layerName = "buildings"
+        //this.addOrUpdateTurnout("c6bc4282-a7fd-4c70-817a-6b2fe6a2a765", true)
+        //this.addOrUpdateTurnout("T2", false)
     }
 
+ addOrUpdateTurnout(turnoutId: string, closed: boolean) {
+    const existing = this.routeTurnouts.find((x) => x.turnoutId === turnoutId);
+
+    if (existing) {
+      existing.closed = closed;
+      return;
+    }
+
+    this.routeTurnouts.push({
+      turnoutId,
+      closed,
+    });
+  }
+
+  removeTurnout(turnoutId: string) {
+    this.routeTurnouts = this.routeTurnouts.filter(
+      (x) => x.turnoutId !== turnoutId
+    );
+  }
     drawArrowsSplit2(
         ctx: CanvasRenderingContext2D,
         x: number,
@@ -126,7 +157,8 @@ export class RouteButtonElement extends BaseElement implements IRouteButtonEleme
             ...super.toJSON(),
             type: ELEMENT_TYPES.BUTTON_ROUTE,
             label: this.label,
-            colorOn: this.colorOn
+            colorOn: this.colorOn,
+            routeTurnouts: this.routeTurnouts ?? [],
         };
     }
 
@@ -139,6 +171,14 @@ export class RouteButtonElement extends BaseElement implements IRouteButtonEleme
         copy.label = this.label;
         copy.colorOn = this.colorOn;
         return copy;
+    }
+
+    override getEditableProperties(): IEditableProperty[] {
+        return [
+            ...super.getEditableProperties(),
+            { label: "TurnoutSelection", key: "routeTurnouts", type: "turnoutSelection", readonly: false, validate: (v) => { return true } },
+
+        ]
     }
 
     getHelp(): string {

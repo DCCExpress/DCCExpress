@@ -37,6 +37,7 @@ type TrackCanvasProps = {
   onSelectedElementChange: (element: BaseElement | null) => void;
   invaildateCounter: number;
   fitCounter: number;
+  turnoutSelectionMode: boolean;
 };
 
 type ViewState = {
@@ -210,7 +211,8 @@ export default function TrackCanvas({
   selectedElement,
   onSelectedElementChange,
   invaildateCounter,
-  fitCounter
+  fitCounter,
+  turnoutSelectionMode
 }: TrackCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { colorScheme } = useMantineColorScheme();
@@ -219,10 +221,10 @@ export default function TrackCanvas({
   const [hoverGrid, setHoverGrid] = useState<{ x: number; y: number } | null>(null);
   const [currentCursor, setCurrentCursor] = useState<BaseElement | null>(null);
   const [drawVersion, setDrawVersion] = useState(0);
-  const [canvasSize, setCanvasSize] = useState<CanvasSize>({
-    width: 0,
-    height: 0,
-  });
+  const [canvasSize, setCanvasSize] = useState<CanvasSize>({ width: 0, height: 0, });
+  
+  const turnoutSelectionModeRef = useRef(false);
+
   const touchPointsRef = useRef<Map<number, TouchPoint>>(new Map());
   const viewRef = useRef<ViewState>(loadSavedViewState());
   const panRef = useRef<PanState>({
@@ -412,6 +414,31 @@ export default function TrackCanvas({
   }, []);
 
   useEffect(() => {
+
+    
+    turnoutSelectionModeRef.current = turnoutSelectionMode;
+
+    if (layoutRef.current) {
+      const elems = layoutRef.current.getAllElements();
+      if (turnoutSelectionMode) {
+        for (const elem of elems) {
+          if (elem instanceof TrackTurnoutLeftElement || elem instanceof TrackTurnoutRightElement) {
+            elem.enabled = true;
+          } else {
+            elem.enabled = false;
+          }
+        }
+      } else {
+        for (const elem of elems) {
+          elem.enabled = true;
+        }
+      }
+    }
+
+  }, [turnoutSelectionMode])
+
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     if (canvasSize.width <= 0 || canvasSize.height <= 0) return;
@@ -447,7 +474,7 @@ export default function TrackCanvas({
       getSelectionRect(selectionRef.current),
 
     );
-  }, [canvasSize, editMode, colorScheme, mouseGrid, tool, hoverGrid, currentCursor, layout, drawVersion, selectedElement, settings]);
+  }, [canvasSize, editMode, colorScheme, mouseGrid, tool, hoverGrid, currentCursor, layout, drawVersion, selectedElement, settings, turnoutSelectionMode]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -493,10 +520,12 @@ export default function TrackCanvas({
       }, 100);
     };
 
+
     const handleMouseDown = (ev: MouseEvent) => {
       const currentLayout = layoutRef.current;
       const currentTool = toolRef.current;
       const currentEditMode = editModeRef.current;
+      const currentTurnouSelection = turnoutSelectionModeRef.current;
 
       //if (ev.button !== 0 && ev.button !== 1) return;
 
@@ -526,6 +555,14 @@ export default function TrackCanvas({
       );
 
       const hitElement = currentLayout.getElement(grid.x, grid.y);
+
+
+      if (currentEditMode) {
+
+        if (currentTurnouSelection) {
+        }
+
+      }
 
       if (!editModeRef.current) {
         if (hitElement instanceof TrackSignalElement) {
@@ -678,104 +715,6 @@ export default function TrackCanvas({
         invalidate();
       }
     };
-
-    // const handleMouseMove222 = (ev: MouseEvent) => {
-    //   const currentLayout = layoutRef.current;
-
-    //   const rect = canvas.getBoundingClientRect();
-    //   const mouseX = ev.clientX - rect.left;
-    //   const mouseY = ev.clientY - rect.top;
-
-    //   const grid = screenToGrid(
-    //     mouseX,
-    //     mouseY,
-    //     viewRef.current,
-    //     currentLayout.gridSize
-    //   );
-
-    //   setMouseGrid((prev) =>
-    //     prev.x === grid.x && prev.y === grid.y ? prev : { x: grid.x, y: grid.y }
-    //   );
-
-    //   if (tool.mode === "draw" && currentCursorRef.current) {
-    //     const occupied = currentLayout.getLayeredElement(currentCursorRef.current, grid.x, grid.y);
-    //     if (occupied != null) {
-    //       setHoverGrid({ x: grid.x, y: grid.y });
-    //     } else {
-    //       setHoverGrid(null);
-    //     }
-    //   }
-
-    //   if (panRef.current.isPanning) {
-    //     ev.preventDefault();
-
-    //     const dx = ev.clientX - panRef.current.lastX;
-    //     const dy = ev.clientY - panRef.current.lastY;
-
-    //     panRef.current.lastX = ev.clientX;
-    //     panRef.current.lastY = ev.clientY;
-
-    //     viewRef.current.offsetX += dx;
-    //     viewRef.current.offsetY += dy;
-
-    //     persistView();
-    //     invalidate();
-    //     return;
-    //   }
-
-    //   if (selectionRef.current.isSelecting) {
-    //     ev.preventDefault();
-
-    //     selectionRef.current.endGridX = grid.x;
-    //     selectionRef.current.endGridY = grid.y;
-
-    //     invalidate();
-    //     return;
-    //   }
-
-    //   if (dragRef.current.isDraggingElement && dragRef.current.elementId) {
-    //     ev.preventDefault();
-
-    //     const dx = grid.x - dragRef.current.startMouseGridX;
-    //     const dy = grid.y - dragRef.current.startMouseGridY;
-
-    //     const all = getAllLayoutElements(currentLayout);
-    //     const selectedIds = new Set(
-    //       dragRef.current.draggedElements.map((item) => item.id)
-    //     );
-
-    //     for (const item of dragRef.current.draggedElements) {
-    //       const el = all.find((e) => e.id === item.id);
-    //       if (!el) continue;
-
-    //       const nextX = item.startX + dx;
-    //       const nextY = item.startY + dy;
-
-    //       const occupied = currentLayout.getLayeredElement(el, nextX, nextY);
-
-    //       if (occupied && !selectedIds.has(occupied.id)) {
-    //         setHoverGrid((prev) =>
-    //           prev?.x === nextX && prev?.y === nextY
-    //             ? prev
-    //             : { x: nextX, y: nextY }
-    //         );
-    //         return;
-    //       }
-    //     }
-
-    //     setHoverGrid(null);
-
-    //     for (const item of dragRef.current.draggedElements) {
-    //       const el = all.find((e) => e.id === item.id);
-    //       if (!el) continue;
-
-    //       el.x = item.startX + dx;
-    //       el.y = item.startY + dy;
-    //     }
-
-    //     invalidate();
-    //   }
-    // };
 
     const handleMouseMove = (ev: MouseEvent) => {
       const currentLayout = layoutRef.current;
@@ -1040,7 +979,7 @@ export default function TrackCanvas({
           }
           return;
 
-        } else if(signalAspectPopoverRef.current.opened) {
+        } else if (signalAspectPopoverRef.current.opened) {
           closeSignalAspectPopover();
           return;
         }

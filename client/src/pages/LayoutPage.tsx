@@ -57,6 +57,8 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
 
   const layoutRef = useRef(layout);
 
+  const [turnoutSelection, setTurnoutSelection] = useState<boolean>(false);
+
   const [editMode, setEditMode] = useState<boolean>(() => {
     try {
       if (isTouchDevice()) return false;
@@ -590,6 +592,7 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
                       onSelectedElementChange={selectedElementChanged}
                       invaildateCounter={invaildateCounter}
                       fitCounter={fitCounter}
+                      turnoutSelectionMode={turnoutSelection}
                     />
                   </Box>
                 </Card>
@@ -610,6 +613,10 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
                       invalidate={invaildateCounter}
                       onUpdateSelectedElement={handleUpdateSelectedElement}
                       editMode={editMode}
+                      turnoutSelectionMode={turnoutSelection}
+                      setTurnoutSelectionMode={setTurnoutSelection}
+                      layout={layout}
+                      onLayoutChange={setLayout}
                     />
                   </Card>
                 )}

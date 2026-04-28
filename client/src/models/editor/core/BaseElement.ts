@@ -19,6 +19,7 @@ export abstract class BaseElement implements IBaseElement {
     rotation: number = 0;
     rotationStep: RotationStep = 0;
     selected: boolean = false;
+    enabled: boolean = true;
     locked: boolean = false;
     visible: boolean = true;
     bg: string = "black";
@@ -157,6 +158,8 @@ export abstract class BaseElement implements IBaseElement {
 
     drawSelection(ctx: CanvasRenderingContext2D): void {
 
+        this.drawEnabled(ctx);
+
         if (this.selected) {
 
             this.beginDraw(ctx);
@@ -174,7 +177,19 @@ export abstract class BaseElement implements IBaseElement {
 
             this.endDraw(ctx);
         }
+
+        
     }
+
+    protected drawEnabled(ctx: CanvasRenderingContext2D): void {
+        if (!this.enabled) {
+            ctx.save();
+            ctx.fillStyle = "#6e6e6e67";
+            ctx.fillRect(this.posLeft, this.posTop, this.width, this.height);
+            ctx.restore();
+        }
+    }
+
 
     toJSON(): IBaseElement {
         return {
@@ -233,7 +248,7 @@ export abstract class BaseElement implements IBaseElement {
         ctx.strokeStyle = "lime";
         ctx.lineWidth = 1;
         ctx.setLineDash([4, 2]); // szaggatott, jól látszik debughoz
-        ctx.strokeRect(b.x * this.GridSizeX, b.y * this.GridSizeX, b.width*this.GridSizeX, b.height * this.GridSizeX);
+        ctx.strokeRect(b.x * this.GridSizeX, b.y * this.GridSizeX, b.width * this.GridSizeX, b.height * this.GridSizeX);
 
         ctx.strokeStyle = "blue";
         ctx.strokeRect(b.x * this.GridSizeX, b.y * this.GridSizeX, this.GridSizeX, this.GridSizeX);

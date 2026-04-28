@@ -1,3 +1,4 @@
+import { RouteTurnoutItem } from "../elements/RouteButtonElement";
 import { SensorTypes } from "../elements/TrackSensorElement";
 import { TrackSignalElement as TrackSignal2Element } from "../elements/TrackSignalElement";
 
@@ -162,6 +163,7 @@ export interface IRouteButtonElement extends IBaseElement {
   type: typeof ELEMENT_TYPES.BUTTON_ROUTE;
   colorOn: string;
   label: string;
+  routeTurnouts: RouteTurnoutItem[] 
 }
 
 

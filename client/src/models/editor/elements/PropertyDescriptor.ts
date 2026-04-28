@@ -1,5 +1,5 @@
 export type PropertyEditorType = 
-"string" | "number" | "boolean" | "checkbox" | "colorpicker" | "bittoggle" | "signal2";
+"string" | "number" | "boolean" | "checkbox" | "colorpicker" | "bittoggle" | "signal2" | "turnoutSelection";
 
 
 export interface IEditableProperty {

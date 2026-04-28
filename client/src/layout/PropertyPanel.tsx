@@ -1,6 +1,6 @@
-import { Accordion, Box, Card, Checkbox, ColorInput, ColorPicker, ColorSwatch, DEFAULT_THEME, Divider, Group, NumberInput, ScrollArea, Stack, Text, TextInput, Title, useMantineColorScheme, useMantineTheme } from "@mantine/core";
+import { Accordion, Badge, Box, Button, Card, Checkbox, ColorInput, ColorPicker, ColorSwatch, DEFAULT_THEME, Divider, Group, NumberInput, ScrollArea, Stack, Text, TextInput, Title, useMantineColorScheme, useMantineTheme } from "@mantine/core";
 import { BaseElement } from "../models/editor/core/BaseElement";
-import { useEffect, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { IEditableProperty } from "../models/editor/elements/PropertyDescriptor";
 import BitToggleElement from "../components/editor/BitToggleElement";
 import { TrackTurnoutLeftElement } from "../models/editor/elements/TrackTurnoutLeftElement";
@@ -11,6 +11,10 @@ import { wsApi } from "../services/wsApi";
 import { useEditorSettings } from "../context/EditorSettingsContext";
 import { SetTurnoutMessage } from "../../../common/src/types";
 import { TrackSignalElement } from "../models/editor/elements/TrackSignalElement";
+import { TrackTurnoutTwoWayElement } from "../models/editor/elements/TrackTurnoutTwoWayElement";
+import TrackTurnoutDoubleElement from "../models/editor/elements/TrackTurnoutDoubleElement";
+import { Layout } from "../models/editor/core/Layout";
+import { RouteTurnoutItem } from "../models/editor/elements/RouteButtonElement";
 
 
 type PropertyPanelProps = {
@@ -19,7 +23,12 @@ type PropertyPanelProps = {
   onUpdateSelectedElement: (element: BaseElement | null) => void;
   invalidate: number;
   editMode: boolean;
+  turnoutSelectionMode: boolean;
+  setTurnoutSelectionMode: (on: boolean) => void;
+  layout: Layout;
+  onLayoutChange: Dispatch<SetStateAction<Layout>>;
 };
+
 
 const ColorsDefault = [
   "#000000", "#ffffff", "#868e96",
@@ -30,7 +39,32 @@ const ColorsDefault = [
   "#fd7e14",
 ]
 
-export default function RightPropertyPanel({ selectedElement, onUpdateSelectedElement, invalidate, editMode }: PropertyPanelProps) {
+function isTurnoutElement(el: BaseElement | null | undefined) {
+  return (
+    el instanceof TrackTurnoutLeftElement ||
+    el instanceof TrackTurnoutRightElement ||
+    el instanceof TrackTurnoutTwoWayElement ||
+    el instanceof TrackTurnoutDoubleElement
+  );
+}
+
+function findElementById(layout: Layout, id: string) {
+  return layout.getAllElements().find((el) => el.id === id) ?? null;
+}
+
+function createPreviewElement<T extends BaseElement>(element: T): T {
+  const preview = element.clone() as T;
+
+  preview.id = element.id;
+  preview.x = 0;
+  preview.y = 0;
+  preview.selected = false;
+  preview.enabled = true;
+
+  return preview;
+}
+
+export default function RightPropertyPanel({ selectedElement, onUpdateSelectedElement, invalidate, editMode, turnoutSelectionMode, setTurnoutSelectionMode, layout, onLayoutChange }: PropertyPanelProps) {
 
   const trackturnoutleft1 = new TrackTurnoutLeftElement(0, 0);
   trackturnoutleft1.turnoutClosed = true;
@@ -438,27 +472,149 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
 
                     {/* WHITE */}
                     {(selectedElement as TrackSignalElement).aspect >= 4 && (
-                    <Group>
+                      <Group>
 
-                      <ElementPreview style={{ width: "50%" }} element={getPreviewSignal(selectedElement, 4)} label="White" width={40} height={40} translateX={-10} onClick={() => {
-                        const t = selectedElement as TrackSignalElement;
-                        t.sendWhite();
-                      }}
-                      />
-
-                      <NumberInput w="50%"
-                        value={(selectedElement as TrackSignalElement).valueWhite}
-                        onChange={(e) => {
+                        <ElementPreview style={{ width: "50%" }} element={getPreviewSignal(selectedElement, 4)} label="White" width={40} height={40} translateX={-10} onClick={() => {
                           const t = selectedElement as TrackSignalElement;
-                          t.valueWhite = Number(e) ?? 1;
-                          onUpdateSelectedElement(t);
+                          t.sendWhite();
                         }}
-                      />
-                    </Group>
+                        />
+
+                        <NumberInput w="50%"
+                          value={(selectedElement as TrackSignalElement).valueWhite}
+                          onChange={(e) => {
+                            const t = selectedElement as TrackSignalElement;
+                            t.valueWhite = Number(e) ?? 1;
+                            onUpdateSelectedElement(t);
+                          }}
+                        />
+                      </Group>
                     )}
 
                   </Group>
                 )}
+
+                {prop.type === "turnoutSelection" && (() => {
+                  const items = Array.isArray((selectedElement as any)[prop.key])
+                    ? ((selectedElement as any)[prop.key] as RouteTurnoutItem[])
+                    : [];
+
+                  const setRouteTurnoutClosed = (turnoutId: string, closed: boolean) => {
+                    if (!selectedElement) return;
+
+                    const routeItems = Array.isArray((selectedElement as any)[prop.key])
+                      ? ((selectedElement as any)[prop.key] as RouteTurnoutItem[])
+                      : [];
+
+                    const item = routeItems.find((x) => x.turnoutId === turnoutId);
+                    if (!item) return;
+
+                    item.closed = closed;
+
+                    onLayoutChange((prev) => prev);
+                  };
+
+                  const toggleRouteTurnout = (turnoutId: string) => {
+                    const item = items.find((x) => x.turnoutId === turnoutId);
+                    if (!item) return;
+
+                    setRouteTurnoutClosed(turnoutId, !item.closed);
+                  };
+
+                  return (
+                    <Stack gap="xs">
+                      <Button
+                        size="xs"
+                        variant={turnoutSelectionMode ? "filled" : "light"}
+                        onClick={() => {
+                          setTurnoutSelectionMode(!turnoutSelectionMode);
+                        }}
+                      >
+                        {turnoutSelectionMode ? "Finish selection" : "Add turnouts"}
+                      </Button>
+
+                      {items.length === 0 ? (
+                        <Text size="xs" c="dimmed">
+                          No turnouts selected
+                        </Text>
+                      ) : (
+                        <Stack gap={6}>
+                          {items.map((item) => {
+                            const turnout = findElementById(layout, item.turnoutId);
+
+                            if (!isTurnoutElement(turnout)) {
+                              return (
+                                <Group
+                                  key={item.turnoutId}
+                                  justify="space-between"
+                                  gap="xs"
+                                  wrap="nowrap"
+                                >
+                                  <Text size="xs" c="red">
+                                    Missing turnout
+                                  </Text>
+
+                                  <Text size="10px" c="dimmed" ff="monospace">
+                                    {item.turnoutId}
+                                  </Text>
+                                </Group>
+                              );
+                            }
+
+                            // Previewben a route által kívánt állapotot mutatjuk,
+                            // nem feltétlenül a valódi aktuális állapotot.
+                            const previewTurnout = createPreviewElement(turnout);
+                            (previewTurnout as any).closed = item.closed;
+                            previewTurnout.selected = false;
+                            previewTurnout.enabled = true;
+
+                            return (
+                              <Group
+                                key={item.turnoutId}
+                                gap="xs"
+                                wrap="nowrap"
+                                align="center"
+                              >
+                                <Box
+                                  className="route-turnout-preview-button"
+                                  onClick={() => {
+                                    toggleRouteTurnout(item.turnoutId);
+                                  }}
+                                >
+                                  <ElementPreview
+                                    element={previewTurnout}
+                                    label=""
+                                    width={48}
+                                    height={48}
+                                  />
+                                </Box>
+
+                                <Stack gap={0} style={{ flex: 1, minWidth: 0 }}>
+                                  <Text size="xs" fw={500} truncate>
+                                    {turnout.name || "Turnout"}
+                                  </Text>
+
+                                  <Text size="10px" c="dimmed" ff="monospace" truncate>
+                                    {item.turnoutId}
+                                  </Text>
+                                </Stack>
+
+                                <Badge
+                                  size="sm"
+                                  variant="light"
+                                  color={item.closed ? "green" : "orange"}
+                                >
+                                  {item.closed ? "closed" : "thrown"}
+                                </Badge>
+                              </Group>
+                            );
+                          })}
+                        </Stack>
+                      )}
+                    </Stack>
+                  );
+                })()}
+
               </Card >
 
             </div>

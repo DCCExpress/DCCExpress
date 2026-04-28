@@ -33,7 +33,13 @@
           "bg": "black",
           "fg": "white",
           "label": "Route",
-          "colorOn": "lime"
+          "colorOn": "lime",
+          "routeTurnouts": [
+            {
+              "turnoutId": "c6bc4282-a7fd-4c70-817a-6b2fe6a2a765",
+              "closed": true
+            }
+          ]
         },
         {
           "id": "6cf8b47d-7e15-48d7-ac5b-fe8192af1fb9",
@@ -47,7 +53,13 @@
           "bg": "black",
           "fg": "white",
           "label": "Route",
-          "colorOn": "lime"
+          "colorOn": "lime",
+          "routeTurnouts": [
+            {
+              "turnoutId": "c6bc4282-a7fd-4c70-817a-6b2fe6a2a765",
+              "closed": false
+            }
+          ]
         }
       ]
     },

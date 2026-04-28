@@ -171,10 +171,10 @@ export class ElementFactory {
         signal.address = data.address ?? 0;
         signal.addressLength = data.addressLength ?? 5;
         signal.dispalyAsSingleLamp = data.dispalyAsSingleLamp ?? false;
-        signal.valueGreen = data.valueGreen  ?? 0;
-        signal.valueRed = data.valueRed  ?? 0;
-        signal.valueYellow = data.valueYellow  ?? 0;
-        signal.valueWhite = data.valueWhite  ?? 0;
+        signal.valueGreen = data.valueGreen ?? 0;
+        signal.valueRed = data.valueRed ?? 0;
+        signal.valueYellow = data.valueYellow ?? 0;
+        signal.valueWhite = data.valueWhite ?? 0;
         return signal;
       }
 
@@ -216,6 +216,15 @@ export class ElementFactory {
         button.fg = data.fg;
         button.colorOn = data.colorOn;
         button.label = data.label;
+        button.routeTurnouts = Array.isArray(data.routeTurnouts)
+          ? data.routeTurnouts
+            .filter((x: any) => typeof x?.turnoutId === "string")
+            .map((x: any) => ({
+              turnoutId: x.turnoutId,
+              closed: Boolean(x.closed),
+            }))
+          : [];
+
         return button;
       }
 

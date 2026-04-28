@@ -101,6 +101,7 @@ export class TrackElement extends AddressedElement implements ITrackElement {
         
 
         super.drawSelection(ctx);
+        //super.drawEnabled(ctx);
         //super.draw(ctx)
     }
 
