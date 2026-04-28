@@ -376,7 +376,7 @@ export default function TrackCanvas({
   }, [tool]);
 
   useEffect(() => {
-    if(editMode && signalAspectPopoverRef.current.opened) {
+    if (editMode && signalAspectPopoverRef.current.opened) {
       closeSignalAspectPopover();
     }
     invalidate();
@@ -861,7 +861,7 @@ export default function TrackCanvas({
             //     ? prev
             //     : { x: nextX, y: nextY }
             // );
-            
+
             setHoverGrid({ x: grid.x, y: grid.y });
             canvas.style.cursor = "not-allowed";
             return;
@@ -1019,11 +1019,35 @@ export default function TrackCanvas({
 
       const hitElement = currentLayout.getElement(grid.x, grid.y);
 
+      // if (!editModeRef.current) {
+      //   if (currentTool.mode === "cursor" && hitElement instanceof ClickableBaseElement) {
+      //     hitElement.mouseDown(ev as any);
+      //   }
+      // }
+
       if (!editModeRef.current) {
+        if (hitElement instanceof TrackSignalElement) {
+          if (signalAspectPopoverRef.current.opened) {
+            reopenSignalAspectPopover(hitElement, ev.clientX, ev.clientY);
+          } else {
+            openSignalAspectPopover(hitElement, ev.clientX, ev.clientY);
+          }
+
+          try {
+            canvas.setPointerCapture(ev.pointerId);
+          } catch {
+            // ignore
+          }
+          return;
+
+        } else if(signalAspectPopoverRef.current.opened) {
+          closeSignalAspectPopover();
+          return;
+        }
+
         if (currentTool.mode === "cursor" && hitElement instanceof ClickableBaseElement) {
           hitElement.mouseDown(ev as any);
         }
-
       }
 
       const points = Array.from(touchPointsRef.current.entries());
@@ -1283,7 +1307,7 @@ export default function TrackCanvas({
         (el) => el.selected
       );
 
-      if(ev.key.toLowerCase() == "escape") {
+      if (ev.key.toLowerCase() == "escape") {
         closeSignalAspectPopover();
       }
 
@@ -1630,14 +1654,14 @@ function drawScene(
   if (settings.showGrid) {
     drawGrid(ctx, width, height, layout.gridSize, isDark, view);
   }
-  
+
   if (hoverGrid) {
     const gs = layout.gridSize;
     ctx.strokeStyle = "#ef4444";
     ctx.fillStyle = "#ef444450";
     ctx.lineWidth = 2 / view.scale;
-      ctx.fillRect(hoverGrid.x * gs, hoverGrid.y * gs, gs, gs);
-      ctx.strokeRect(hoverGrid.x * gs, hoverGrid.y * gs, gs, gs);
+    ctx.fillRect(hoverGrid.x * gs, hoverGrid.y * gs, gs, gs);
+    ctx.strokeRect(hoverGrid.x * gs, hoverGrid.y * gs, gs, gs);
 
     if (currentCursor) {
 
