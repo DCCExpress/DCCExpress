@@ -376,6 +376,9 @@ export default function TrackCanvas({
   }, [tool]);
 
   useEffect(() => {
+    if(editMode && signalAspectPopoverRef.current.opened) {
+      closeSignalAspectPopover();
+    }
     invalidate();
   }, [layout, colorScheme, tool, mouseGrid, hoverGrid, editMode, currentCursor]);
 
