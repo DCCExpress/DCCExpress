@@ -19,6 +19,7 @@ import {
   IconEditFilled,
   IconHome,
   IconMaximize,
+  IconMinimize,
   IconMoon,
   IconPointer,
   IconSettings,
@@ -28,7 +29,7 @@ import {
 } from "@tabler/icons-react";
 import TrainIcon from "../icons/TrainIcon";
 import { EditorTool } from "../models/editor/types/EditorTypes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/help.css";
 import { useWsStatus } from "../hooks/useWsStatus";
 import { useTranslation } from "react-i18next";
@@ -102,11 +103,37 @@ export default function TopMenuBar({
   const [helpOpened, setHelpOpened] = useState(false);
   const { colorScheme, setColorScheme } = useMantineColorScheme();
   const touchOnly = isTouchDevice();
+  const [fullscreen, setFullscreen] = useState(false);
   //const wsStatus = useWsStatus();
 
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setFullscreen(!!document.fullscreenElement);
+    };
 
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+        return;
+      }
+
+      await document.documentElement.requestFullscreen({
+        navigationUI: "hide",
+      });
+    } catch (error) {
+      console.error("Fullscreen failed:", error);
+    }
+  };
   return (
-    <Group ml={26} h="100%" px="md" justify="space-between" wrap="nowrap">
+    <Group ml={32} h="100%" px="md" justify="space-between" wrap="nowrap">
       <Group gap="sm" wrap="nowrap">
         {/* <ThemeIcon size="lg" radius="sm" variant="light">
           <TrainIcon size={18} />
@@ -115,7 +142,24 @@ export default function TopMenuBar({
         {/* <Badge color={getWsColor(wsStatus)} variant="filled">
           WS: {wsStatus}
         </Badge> */}
-
+        <ActionIcon
+          variant="filled"
+          size="md"
+          radius="xs"
+          color={fullscreen ? "red" : "green"}
+          onClick={toggleFullscreen}
+          onMouseDown={(e) => e.preventDefault()}
+          aria-label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+          style={{
+            boxShadow: "var(--mantine-shadow-md)",
+          }}
+        >
+          {fullscreen ? (
+            <IconMinimize size={18} />
+          ) : (
+            <IconMaximize size={18} />
+          )}
+        </ActionIcon>
         <Tooltip label={t("Home")} withArrow position="bottom">
           <ActionIcon
             size="lg"

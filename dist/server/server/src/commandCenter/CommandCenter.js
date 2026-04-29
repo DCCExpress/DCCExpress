@@ -47,6 +47,17 @@ export class CommandCenter {
     getName() {
         return this.name;
     }
+    getOrCreateTurnout(address) {
+        let turnout = this.turnouts.get(address);
+        if (!turnout) {
+            turnout = {
+                address,
+                closed: false,
+            };
+            this.turnouts.set(address, turnout);
+        }
+        return turnout;
+    }
     getOrCreateAccessory(address) {
         let accessory = this.accessories.get(address);
         if (!accessory) {

@@ -514,58 +514,69 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
         footer={{ height: FOOTER_HEIGHT }}
         padding="xs"
       >
-          <ActionIcon
-            variant="filled"
-            size="md"
-            radius="xl"
-            color="blue"
-            onClick={() => setToolbarOpened((v) => !v)}
-            onMouseDown={(e) => e.preventDefault()}
-            aria-label={toolbarOpened ? "Hide toolbar" : "Show toolbar"}
-            style={{
-              position: "fixed",
-              top: 12,
-              left: 8,
-              zIndex: 5000,
-              boxShadow: "var(--mantine-shadow-md)",
-            }}
-          >
-            {toolbarOpened ? (
-              <IconChevronUp size={16} />
-            ) : (
-              <IconChevronDown size={16} />
-            )}
-          </ActionIcon>
+        <ActionIcon
+          variant="filled"
+          size="md"
+          radius="xl"
+          color="blue"
+          onClick={() => setToolbarOpened((v) => !v)}
+          onMouseDown={(e) => e.preventDefault()}
+          aria-label={toolbarOpened ? "Hide toolbar" : "Show toolbar"}
+          style={{
+            position: "fixed",
+            top: 12,
+            left: 8,
+            zIndex: 5000,
+            boxShadow: "var(--mantine-shadow-md)",
+          }}
+        >
+          {toolbarOpened ? (
+            <IconChevronUp size={16} />
+          ) : (
+            <IconChevronDown size={16} />
+          )}
+        </ActionIcon>
 
         <AppShell.Header>
-          {toolbarOpened && (
-            <TopMenuBar
-              editMode={editMode}
-              onEditModeChange={setEditMode}
-              onGoHome={onGoHome}
-              onOpenLocos={() => setLocoDialogOpened(true)}
-              locoPanelCollapsed={locoPanelCollapsed}
-              onToggleLocoPanel={() => setLocoPanelCollapsed((v) => !v)}
-              propertyPanelCollapsed={propertyPanelCollapsed}
-              onTogglePropertyPanel={() => setPropertyPanelCollapsed((v) => !v)}
-              tool={tool}
-              onCursorToolClick={() =>
-                setTool({ mode: "cursor", elementType: tool.elementType })
-              }
-              onOpenElementPicker={() => setPickerOpened(true)}
-              onSaveLayout={saveLayoutToServer}
-              onLoadLayout={loadLayoutFromServer}
-              canUndo={canUndo}
-              canRedo={canRedo}
-              onUndo={undo}
-              onRedo={redo}
-              onSettingsClick={handleSettingClick}
-              onDeleteToolClick={() =>
-                setTool({ mode: "delete", elementType: tool.elementType })
-              }
-              onFitLayout={onFitLayout}
-              onOpenCommandCenterDialog={() => setCommandCenterOpened(true)}
-            />
+          {true && (
+            <Box
+              pl={0}
+              h="100%"
+              style={{
+                opacity: toolbarOpened ? 1 : 0,
+                pointerEvents: toolbarOpened ? "auto" : "none",
+                overflow: "hidden",
+                transition: "opacity 120ms ease",
+              }}
+            >
+              <TopMenuBar
+                editMode={editMode}
+                onEditModeChange={setEditMode}
+                onGoHome={onGoHome}
+                onOpenLocos={() => setLocoDialogOpened(true)}
+                locoPanelCollapsed={locoPanelCollapsed}
+                onToggleLocoPanel={() => setLocoPanelCollapsed((v) => !v)}
+                propertyPanelCollapsed={propertyPanelCollapsed}
+                onTogglePropertyPanel={() => setPropertyPanelCollapsed((v) => !v)}
+                tool={tool}
+                onCursorToolClick={() =>
+                  setTool({ mode: "cursor", elementType: tool.elementType })
+                }
+                onOpenElementPicker={() => setPickerOpened(true)}
+                onSaveLayout={saveLayoutToServer}
+                onLoadLayout={loadLayoutFromServer}
+                canUndo={canUndo}
+                canRedo={canRedo}
+                onUndo={undo}
+                onRedo={redo}
+                onSettingsClick={handleSettingClick}
+                onDeleteToolClick={() =>
+                  setTool({ mode: "delete", elementType: tool.elementType })
+                }
+                onFitLayout={onFitLayout}
+                onOpenCommandCenterDialog={() => setCommandCenterOpened(true)}
+              />
+            </Box>
           )}
         </AppShell.Header>
         <AppShell.Main>

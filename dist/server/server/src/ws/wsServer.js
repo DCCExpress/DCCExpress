@@ -113,6 +113,7 @@ export function setupWebSocketServer(server) {
                 });
             }
             const turnouts = commandCenter.getTurnouts();
+            log("Turnouts", turnouts);
             for (const turnout of turnouts) {
                 const msg = {
                     type: "turnoutChanged",

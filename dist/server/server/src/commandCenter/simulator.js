@@ -48,6 +48,8 @@ export class CommandCenterSimulator extends CommandCenter {
     }
     setTurnout(address, closed) {
         console.log("Sim: setTurnout", { address, closed });
+        const turnout = this.getOrCreateTurnout(address);
+        turnout.closed = closed;
         const msg = {
             type: "turnoutChanged",
             data: {
