@@ -15,7 +15,8 @@ export class CommandCenterSimulator extends CommandCenter {
                     alive: this.alive,
                     power: this.power,
                     type: "simulator",
-                }
+                },
+                uuid: this.lockOwnerUUID
             };
             broadcastAll(msg);
         }, 1000);
@@ -34,7 +35,8 @@ export class CommandCenterSimulator extends CommandCenter {
                     alive: this.alive,
                     power: this.power,
                     type: "simulator",
-                }
+                },
+                uuid: this.lockOwnerUUID
             };
             broadcastAll(msg);
         }

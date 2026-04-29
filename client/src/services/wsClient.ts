@@ -10,6 +10,8 @@ export type WsConnectionStatus =
 export interface WsMessage<T = any> {
     type: string;
     data?: T;
+     uuid?: string;
+    
 }
 
 type StatusListener = (status: WsConnectionStatus) => void;
@@ -32,6 +34,7 @@ class WsClient {
     private readonly maxReconnectDelayMs = 10000;
 
     private url = "";
+    public uuid = crypto.randomUUID();
 
     public connect(url?: string) {
         if (url) {
@@ -104,8 +107,8 @@ class WsClient {
             console.warn("[WS] Cannot send, socket is not open:", message);
             return false;
         }
-
-        this.socket.send(JSON.stringify(message));
+        
+        this.socket.send(JSON.stringify({type: message.type, data: message.data, uuid: this.uuid}));
         return true;
     }
 

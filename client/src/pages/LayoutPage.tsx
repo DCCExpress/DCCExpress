@@ -11,7 +11,7 @@ import { getLayout, getLocos, saveLayout } from "../api/http";
 
 import { ELEMENT_TYPES, type EditorTool } from "../models/editor/types/EditorTypes";
 import ElementPickerDialog from "../components/editor/ElementPickerDialog";
-import { isTouchDevice, showOkMessage } from "../helpers";
+import { isTouchDevice, showErrorMessage, showOkMessage, showWarningMessage } from "../helpers";
 import { Layout } from "../models/editor/core/Layout";
 import { BaseElement } from "../models/editor/core/BaseElement";
 import SettingDialog from "../components/SettingsDialog";
@@ -438,11 +438,29 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
 
     );
 
+    // const commandCenterLockChanged = wsClient.on(
+    //   "commandCenterLockChanged",
+    //   (data: any) => {
+
+        
+    //   }
+    // )
+
+    const unsubscribeCommandRejected = wsClient.on(
+      "commandRejected",
+      (data: any, raw: any) => {
+        if (data.lockOwner != wsClient.uuid) {
+          showWarningMessage("Warning", data.reason);
+        }
+      }
+    );
+
     return () => {
       unsubscribeSensor();
       unsubscribeTurnout();
       unsubscribeCommandCenter();
       unsubscribeAccessory();
+      unsubscribeCommandRejected();
       wsApi.disconnect();
     };
   }, []);

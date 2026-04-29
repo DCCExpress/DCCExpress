@@ -4,6 +4,8 @@ import { Direction, SetTurnoutMessage } from "../../../common/src/types";
 import { wsClient } from "./wsClient";
 
 export const wsApi = {
+
+  
   connect(url: string) {
     wsClient.connect(url);
   },
@@ -53,7 +55,7 @@ export const wsApi = {
   },
 
   setTurnout(address: number, closed: boolean ) {
-    const data: SetTurnoutMessage = {type: "setTurnout", data: { address: address, closed: closed }};
+    const data = {type: "setTurnout", data: { address: address, closed: closed }};
      return wsClient.send(data);
   },
 
@@ -62,6 +64,15 @@ export const wsApi = {
     return wsClient.send({ type: "setBasicAccessory", data });
   },
   
+  routeLock() {
+    return wsClient.send({type: "routeLock"})
+  },
+
+  routeUnlock() {
+    return wsClient.send({type: "routeUnlock"})
+
+  },
+
   setTurnout22(t: SetTurnoutMessage) {
     return wsClient.send(t);
     return wsClient.send({ type: t.type, data: t.data });

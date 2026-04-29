@@ -50,6 +50,8 @@ export abstract class CommandCenter {
   protected turnouts: Map<number, TurnoutInfo> = new Map();
   protected sensors: Map<number, SensorInfo> = new Map();
   protected accessories: Map<number, AccessoryInfo> = new Map();
+  public locked: boolean = false;
+  public lockOwnerUUID: string | null = "";
 
   constructor(name: string) {
     this.name = name;

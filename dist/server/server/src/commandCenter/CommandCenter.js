@@ -16,6 +16,8 @@ export class CommandCenter {
     turnouts = new Map();
     sensors = new Map();
     accessories = new Map();
+    locked = false;
+    lockOwnerUUID = "";
     constructor(name) {
         this.name = name;
     }

@@ -25,6 +25,14 @@ export function showErrorMessage(title: string, message: string) {
   });
 }
 
+export function showWarningMessage(title: string, message: string) {
+  notifications.show({
+    title: title,
+    message: message,
+    color: "yellow",
+  });
+}
+
 export function isTouchDevice(): boolean {
   if (typeof window === "undefined") return false;
 

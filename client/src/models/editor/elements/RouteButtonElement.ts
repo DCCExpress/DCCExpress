@@ -154,7 +154,7 @@ export class RouteButtonElement extends ClickableBaseElement implements IRouteBu
     }
 
     override mouseDown(ev: MouseEvent) {
-      alert("Down")
+      //alert("Down")
     }
 
     override toJSON(): IRouteButtonElement {

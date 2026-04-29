@@ -117,7 +117,7 @@ export function setupWebSocketServer(server: http.Server) {
 
   wss.on("connection", (ws, req) => {
     log("WebSocket client connected:", req.socket.remoteAddress);
-
+    let clientUUID: string | null = null;
     sendToClient(ws, {
       type: "ws:welcome",
       data: { message: "Connected" },
@@ -141,7 +141,7 @@ export function setupWebSocketServer(server: http.Server) {
       const turnouts = commandCenter.getTurnouts();
       log("Turnouts", turnouts)
       for (const turnout of turnouts) {
-        
+
         const msg: TurnoutChangedMessage = {
           type: "turnoutChanged",
           data: {
@@ -171,13 +171,70 @@ export function setupWebSocketServer(server: http.Server) {
       const text = message.toString();
       log("WS incoming:", text);
 
+
+
       if (commandCenter) {
         //log("Current command center:", commandCenter.getName());
         try {
 
           const msg = JSON.parse(text) as WsMessage;
+
+          if (msg.uuid) {
+            clientUUID = msg.uuid;
+          }
+
+
           log("Received message of type:", msg.type);
           switch (msg.type) {
+
+            //===============================
+            // LOCK & UNLOCK
+            //===============================
+            case "routeLock": {
+              if (commandCenter.locked && commandCenter.lockOwnerUUID !== msg.uuid) {
+                sendToClient(ws, {
+                  type: "commandRejected",
+                  uuid: msg.uuid,
+                  data: {
+                    reason: "Command center busy",
+                    lockOwner: commandCenter.lockOwnerUUID,
+                  },
+                });
+                return;
+              }
+
+              commandCenter.locked = true;
+              commandCenter.lockOwnerUUID = msg.uuid;
+
+              broadcast(wss, {
+                type: "commandCenterLockChanged",
+                data: {
+                  locked: true,
+                  lockOwner: commandCenter.lockOwnerUUID,
+                
+                },
+              });
+
+              return;
+            }
+
+            case "routeUnlock": {
+              if (commandCenter.lockOwnerUUID === msg.uuid) {
+                commandCenter.locked = false;
+                commandCenter.lockOwnerUUID = null;
+
+                broadcast(wss, {
+                  type: "commandCenterLockChanged",
+                  data: {
+                    locked: false,
+                    lockOwner: null,
+                  },
+                });
+              }
+
+              return;
+            }
+
 
             //===============================
             // setLoco
@@ -281,6 +338,20 @@ export function setupWebSocketServer(server: http.Server) {
             // setTurnout
             //===============================
             case "setTurnout": {
+
+              if (commandCenter.locked && commandCenter.lockOwnerUUID != msg.uuid) {
+                ws.send(JSON.stringify({
+                  type: "commandRejected",
+                  uuid: msg.uuid,
+                  data: {
+                    reason: "Command center busy",
+                    lockOwner: commandCenter.lockOwnerUUID,
+                  },
+
+                }));
+                return;
+              }
+
               const address = msg.data?.address;
               const closed = msg.data?.closed;
 
@@ -373,8 +444,24 @@ export function setupWebSocketServer(server: http.Server) {
 
     ws.on("close", () => {
       log("WebSocket client disconnected");
-    });
 
+      if (
+        commandCenter &&
+        clientUUID &&
+        commandCenter.lockOwnerUUID === clientUUID
+      ) {
+        commandCenter.locked = false;
+        commandCenter.lockOwnerUUID = null;
+
+        broadcast(wss, {
+          type: "commandCenterLockChanged",
+          data: {
+            locked: false,
+            lockOwner: null,
+          },
+        });
+      }
+    });
     ws.on("error", (error) => {
       console.error("WebSocket client error:", error);
     });

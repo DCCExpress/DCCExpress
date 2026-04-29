@@ -24,6 +24,7 @@ export type SetTurnoutMessage = {
     address: number;
     closed: boolean;
   };
+  uuid: string;
 };
 
 export type TurnoutChangedMessage = {
@@ -49,6 +50,7 @@ export type SetSensorMessage = {
     address: number;
     on: boolean;
   };
+  uuid: string;
 };
 
 export type CommandCenterInfo = {
@@ -60,13 +62,15 @@ export type CommandCenterInfo = {
   }
 }
 export type WsMessage =
-  | SetTurnoutMessage
-  | SetSensorMessage
-  | TurnoutChangedMessage
-  | CommandCenterInfo
-  | {
+  // | SetTurnoutMessage
+  // | SetSensorMessage
+  // | TurnoutChangedMessage
+  // | CommandCenterInfo
+  //| 
+  {
       type: string;
-      data?: any;
+      data: any;
+      uuid: string | null;
     };
 
 export type LocoFunction = {

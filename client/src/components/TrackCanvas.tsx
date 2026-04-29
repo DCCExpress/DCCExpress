@@ -8,7 +8,7 @@ import { TrackCornerElement } from "../models/editor/elements/TrackCornerElement
 import { TrackCurveElement } from "../models/editor/elements/TrackCurveElement";
 import { TrackTurnoutLeftElement } from "../models/editor/elements/TrackTurnoutLeftElement";
 import { TrackTurnoutRightElement } from "../models/editor/elements/TrackTurnoutRightElement";
-import { generateId, showErrorMessage, sleep } from "../helpers";
+import { generateId, showErrorMessage, showWarningMessage, sleep } from "../helpers";
 import { isTurnoutElement, Layout } from "../models/editor/core/Layout";
 
 import "../styles/TrackCanvas.css";
@@ -28,6 +28,7 @@ import { EditorSettings, useEditorSettings } from "../context/EditorSettingsCont
 import ElementPreview from "../models/editor/rendering/ElementPreviewRenderer";
 import { wsApi } from "../services/wsApi";
 import { TrackTurnoutElement } from "../models/editor/elements/TrackTurnoutElement";
+import { useCommandCenter } from "../context/CommandCenterContext";
 
 type TrackCanvasProps = {
   editMode?: boolean;
@@ -297,6 +298,15 @@ export default function TrackCanvas({
     setDrawVersion((prev) => prev + 1);
   };
 
+
+  const commandCenter = useCommandCenter();
+  const commandCenterRef = useRef(commandCenter);
+
+  useEffect(() => {
+    commandCenterRef.current = commandCenter;
+  }, [commandCenter]);
+
+
   useEffect(() => {
     invalidate();
   }, [invaildateCounter]);
@@ -409,6 +419,9 @@ export default function TrackCanvas({
     updateSize();
 
     const ro = new ResizeObserver(() => {
+      if (signalAspectPopoverRef.current.opened) {
+        closeSignalAspectPopover();
+      }
       updateSize();
     });
 
@@ -528,6 +541,71 @@ export default function TrackCanvas({
     };
 
 
+    const executeRoute = async function (rb: RouteButtonElement) {
+
+      if (commandCenterRef.current.locked) {
+        showWarningMessage(
+          "Warning",
+          "Command center is busy. Route cannot be started."
+        );
+        return;
+      }
+
+      const elems = layoutRef.current.getAllElements();
+      wsApi.routeLock();
+      setBusy?.(true, "Route is being set...");
+      await sleep(500);
+      try {
+        for (const ri of rb.routeTurnouts) {
+          const t = elems.find((elem) => ri.turnoutId === elem.id) as TrackTurnoutElement;
+
+          if (
+            t instanceof TrackTurnoutLeftElement ||
+            t instanceof TrackTurnoutRightElement ||
+            t instanceof TrackTurnoutTwoWayElement ||
+            t instanceof TrackTurnoutDoubleElement
+          ) {
+            wsApi.setTurnout(
+              t.turnoutAddress,
+              ri.closed === t.turnoutClosedValue
+            );
+
+            await sleep(1500);
+          }
+        }
+      } finally {
+        wsApi.routeUnlock();
+        setBusy?.(false);
+      }
+    }
+
+    const handleClickableDown = (
+      hitElement: BaseElement | null,
+      ev: MouseEvent | PointerEvent
+    ): boolean => {
+      if (!hitElement) return false;
+      if (!(hitElement instanceof ClickableBaseElement)) return false;
+
+      if (hitElement instanceof RouteButtonElement) {
+        void executeRoute(hitElement);
+        return true;
+      }
+
+      hitElement.mouseDown(ev as any);
+      return true;
+    };
+
+    const handleClickableUp = (
+      hitElement: BaseElement | null,
+      ev: MouseEvent | PointerEvent
+    ): boolean => {
+      if (!hitElement) return false;
+      if (!(hitElement instanceof ClickableBaseElement)) return false;
+
+      hitElement.mouseUp(ev as any);
+      return true;
+    };
+
     const handleMouseDown = (ev: MouseEvent) => {
       const currentLayout = layoutRef.current;
       const currentTool = toolRef.current;
@@ -603,47 +681,26 @@ export default function TrackCanvas({
       }
 
       // A klikkelést lehet csak Control módban kellene engedélyezni!
-      if (toolRef.current.mode == "cursor" && hitElement && !editModeRef.current) {
-        if (hitElement instanceof ClickableBaseElement) {
-          if (hitElement instanceof RouteButtonElement) {
-            const rb = hitElement as RouteButtonElement;
-            const elems = currentLayout.getAllElements();
+      // if (toolRef.current.mode == "cursor" && hitElement && !editModeRef.current) {
+      //   if (hitElement instanceof ClickableBaseElement) {
+      //     if (hitElement instanceof RouteButtonElement) {
+      //       const rb = hitElement as RouteButtonElement;
+      //       const elems = currentLayout.getAllElements();
 
-            //setBusy?.(true, "Route is being set...");
-            const executeRoute = async function (rb: RouteButtonElement) {
-              setBusy?.(true, "Route is being set...");
-              await sleep(500);
-              try {
-                for (const ri of rb.routeTurnouts) {
-                  const t = elems.find((elem) => ri.turnoutId === elem.id) as TrackTurnoutElement;
+      //       //setBusy?.(true, "Route is being set...");
+      //       executeRoute(rb)
 
-                  if (
-                    t instanceof TrackTurnoutLeftElement ||
-                    t instanceof TrackTurnoutRightElement ||
-                    t instanceof TrackTurnoutTwoWayElement ||
-                    t instanceof TrackTurnoutDoubleElement
-                  ) {
-                    wsApi.setTurnout(
-                      t.turnoutAddress,
-                      ri.closed === t.turnoutClosedValue
-                    );
-
-                    await sleep(500);
-                  }
-                }
-              } finally {
-                setBusy?.(false);
-              }
-            }
-            executeRoute(rb)
-
-          } else {
-            const elem = hitElement as ClickableBaseElement
-            elem.mouseDown(ev);
-          }
+      //     } else {
+      //       const elem = hitElement as ClickableBaseElement
+      //       elem.mouseDown(ev);
+      //     }
+      //   }
+      // }
+      if (toolRef.current.mode === "cursor" && !editModeRef.current) {
+        if (handleClickableDown(hitElement, ev)) {
+          return;
         }
       }
-
 
       if (!currentEditMode) return;
 
@@ -968,12 +1025,13 @@ export default function TrackCanvas({
         );
 
         const hitElement = layoutRef.current.getElement(grid.x, grid.y);
-        if (hitElement) {
-          if (hitElement instanceof ClickableBaseElement) {
-            const elem = hitElement as ClickableBaseElement
-            elem.mouseUp(ev);
-          }
-        }
+        // if (hitElement) {
+        //   if (hitElement instanceof ClickableBaseElement) {
+        //     const elem = hitElement as ClickableBaseElement
+        //     elem.mouseUp(ev);
+        //   }
+        // }
+        handleClickableUp(hitElement, ev);
         return;
       }
       stopInteraction();
@@ -1016,6 +1074,7 @@ export default function TrackCanvas({
 
       const hitElement = currentLayout.getElement(grid.x, grid.y);
 
+      //alert("PointerDown")
       // if (!editModeRef.current) {
       //   if (currentTool.mode === "cursor" && hitElement instanceof ClickableBaseElement) {
       //     hitElement.mouseDown(ev as any);
@@ -1042,8 +1101,19 @@ export default function TrackCanvas({
           return;
         }
 
-        if (currentTool.mode === "cursor" && hitElement instanceof ClickableBaseElement) {
-          hitElement.mouseDown(ev as any);
+        // if (currentTool.mode === "cursor" && hitElement instanceof ClickableBaseElement) {
+        //   hitElement.mouseDown(ev as any);
+        // }
+        if (currentTool.mode === "cursor") {
+          if (handleClickableDown(hitElement, ev)) {
+            try {
+              canvas.setPointerCapture(ev.pointerId);
+            } catch {
+              // ignore
+            }
+
+            return;
+          }
         }
       }
 
@@ -1173,6 +1243,23 @@ export default function TrackCanvas({
 
       const rect = canvas.getBoundingClientRect();
 
+      // if (!editModeRef.current) {
+      //   const rect = canvas.getBoundingClientRect();
+      //   const mouseX = ev.clientX - rect.left;
+      //   const mouseY = ev.clientY - rect.top;
+
+      //   const grid = screenToGrid(
+      //     mouseX,
+      //     mouseY,
+      //     viewRef.current,
+      //     layoutRef.current.gridSize
+      //   );
+
+      //   const hitElement = layoutRef.current.getElement(grid.x, grid.y);
+      //   if (hitElement instanceof ClickableBaseElement) {
+      //     hitElement.mouseUp(ev as any);
+      //   }
+      // }
       if (!editModeRef.current) {
         const rect = canvas.getBoundingClientRect();
         const mouseX = ev.clientX - rect.left;
@@ -1186,11 +1273,8 @@ export default function TrackCanvas({
         );
 
         const hitElement = layoutRef.current.getElement(grid.x, grid.y);
-        if (hitElement instanceof ClickableBaseElement) {
-          hitElement.mouseUp(ev as any);
-        }
+        handleClickableUp(hitElement, ev);
       }
-
       touchPointsRef.current.delete(ev.pointerId);
 
       const remaining = Array.from(touchPointsRef.current.entries());
