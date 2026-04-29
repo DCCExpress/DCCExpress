@@ -14,7 +14,10 @@
     "build": "npm run build:client && npm run build:server"
   },
   "dependencies": {
-    "@mantine/form": "^9.0.1",
+    "@mantine/core": "^9.1.1",
+    "@mantine/form": "^9.1.1",
+    "@mantine/hooks": "^9.1.1",
+    "@mantine/notifications": "^9.1.1",
     "@tabler/icons-react": "^3.41.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",

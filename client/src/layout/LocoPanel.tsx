@@ -235,20 +235,37 @@ export default function LocoPanel({ locos = [] }: LocoPanelProps) {
                     </Group> */}
 
                     <Slider
+                      min={0}
+                      max={currentLoco.maxSpeed || 100}
                       value={speed}
                       onChange={(s) => {
                         setSpeed(s);
-                        if (currentLoco) {
-                          wsApi.setLoco(currentLoco.address, s, direction);
-                        }
+                        wsApi.setLoco(currentLoco.address, s, direction);
                       }}
-                      min={0}
-                      max={currentLoco.maxSpeed || 100}
                       label={null}
-                      orientation="vertical"
                     />
                   </div>
 
+   <SimpleGrid cols={6} spacing="xs" p={0} w="100%">
+                    {SPEED_PRESETS.map((preset) => (
+                      <Button
+                        key={preset}
+                        size="xs"
+                        variant="light"
+                        onClick={() => {
+                          setSpeedByPercent(preset);
+                          if (currentLoco) {
+                            const max = currentLoco.maxSpeed || 100;
+                            const calculated = Math.round((max * preset) / 100);
+                            wsApi.setLoco(currentLoco.address, calculated, direction);
+                          }
+                        }
+                        }
+                      >
+                        {preset}
+                      </Button>
+                    ))}
+                  </SimpleGrid>
 
                   <Group grow gap={4} w="100%">
                     <Button
@@ -290,26 +307,7 @@ export default function LocoPanel({ locos = [] }: LocoPanelProps) {
                   </Button>
 
 
-                  <SimpleGrid cols={6} spacing="xs" p={0} w="100%">
-                    {SPEED_PRESETS.map((preset) => (
-                      <Button
-                        key={preset}
-                        size="xs"
-                        variant="light"
-                        onClick={() => {
-                          setSpeedByPercent(preset);
-                          if (currentLoco) {
-                            const max = currentLoco.maxSpeed || 100;
-                            const calculated = Math.round((max * preset) / 100);
-                            wsApi.setLoco(currentLoco.address, calculated, direction);
-                          }
-                        }
-                        }
-                      >
-                        {preset}
-                      </Button>
-                    ))}
-                  </SimpleGrid>
+               
                 </Stack>
               </Card>
 
