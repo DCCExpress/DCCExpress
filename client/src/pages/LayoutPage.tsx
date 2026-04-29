@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AppShell, Box, Card, Group, Stack } from "@mantine/core";
+import { ActionIcon, AppShell, Box, Card, Group, Stack, Tooltip } from "@mantine/core";
 import TrackCanvas from "../components/TrackCanvas";
 import PanelHandle from "../components/PanelHandle";
 import LocoDialog from "../components/LocoDialog";
@@ -26,11 +26,14 @@ import { ICommandCenter, Loco } from "../../../common/src/types";
 import { WsEvents } from "../../../common/src/wsEvents";
 import { TrackSignalElement } from "../models/editor/elements/TrackSignalElement";
 import FullscreenLoader from "../components/FullscreenLoader";
+import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 
 type LayoutPageProps = {
   onGoHome: () => void;
 };
 
+const HEADER_HEIGHT = 50;
+const FOOTER_HEIGHT = 40;
 const LOCO_PANEL_WIDTH = 380;
 const PROPERTY_PANEL_WIDTH = 320;
 const EDIT_MODE_KEY = "dcc-express.editor.editMode";
@@ -39,6 +42,7 @@ const PROPERTYPANEL_COLLAPSED = "dcc-express.editor.propertyPanelCollapsed";
 const MAX_HISTORY = 100;
 
 export default function LayoutPage({ onGoHome }: LayoutPageProps) {
+  const [toolbarOpened, setToolbarOpened] = useState(true);
   const [locoDialogOpened, setLocoDialogOpened] = useState(false);
   const [locos, setLocos] = useState<Loco[]>([]);
   const [tool, setTool] = useState<EditorTool>({ mode: "cursor", elementType: "general" });
@@ -364,7 +368,7 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
 
         if (!data || typeof data.address !== "number") {
           console.warn("Invalid turnout data:", data);
-          
+
           return;
         }
 
@@ -505,39 +509,72 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
         onClose={() => setSettingsDialogOpened(false)}
       />
 
-      <AppShell header={{ height: 50 }} footer={{ height: 40 }} padding="xs">
-        <AppShell.Header>
-          <TopMenuBar
-            editMode={editMode}
-            onEditModeChange={setEditMode}
-            onGoHome={onGoHome}
-            onOpenLocos={() => setLocoDialogOpened(true)}
-            locoPanelCollapsed={locoPanelCollapsed}
-            onToggleLocoPanel={() => setLocoPanelCollapsed((v) => !v)}
-            propertyPanelCollapsed={propertyPanelCollapsed}
-            onTogglePropertyPanel={() => setPropertyPanelCollapsed((v) => !v)}
-            tool={tool}
-            onCursorToolClick={() =>
-              setTool({ mode: "cursor", elementType: tool.elementType })
-            }
-            onOpenElementPicker={() => setPickerOpened(true)}
-            onSaveLayout={saveLayoutToServer}
-            onLoadLayout={loadLayoutFromServer}
-            canUndo={canUndo}
-            canRedo={canRedo}
-            onUndo={undo}
-            onRedo={redo}
-            onSettingsClick={handleSettingClick}
-            onDeleteToolClick={() =>
-              setTool({ mode: "delete", elementType: tool.elementType })
-            }
-            onFitLayout={onFitLayout}
-            onOpenCommandCenterDialog={() => setCommandCenterOpened(true)}
-          />
-        </AppShell.Header>
+      <AppShell
+        header={{ height: toolbarOpened ? HEADER_HEIGHT : 0 }}
+        footer={{ height: FOOTER_HEIGHT }}
+        padding="xs"
+      >
+          <ActionIcon
+            variant="filled"
+            size="sm"
+            radius="xl"
+            color="blue"
+            onClick={() => setToolbarOpened((v) => !v)}
+            onMouseDown={(e) => e.preventDefault()}
+            aria-label={toolbarOpened ? "Hide toolbar" : "Show toolbar"}
+            style={{
+              position: "fixed",
+              top: 12,
+              left: 8,
+              zIndex: 5000,
+              boxShadow: "var(--mantine-shadow-md)",
+            }}
+          >
+            {toolbarOpened ? (
+              <IconChevronUp size={16} />
+            ) : (
+              <IconChevronDown size={16} />
+            )}
+          </ActionIcon>
 
+        <AppShell.Header>
+          {toolbarOpened && (
+            <TopMenuBar
+              editMode={editMode}
+              onEditModeChange={setEditMode}
+              onGoHome={onGoHome}
+              onOpenLocos={() => setLocoDialogOpened(true)}
+              locoPanelCollapsed={locoPanelCollapsed}
+              onToggleLocoPanel={() => setLocoPanelCollapsed((v) => !v)}
+              propertyPanelCollapsed={propertyPanelCollapsed}
+              onTogglePropertyPanel={() => setPropertyPanelCollapsed((v) => !v)}
+              tool={tool}
+              onCursorToolClick={() =>
+                setTool({ mode: "cursor", elementType: tool.elementType })
+              }
+              onOpenElementPicker={() => setPickerOpened(true)}
+              onSaveLayout={saveLayoutToServer}
+              onLoadLayout={loadLayoutFromServer}
+              canUndo={canUndo}
+              canRedo={canRedo}
+              onUndo={undo}
+              onRedo={redo}
+              onSettingsClick={handleSettingClick}
+              onDeleteToolClick={() =>
+                setTool({ mode: "delete", elementType: tool.elementType })
+              }
+              onFitLayout={onFitLayout}
+              onOpenCommandCenterDialog={() => setCommandCenterOpened(true)}
+            />
+          )}
+        </AppShell.Header>
         <AppShell.Main>
-          <Stack gap="xs" h="calc(100vh - 60px - 34px - 20px)">
+          {/* <Stack gap="xs" h="calc(100vh - 60px - 34px - 20px)"> */}
+          <Stack
+            gap="xs"
+            h={`calc(100vh - ${toolbarOpened ? HEADER_HEIGHT : 0
+              }px - ${FOOTER_HEIGHT}px - 20px)`}
+          >
             <Group
               gap="xs"
               wrap="nowrap"

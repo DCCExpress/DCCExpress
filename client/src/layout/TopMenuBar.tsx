@@ -17,6 +17,7 @@ import {
   IconArrowForwardUp,
   IconEdit,
   IconEditFilled,
+  IconHome,
   IconMaximize,
   IconMoon,
   IconPointer,
@@ -105,15 +106,28 @@ export default function TopMenuBar({
 
 
   return (
-    <Group h="100%" px="md" justify="space-between" wrap="nowrap">
+    <Group ml={22} h="100%" px="md" justify="space-between" wrap="nowrap">
       <Group gap="sm" wrap="nowrap">
-        <ThemeIcon size="lg" radius="sm" variant="light">
+        {/* <ThemeIcon size="lg" radius="sm" variant="light">
           <TrainIcon size={18} />
-        </ThemeIcon>
+        </ThemeIcon> */}
 
         {/* <Badge color={getWsColor(wsStatus)} variant="filled">
           WS: {wsStatus}
         </Badge> */}
+
+        <Tooltip label={t("Home")} withArrow position="bottom">
+          <ActionIcon
+            size="lg"
+            radius="sm"
+            variant="light"
+            onClick={onGoHome}
+            onMouseDown={(e) => e.preventDefault()}
+            aria-label={t("Home")}
+          >
+            <IconHome size={18} />
+          </ActionIcon>
+        </Tooltip>
 
         <Text fw={700}>DCCExpress</Text>
 
@@ -235,7 +249,7 @@ export default function TopMenuBar({
           <ActionIcon
             variant={editMode ? "filled" : "light"}
             //onClick={onOpenElementPicker}
-            
+
             disabled={touchOnly}
             color="#7B2EDA"
             onClick={(e) => onEditModeChange(!editMode)}
@@ -246,19 +260,19 @@ export default function TopMenuBar({
           </ActionIcon>
         </Tooltip>
 
-            <Divider orientation="vertical" size="sm" mr={4} ml={4} />
+        <Divider orientation="vertical" size="sm" mr={4} ml={4} />
 
-            <Tooltip label="Fit layout (F)">
-              <ActionIcon
-                variant="light"
-                color="blue"
-                onClick={onFitLayout}
-                onMouseDown={(e) => e.preventDefault()}
-                aria-label="Fit layout"
-              >
-                <IconMaximize size={18} />
-              </ActionIcon>
-            </Tooltip>
+        <Tooltip label="Fit layout (F)">
+          <ActionIcon
+            variant="light"
+            color="blue"
+            onClick={onFitLayout}
+            onMouseDown={(e) => e.preventDefault()}
+            aria-label="Fit layout"
+          >
+            <IconMaximize size={18} />
+          </ActionIcon>
+        </Tooltip>
 
 
         {editMode && (

@@ -188,11 +188,6 @@ export default function HomePage({ onOpenLayout }: HomePageProps) {
               "linear-gradient(135deg, rgba(34,139,230,0.14) 0%, rgba(64,192,87,0.10) 100%)",
           }}
         >
-          <Overlay
-            opacity={0.05}
-            gradient="linear-gradient(120deg, #228be6 0%, #40c057 100%)"
-          />
-
           <Stack
             gap="md"
             style={{

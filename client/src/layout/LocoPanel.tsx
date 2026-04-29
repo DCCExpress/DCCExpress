@@ -181,7 +181,7 @@ export default function LocoPanel({ locos = [] }: LocoPanelProps) {
                     image={currentLoco.image}
                     name={currentLoco.name}
                     width={400}
-                    height={80}
+                    height={60}
                     clickable
                     onClick={() => setPickerOpened(true)}
                   />
@@ -246,7 +246,7 @@ export default function LocoPanel({ locos = [] }: LocoPanelProps) {
                     />
                   </div>
 
-   <SimpleGrid cols={6} spacing="xs" p={0} w="100%">
+                  <SimpleGrid cols={6} spacing={2} p={0} w="100%">
                     {SPEED_PRESETS.map((preset) => (
                       <Button
                         key={preset}
@@ -297,7 +297,7 @@ export default function LocoPanel({ locos = [] }: LocoPanelProps) {
 
                   </Group>
                   <Button
-                    size="xs"
+                    size="md"
                     style={{ width: "100%" }}
                     color="red"
                     leftSection={<IconAlertTriangle size={14} />}
@@ -307,7 +307,7 @@ export default function LocoPanel({ locos = [] }: LocoPanelProps) {
                   </Button>
 
 
-               
+
                 </Stack>
               </Card>
 
