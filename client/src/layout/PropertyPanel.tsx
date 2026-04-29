@@ -17,6 +17,7 @@ import { isTurnoutElement, Layout } from "../models/editor/core/Layout";
 import { RouteButtonElement, RouteTurnoutItem } from "../models/editor/elements/RouteButtonElement";
 import { IconTrash } from "@tabler/icons-react";
 import "../styles/propertypanel.css"
+import { TrackTurnoutElement } from "../models/editor/elements/TrackTurnoutElement";
 
 type PropertyPanelProps = {
   selectedElement: BaseElement | null;
@@ -374,26 +375,31 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
                 {prop.type === "bittoggle" && (
                   <Group>
                     <Group>
-                      <ElementPreview element={getPreviewTurnout(selectedElement, true)} label="Closed" width={40} height={40} onClick={() => {
-                        const t = selectedElement as TrackTurnoutLeftElement
-                        //const data: SetTurnoutMessage = { address: t.turnoutAddress, closed: t.turnoutClosedValue };
-                        //const data: SetTurnoutMessage = {type: "setTurnout", data: { address: t.turnoutAddress, closed: t.turnoutClosedValue }};
-                        //console.log("WSAPI:", data)
-                        wsApi.setTurnout(t.turnoutAddress, t.turnoutClosedValue);
-                      }}
-                      />
+                      <Box className="route-turnout-preview-button">
+                        <ElementPreview element={getPreviewTurnout(selectedElement, true)} label="Closed" width={40} height={40} onClick={() => {
+                          const t = selectedElement as TrackTurnoutLeftElement
+                          //const data: SetTurnoutMessage = { address: t.turnoutAddress, closed: t.turnoutClosedValue };
+                          //const data: SetTurnoutMessage = {type: "setTurnout", data: { address: t.turnoutAddress, closed: t.turnoutClosedValue }};
+                          //console.log("WSAPI:", data)
+                          wsApi.setTurnout(t.turnoutAddress, t.turnoutClosedValue);
+                        }}
+                        />
+                      </Box>
                       <BitToggleElement
                         value={(selectedElement as any)[prop.key]}
                         onChange={(e) => handleChange(prop, e)}
                       />
                     </Group>
                     <Group>
-                      <ElementPreview element={getPreviewTurnout(selectedElement, false)} label="Opened" width={40} height={40} onClick={() => {
-                        const t = selectedElement as TrackTurnoutLeftElement
-                        //const data: SetTurnoutMessage = {type: "setTurnout", data: { address: t.turnoutAddress, closed: !t.turnoutClosedValue }};
-                        wsApi.setTurnout(t.turnoutAddress, !t.turnoutClosedValue);
-                      }}
-                      />
+                      <Box className="route-turnout-preview-button">
+                        <ElementPreview element={getPreviewTurnout(selectedElement, false)} label="Opened" width={40} height={40} onClick={() => {
+                          const t = selectedElement as TrackTurnoutLeftElement
+                          //const data: SetTurnoutMessage = {type: "setTurnout", data: { address: t.turnoutAddress, closed: !t.turnoutClosedValue }};
+                          wsApi.setTurnout(t.turnoutAddress, !t.turnoutClosedValue);
+                        }}
+                        />
+                      </Box>
+
                       <BitToggleElement
                         value={!((selectedElement as any)[prop.key])}
                         onChange={(e) => handleChange(prop, (!e))}
@@ -407,13 +413,14 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
                   <Group>
                     {/* GREEN */}
                     <Group>
-
-                      <ElementPreview style={{ width: "50%" }} element={getPreviewSignal(selectedElement, 1)} label="Green" width={40} height={40} translateX={-10} onClick={() => {
-                        const t = selectedElement as TrackSignalElement;
-                        t.sendGreen();
-                        //wsApi.setTurnout(t.turnoutAddress, t.turnoutClosedValue);
-                      }}
-                      />
+                      <Box className="route-turnout-preview-button">
+                        <ElementPreview style={{ width: "50%" }} element={getPreviewSignal(selectedElement, 1)} label="Green" width={40} height={40} translateX={-10} onClick={() => {
+                          const t = selectedElement as TrackSignalElement;
+                          t.sendGreen();
+                          //wsApi.setTurnout(t.turnoutAddress, t.turnoutClosedValue);
+                        }}
+                        />
+                      </Box>
 
                       <NumberInput w="50%"
                         value={(selectedElement as TrackSignalElement).valueGreen}
@@ -428,11 +435,13 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
                     {/* RED */}
                     <Group>
 
-                      <ElementPreview style={{ width: "50%" }} element={getPreviewSignal(selectedElement, 2)} label="Red" width={40} height={40} translateX={-10} onClick={() => {
-                        const t = selectedElement as TrackSignalElement;
-                        t.sendRed();
-                      }}
-                      />
+                      <Box className="route-turnout-preview-button">
+                        <ElementPreview style={{ width: "50%" }} element={getPreviewSignal(selectedElement, 2)} label="Red" width={40} height={40} translateX={-10} onClick={() => {
+                          const t = selectedElement as TrackSignalElement;
+                          t.sendRed();
+                        }}
+                        />
+                      </Box>
 
                       <NumberInput w="50%"
                         value={(selectedElement as TrackSignalElement).valueRed}
@@ -447,13 +456,13 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
                     {/* YELLOW */}
                     {(selectedElement as TrackSignalElement).aspect >= 3 && (
                       <Group>
-
-                        <ElementPreview style={{ width: "50%" }} element={getPreviewSignal(selectedElement, 3)} label="Yellow" width={40} height={40} translateX={-10} onClick={() => {
-                          const t = selectedElement as TrackSignalElement;
-                          t.sendYellow();
-                        }}
-                        />
-
+                        <Box className="route-turnout-preview-button">
+                          <ElementPreview style={{ width: "50%" }} element={getPreviewSignal(selectedElement, 3)} label="Yellow" width={40} height={40} translateX={-10} onClick={() => {
+                            const t = selectedElement as TrackSignalElement;
+                            t.sendYellow();
+                          }}
+                          />
+                        </Box>
                         <NumberInput w="50%"
                           value={(selectedElement as TrackSignalElement).valueYellow}
                           onChange={(e) => {
@@ -467,13 +476,13 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
                     {/* WHITE */}
                     {(selectedElement as TrackSignalElement).aspect >= 4 && (
                       <Group>
-
-                        <ElementPreview style={{ width: "50%" }} element={getPreviewSignal(selectedElement, 4)} label="White" width={40} height={40} translateX={-10} onClick={() => {
-                          const t = selectedElement as TrackSignalElement;
-                          t.sendWhite();
-                        }}
-                        />
-
+                        <Box className="route-turnout-preview-button">
+                          <ElementPreview style={{ width: "50%" }} element={getPreviewSignal(selectedElement, 4)} label="White" width={40} height={40} translateX={-10} onClick={() => {
+                            const t = selectedElement as TrackSignalElement;
+                            t.sendWhite();
+                          }}
+                          />
+                        </Box>
                         <NumberInput w="50%"
                           value={(selectedElement as TrackSignalElement).valueWhite}
                           onChange={(e) => {
@@ -533,34 +542,43 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
                         </Text>
                       ) : (
                         <Stack gap={6}>
-                          {/* {items.map((item) => {
+
+                          {items.map((item) => {
                             const turnout = findElementById(layout, item.turnoutId);
 
-                            if (!isTurnoutElement(turnout)) {
+                            if (!turnout) {
                               return (
-                                <Group
-                                  key={item.turnoutId}
-                                  justify="space-between"
-                                  gap="xs"
-                                  wrap="nowrap"
-                                >
+                                <Group key={item.turnoutId} justify="space-between" gap="xs">
                                   <Text size="xs" c="red">
-                                    Missing turnout
+                                    Missing turnout: {item.turnoutId}
                                   </Text>
 
-                                  <Text size="10px" c="dimmed" ff="monospace">
-                                    {item.turnoutId}
-                                  </Text>
+                                  <ActionIcon
+                                    size="sm"
+                                    color="red"
+                                    variant="subtle"
+                                    onClick={() => {
+                                      if (!selectedElement) return;
+
+                                      const routeButton = selectedElement as RouteButtonElement;
+                                      routeButton.removeTurnout(item.turnoutId);
+
+                                      onUpdateSelectedElement(selectedElement);
+                                    }}
+                                  >
+                                    <IconTrash size={14} />
+                                  </ActionIcon>
                                 </Group>
                               );
                             }
 
-                            // Previewben a route által kívánt állapotot mutatjuk,
-                            // nem feltétlenül a valódi aktuális állapotot.
-                            const previewTurnout = createPreviewElement(turnout);
-                            (previewTurnout as any).closed = item.closed;
+                            const previewTurnout = turnout.clone();
+                            previewTurnout.id = turnout.id;
+                            previewTurnout.x = 0;
+                            previewTurnout.y = 0;
                             previewTurnout.selected = false;
                             previewTurnout.enabled = true;
+                            (previewTurnout as any).turnoutClosed = item.closed;
 
                             return (
                               <Group
@@ -572,14 +590,25 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
                                 <Box
                                   className="route-turnout-preview-button"
                                   onClick={() => {
-                                    toggleRouteTurnout(item.turnoutId);
+                                    //item.closed = !item.closed;
+                                    const elem = layout.getElementById(item.turnoutId);
+                                    if(elem instanceof TrackTurnoutElement) {
+                                      const turnout = elem as TrackTurnoutElement;  
+                                      turnout.toggle();
+                                      item.closed = turnout.turnoutClosed == turnout.turnoutClosedValue;
+                                    } else {
+                                      alert("Not instance of Turnout!")
+                                    }
+                                    
+
+                                    onUpdateSelectedElement(selectedElement);
                                   }}
                                 >
                                   <ElementPreview
                                     element={previewTurnout}
-                                    label=""
-                                    width={48}
-                                    height={48}
+                                    label={"#" + (previewTurnout as any).turnoutAddress}
+                                    width={40}
+                                    height={40}
                                   />
                                 </Box>
 
@@ -588,116 +617,36 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
                                     {turnout.name || "Turnout"}
                                   </Text>
 
-                                  <Text size="10px" c="dimmed" ff="monospace" truncate>
+                                  {/* <Text size="10px" c="dimmed" ff="monospace" truncate>
                                     {item.turnoutId}
-                                  </Text>
+                                  </Text> */}
+
+                                  {/* <Badge size="xs" variant="light">
+                                    {item.closed ? "closed" : "thrown"}
+                                  </Badge> */}
                                 </Stack>
 
-                                <Badge
+                                <ActionIcon
                                   size="sm"
-                                  variant="light"
-                                  color={item.closed ? "green" : "orange"}
+                                  color="red"
+                                  variant="subtle"
+                                  title="Remove turnout"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+
+                                    if (!selectedElement) return;
+
+                                    const routeButton = selectedElement as RouteButtonElement;
+                                    routeButton.removeTurnout(item.turnoutId);
+
+                                    onUpdateSelectedElement(selectedElement);
+                                  }}
                                 >
-                                  {item.closed ? "closed" : "thrown"}
-                                </Badge>
+                                  <IconTrash size={14} />
+                                </ActionIcon>
                               </Group>
                             );
-                          })} */}
-
-                          {items.map((item) => {
-  const turnout = findElementById(layout, item.turnoutId);
-
-  if (!turnout) {
-    return (
-      <Group key={item.turnoutId} justify="space-between" gap="xs">
-        <Text size="xs" c="red">
-          Missing turnout: {item.turnoutId}
-        </Text>
-
-        <ActionIcon
-          size="sm"
-          color="red"
-          variant="subtle"
-          onClick={() => {
-            if (!selectedElement) return;
-
-            const routeButton = selectedElement as RouteButtonElement;
-            routeButton.removeTurnout(item.turnoutId);
-
-            onUpdateSelectedElement(selectedElement);
-          }}
-        >
-          <IconTrash size={14} />
-        </ActionIcon>
-      </Group>
-    );
-  }
-
-  const previewTurnout = turnout.clone();
-  previewTurnout.id = turnout.id;
-  previewTurnout.x = 0;
-  previewTurnout.y = 0;
-  previewTurnout.selected = false;
-  previewTurnout.enabled = true;
-  (previewTurnout as any).closed = item.closed;
-
-  return (
-    <Group
-      key={item.turnoutId}
-      gap="xs"
-      wrap="nowrap"
-      align="center"
-    >
-      <Box
-        className="route-turnout-preview-button"
-        onClick={() => {
-          item.closed = !item.closed;
-          onUpdateSelectedElement(selectedElement);
-        }}
-      >
-        <ElementPreview
-          element={previewTurnout}
-          label={"#" + (previewTurnout as any).turnoutAddress}
-          width={40}
-          height={40}
-        />
-      </Box>
-
-      <Stack gap={0} style={{ flex: 1, minWidth: 0 }}>
-        <Text size="xs" fw={500} truncate>
-          {turnout.name || "Turnout"}
-        </Text>
-
-        <Text size="10px" c="dimmed" ff="monospace" truncate>
-          {item.turnoutId}
-        </Text>
-
-        <Badge size="xs" variant="light">
-          {item.closed ? "closed" : "thrown"}
-        </Badge>
-      </Stack>
-
-      <ActionIcon
-        size="sm"
-        color="red"
-        variant="subtle"
-        title="Remove turnout"
-        onClick={(e) => {
-          e.stopPropagation();
-
-          if (!selectedElement) return;
-
-          const routeButton = selectedElement as RouteButtonElement;
-          routeButton.removeTurnout(item.turnoutId);
-
-          onUpdateSelectedElement(selectedElement);
-        }}
-      >
-        <IconTrash size={14} />
-      </ActionIcon>
-    </Group>
-  );
-})}
+                          })}
                         </Stack>
                       )}
                     </Stack>

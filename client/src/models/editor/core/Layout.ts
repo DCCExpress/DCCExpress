@@ -1,5 +1,6 @@
 import { TrackElement } from "../elements/TrackElement";
 import TrackTurnoutDoubleElement from "../elements/TrackTurnoutDoubleElement";
+import { TrackTurnoutElement } from "../elements/TrackTurnoutElement";
 import { TrackTurnoutLeftElement } from "../elements/TrackTurnoutLeftElement";
 import { TrackTurnoutRightElement } from "../elements/TrackTurnoutRightElement";
 import { TrackTurnoutTwoWayElement } from "../elements/TrackTurnoutTwoWayElement";
@@ -10,6 +11,7 @@ import { Layer, LayerId } from "./Layer";
 
 export function isTurnoutElement(el: BaseElement | null | undefined) {
   return (
+    el instanceof TrackTurnoutElement ||
     el instanceof TrackTurnoutLeftElement ||
     el instanceof TrackTurnoutRightElement ||
     el instanceof TrackTurnoutTwoWayElement ||
@@ -228,6 +230,10 @@ export class Layout {
         return list;
     }
 
+    getElementById(id: string): BaseElement | undefined {
+        const elements = this.getAllElements();
+        return elements.find((x) => x.id == id);
+    }
     isExists(x: number, y: number): boolean {
         return this.getElements(x, y).length > 0 ? true : false;
     }

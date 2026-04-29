@@ -9,28 +9,28 @@ import { BaseElement } from "../core/BaseElement";
 import { ClickableBaseElement } from "../core/ClickableBaseElement";
 import { DrawOptions, ELEMENT_TYPES, ElementType, ITrackCornerElement, ITrackTurnoutLeftElement } from "../types/EditorTypes";
 import { IEditableProperty } from "./PropertyDescriptor";
+import { TrackTurnoutElement } from "./TrackTurnoutElement";
 import { TrackTurnoutRightElement } from "./TrackTurnoutRightElement";
 
-export class TrackTurnoutLeftElement extends ClickableBaseElement implements ITrackTurnoutLeftElement {
+export class TrackTurnoutLeftElement extends TrackTurnoutElement implements ITrackTurnoutLeftElement {
     override type: typeof ELEMENT_TYPES.TRACK_TURNOUT_LEFT = ELEMENT_TYPES.TRACK_TURNOUT_LEFT;
+    address: number = 0;
     turnoutLocked: string | CanvasGradient | CanvasPattern = "yellow";
     turnoutUnLocked: string | CanvasGradient | CanvasPattern = "red";
     turnoutAddress: number = 0;
     turnoutClosedValue: boolean = false;
     turnoutClosed: boolean = false;
 
-    constructor(x: number, y: number) {
-        super(x, y);
-        this.rotationStep = 45;
-    }
-
-
+    // constructor(x: number, y: number) {
+    //     super(x, y);
+    //     this.rotationStep = 45;
+    // }
 
     override draw(ctx: CanvasRenderingContext2D, options?: DrawOptions): void {
         if (!this.visible) return;
 
         this.beginDraw(ctx, options);
-        this.drawTurnout(ctx, this.turnoutClosed);
+        this.drawTurnout(ctx, this.turnoutClosed == this.turnoutClosedValue);
         this.endDraw(ctx);
         
         this.beginDraw(ctx);
@@ -41,7 +41,6 @@ export class TrackTurnoutLeftElement extends ClickableBaseElement implements ITr
 
         super.drawSelection(ctx);
     }
-
 
     public drawTurnout(ctx: CanvasRenderingContext2D, t1Closed: boolean): void {
 
@@ -216,30 +215,6 @@ export class TrackTurnoutLeftElement extends ClickableBaseElement implements ITr
 
     }
 
-    // getBounds(): Rect {
-    //     return {
-    //         x: this.x - this.GridSizeX,
-    //         y: this.y - this.GridSizeX,
-    //         width: this.GridSizeX,
-    //         height: this.GridSizeX,
-    //     };
-    // }
-
-    // hitTest(px: number, py: number): boolean {
-    //     //const b = this.getBounds();
-    //     //return px >= b.x && px <= b.x + b.width && py >= b.y && py <= b.y + b.height;
-    //     return this.x == px && this.y == py;
-    // }
-    mouseDown(ev: MouseEvent) {
-        const closed = this.turnoutClosed == this.turnoutClosedValue;
-        wsApi.setTurnout(this.turnoutAddress, !closed);
-    }
-
-
-    mouseUp(ev: MouseEvent) {
-        //alert("UP")
-    }
-
     override toJSON(): ITrackTurnoutLeftElement {
         return {
             ...super.toJSON(),
@@ -258,7 +233,9 @@ export class TrackTurnoutLeftElement extends ClickableBaseElement implements ITr
         copy.selected = this.selected;
         copy.address = this.address;
         copy.turnoutAddress = this.turnoutAddress;
+        copy.turnoutClosed = this.turnoutClosed;
         copy.turnoutClosedValue = this.turnoutClosedValue;
+
         return copy;
     }
 

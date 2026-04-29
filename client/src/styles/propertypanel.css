@@ -14,12 +14,12 @@
 }
 
 .route-turnout-preview-button:hover {
-  transform: translateY(-1px) scale(1.03);
+  transform: translateY(0px) scale(1.01);
   background-color: var(--mantine-color-blue-light);
 }
 
 .route-turnout-preview-button:active {
-  transform: scale(0.96);
+  transform: scale(1);
 }
 
 .route-turnout-preview-button * {

@@ -1,6 +1,6 @@
 import type http from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
-import { AccessoryChangedMessage, CommandCenterInfo, WsMessage } from "../../../common/src/types.js";
+import { AccessoryChangedMessage, CommandCenterInfo, TurnoutChangedMessage, WsMessage } from "../../../common/src/types.js";
 import { CommandCenterConfig, readCommandCenter, setCommandCenterConfigLoadedCallback } from "../routes/commandCenterRoutes.js";
 import { CommandCenter } from "../commandCenter/CommandCenter.js";
 import { CommandCenterSimulator } from "../commandCenter/simulator.js";
@@ -137,16 +137,30 @@ export function setupWebSocketServer(server: http.Server) {
         });
       }
 
+
+      const turnouts = commandCenter.getTurnouts();
+      for (const turnout of turnouts) {
+
+        const msg: TurnoutChangedMessage = {
+          type: "turnoutChanged",
+          data: {
+            address: turnout.address,
+            closed: turnout.closed,
+          },
+        };
+        sendToClient(ws, msg);
+      }
+
       const accessories = commandCenter.getAccessories();
       for (const accessory of accessories) {
-        
-         const msg: AccessoryChangedMessage = {
-              type: "accessoryChanged",
-              data: {
-                address: accessory.address,
-                active: accessory.active,
-              },
-            };
+
+        const msg: AccessoryChangedMessage = {
+          type: "accessoryChanged",
+          data: {
+            address: accessory.address,
+            active: accessory.active,
+          },
+        };
         sendToClient(ws, msg);
       }
     }

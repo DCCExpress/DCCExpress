@@ -66,4 +66,7 @@ export class CommandCenter {
     getAccessories() {
         return Array.from(this.accessories.values());
     }
+    getTurnouts() {
+        return Array.from(this.turnouts.values());
+    }
 }

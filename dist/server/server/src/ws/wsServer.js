@@ -112,6 +112,17 @@ export function setupWebSocketServer(server) {
                     data: { loco },
                 });
             }
+            const turnouts = commandCenter.getTurnouts();
+            for (const turnout of turnouts) {
+                const msg = {
+                    type: "turnoutChanged",
+                    data: {
+                        address: turnout.address,
+                        closed: turnout.closed,
+                    },
+                };
+                sendToClient(ws, msg);
+            }
             const accessories = commandCenter.getAccessories();
             for (const accessory of accessories) {
                 const msg = {

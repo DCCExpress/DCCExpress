@@ -8,12 +8,13 @@ import { BaseElement } from "../core/BaseElement";
 import { ClickableBaseElement } from "../core/ClickableBaseElement";
 import { DrawOptions, ELEMENT_TYPES, ElementType, ITrackTurnoutLeftElement, ITrackTurnoutRightElement } from "../types/EditorTypes";
 import { IEditableProperty } from "./PropertyDescriptor";
+import { TrackTurnoutElement } from "./TrackTurnoutElement";
 
-export class TrackTurnoutRightElement extends ClickableBaseElement implements ITrackTurnoutRightElement {
+export class TrackTurnoutRightElement extends TrackTurnoutElement implements ITrackTurnoutRightElement {
     override type: typeof ELEMENT_TYPES.TRACK_TURNOUT_RIGHT = ELEMENT_TYPES.TRACK_TURNOUT_RIGHT;
     turnoutLocked: string | CanvasGradient | CanvasPattern = "yellow";
     turnoutUnLocked: string | CanvasGradient | CanvasPattern = "red";
-
+    address: number = 0;
     turnoutAddress: number = 0;
     turnoutClosedValue: boolean = false;
     turnoutClosed: boolean = false;
@@ -30,7 +31,7 @@ export class TrackTurnoutRightElement extends ClickableBaseElement implements IT
 
         this.beginDraw(ctx, options);
 
-        this.drawTurnout(ctx, this.turnoutClosed);
+        this.drawTurnout(ctx, this.turnoutClosed == this.turnoutClosedValue);
 
         this.endDraw(ctx);
 
@@ -214,40 +215,14 @@ export class TrackTurnoutRightElement extends ClickableBaseElement implements IT
 
     }
 
-
-    // getBounds(): Rect {
-    //     return {
-    //         x: this.x - this.GridSizeX,
-    //         y: this.y - this.GridSizeX,
-    //         width: this.GridSizeX,
-    //         height: this.GridSizeX,
-    //     };
-    // }
-
-    hitTest(px: number, py: number): boolean {
-        //const b = this.getBounds();
-        //return px >= b.x && px <= b.x + b.width && py >= b.y && py <= b.y + b.height;
-        return this.x == px && this.y == py;
-    }
-
-    mouseDown(ev: MouseEvent) {
-        const closed = this.turnoutClosed == this.turnoutClosedValue;
-        wsApi.setTurnout(this.turnoutAddress, !closed);
-    }
-
-
-    mouseUp(ev: MouseEvent) {
-        //alert("UP")
-    }
-
-
     override toJSON(): ITrackTurnoutRightElement {
         return {
             ...super.toJSON(),
             type: ELEMENT_TYPES.TRACK_TURNOUT_RIGHT,
             address: this.address,
             turnoutAddress: this.turnoutAddress,
-            turnoutClosedValue: this.turnoutClosedValue
+            turnoutClosedValue: this.turnoutClosedValue,
+
         };
     }
 
@@ -258,6 +233,7 @@ export class TrackTurnoutRightElement extends ClickableBaseElement implements IT
         copy.rotationStep = this.rotationStep;
         copy.selected = this.selected;
         copy.turnoutAddress = this.turnoutAddress;
+        copy.turnoutClosed = this.turnoutClosed;
         copy.turnoutClosedValue = this.turnoutClosedValue;
         return copy;
     }

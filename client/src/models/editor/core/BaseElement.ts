@@ -1,3 +1,4 @@
+import { generateId } from "../../../helpers";
 import { IEditableProperty } from "../elements/PropertyDescriptor";
 import { sampleLayout } from "../sample/sampleLayout";
 import { ELEMENT_TYPES, ElementType } from "../types/EditorTypes";
@@ -25,6 +26,7 @@ export abstract class BaseElement implements IBaseElement {
     bg: string = "black";
     fg: string = "white";
     occupied: boolean = false;
+    //length: number = 1;
 
     constructor(x: number, y: number) {
         this.x = x;
@@ -178,7 +180,7 @@ export abstract class BaseElement implements IBaseElement {
             this.endDraw(ctx);
         }
 
-        
+
     }
 
     protected drawEnabled(ctx: CanvasRenderingContext2D): void {
@@ -190,6 +192,11 @@ export abstract class BaseElement implements IBaseElement {
         }
     }
 
+    mouseDown(ev: MouseEvent) {
+    }
+
+    mouseUp(ev: MouseEvent) {
+    }
 
     toJSON(): IBaseElement {
         return {
@@ -264,7 +271,7 @@ export abstract class BaseElement implements IBaseElement {
         return this.x == px && this.y == py;
     }
 
-    abstract clone(): BaseElement;
+    abstract clone(): BaseElement ;
 
     getEditableProperties(): IEditableProperty[] {
         return [

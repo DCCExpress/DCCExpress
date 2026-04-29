@@ -68,16 +68,20 @@
           "colorOn": "lime",
           "routeTurnouts": [
             {
+              "turnoutId": "da23d9c-4ebe-44e6-9190-0165f734",
+              "closed": false
+            },
+            {
               "turnoutId": "28394d0-1c70-4ca7-8c39-3a925ae0",
-              "closed": true
+              "closed": false
             },
             {
               "turnoutId": "c6bc4282-a7fd-4c70-817a-6b2fe6a2a765",
-              "closed": true
+              "closed": false
             },
             {
               "turnoutId": "489067cf-c95f-4893-9050-8c0e2a7a7d58",
-              "closed": true
+              "closed": false
             }
           ]
         }
@@ -630,7 +634,7 @@
           "fg": "white",
           "address": 1,
           "turnoutAddress": 12,
-          "turnoutClosedValue": true
+          "turnoutClosedValue": false
         },
         {
           "id": "489067cf-c95f-4893-9050-8c0e2a7a7d58",
@@ -645,7 +649,7 @@
           "fg": "white",
           "address": 0,
           "turnoutAddress": 13,
-          "turnoutClosedValue": true
+          "turnoutClosedValue": false
         },
         {
           "id": "492beaeb-600d-4ada-8802-47facd815655",
@@ -671,7 +675,6 @@
           "rotationStep": 45,
           "bg": "black",
           "fg": "white",
-          "length": 200,
           "address": 10
         },
         {
@@ -1314,6 +1317,36 @@
           "bg": "black",
           "fg": "white",
           "address": 0
+        },
+        {
+          "id": "56ac3a2-c58e-438a-9a1b-5568b8bd",
+          "type": "trackturnoutleft",
+          "name": "element",
+          "layerName": "track",
+          "x": 21,
+          "y": 12,
+          "rotation": 0,
+          "rotationStep": 45,
+          "bg": "black",
+          "fg": "white",
+          "address": 0,
+          "turnoutAddress": 20,
+          "turnoutClosedValue": false
+        },
+        {
+          "id": "9c47d3c-e79c-42c9-9f7e-d7f2f495",
+          "type": "trackturnoutright",
+          "name": "element",
+          "layerName": "track",
+          "x": 22,
+          "y": 12,
+          "rotation": 0,
+          "rotationStep": 45,
+          "bg": "black",
+          "fg": "white",
+          "address": 0,
+          "turnoutAddress": 21,
+          "turnoutClosedValue": false
         }
       ]
     }

@@ -2,12 +2,15 @@
 
 import { IAddressedElement } from "../types/EditorTypes";
 import { AddressedElement } from "./AddressedElement";
+import { BaseElement } from "./BaseElement";
 
-export class ClickableBaseElement extends AddressedElement implements IAddressedElement {
+export abstract class ClickableBaseElement extends BaseElement {
 
     mouseDown(ev: MouseEvent) {
     }
 
     mouseUp(ev: MouseEvent) {
     }
+
+    
 }

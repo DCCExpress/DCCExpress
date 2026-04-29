@@ -10,7 +10,7 @@ export class TrackBaseElement extends BaseElement implements ITrackBaseElement {
     override toJSON(): ITrackBaseElement {
         return {
             ...super.toJSON(),
-            length: this.length,
+            
         };
     }
 

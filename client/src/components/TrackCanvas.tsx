@@ -26,6 +26,8 @@ import { TrackCrossingElement } from "../models/editor/elements/TrackCrossingEle
 import { ClickableBaseElement } from "../models/editor/core/ClickableBaseElement";
 import { EditorSettings, useEditorSettings } from "../context/EditorSettingsContext";
 import ElementPreview from "../models/editor/rendering/ElementPreviewRenderer";
+import { wsApi } from "../services/wsApi";
+import { TrackTurnoutElement } from "../models/editor/elements/TrackTurnoutElement";
 
 type TrackCanvasProps = {
   editMode?: boolean;
@@ -566,8 +568,9 @@ export default function TrackCanvas({
             if (currentElement instanceof RouteButtonElement) {
               if (isTurnoutElement(hitElement)) {
                 const rb = currentElement as RouteButtonElement;
-
-                rb.addOrUpdateTurnout(hitElement.id, true);
+                const t = hitElement as TrackTurnoutElement;
+                const closed = t.turnoutClosed == t.turnoutClosedValue;
+                rb.addOrUpdateTurnout(hitElement.id, closed);
                 onInvalidate();
               }
             } else {
@@ -598,8 +601,21 @@ export default function TrackCanvas({
       // A klikkelést lehet csak Control módban kellene engedélyezni!
       if (toolRef.current.mode == "cursor" && hitElement && !editModeRef.current) {
         if (hitElement instanceof ClickableBaseElement) {
-          const elem = hitElement as ClickableBaseElement
-          elem.mouseDown(ev);
+          if (hitElement instanceof RouteButtonElement) {
+            const rb = hitElement as RouteButtonElement;
+            const elems = currentLayout.getAllElements();
+            for (const routeItem of rb.routeTurnouts) {
+              const t = elems.find((elem) => routeItem.turnoutId === elem.id)
+              if(t) {
+                const turnout = t as TrackTurnoutLeftElement;
+                wsApi.setTurnout(turnout.turnoutAddress, routeItem.closed == turnout.turnoutClosedValue);
+                
+              }
+            }
+          } else {
+            const elem = hitElement as ClickableBaseElement
+            elem.mouseDown(ev);
+          }
         }
       }
 
@@ -843,7 +859,8 @@ export default function TrackCanvas({
           hoveredElement instanceof TrackTurnoutRightElement ||
           hoveredElement instanceof TrackTurnoutTwoWayElement ||
           hoveredElement instanceof TrackTurnoutDoubleElement ||
-          hoveredElement instanceof TrackSignalElement
+          hoveredElement instanceof TrackSignalElement ||
+          hoveredElement instanceof ClickableBaseElement
 
         ) {
           canvas.style.cursor = "pointer";

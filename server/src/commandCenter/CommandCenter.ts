@@ -130,7 +130,11 @@ export abstract class CommandCenter {
   getAccessories(): AccessoryInfo[] {
     return Array.from(this.accessories.values());
   }
-  
+
+  getTurnouts(): TurnoutInfo[] {
+    return Array.from(this.turnouts.values());
+  }
+
 
 
 

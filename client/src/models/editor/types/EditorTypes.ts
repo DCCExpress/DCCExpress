@@ -12,6 +12,7 @@ export const ELEMENT_TYPES = {
   TRACK_CORNER: "trackcorner",
   TRACK_CURVE: "trackcurve",
   TRACK_CROSSING: "trackcrossing",
+  TRACK_TURNOUT: "trackturnout",
   TRACK_TURNOUT_LEFT: "trackturnoutleft",
   TRACK_TURNOUT_RIGHT: "trackturnoutright",
   TRACK_TURNOUT_DOUBLE: "trackturnoutdouble",
@@ -76,7 +77,7 @@ export interface IBaseElement {
 }
 
 export interface ITrackBaseElement extends IBaseElement   {
-  length: number;
+  //length: number;
 }
 
 export interface IAddressedElement extends ITrackBaseElement {
