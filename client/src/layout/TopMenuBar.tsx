@@ -26,6 +26,8 @@ import {
   IconSun,
   IconTopologyStar3,
   IconTrash,
+  IconWindowMaximize,
+  IconWindowMinimize,
 } from "@tabler/icons-react";
 import TrainIcon from "../icons/TrainIcon";
 import { EditorTool } from "../models/editor/types/EditorTypes";
@@ -155,9 +157,9 @@ export default function TopMenuBar({
           }}
         >
           {fullscreen ? (
-            <IconMinimize size={18} />
+            <IconWindowMinimize size={18} />
           ) : (
-            <IconMaximize size={18} />
+            <IconWindowMaximize size={18} />
           )}
         </ActionIcon>
         <Tooltip label={t("Home")} withArrow position="bottom">
