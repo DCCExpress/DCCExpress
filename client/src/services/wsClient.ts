@@ -11,12 +11,15 @@ export interface WsMessage<T = any> {
     type: string;
     data?: T;
     uuid: string;
-    
+
 }
 
 type StatusListener = (status: WsConnectionStatus) => void;
 type MessageListener = (message: WsMessage) => void;
 type TypedMessageListener<T = any> = (data: T, raw: WsMessage<T>) => void;
+
+
+const WS_DEBUG = false;
 
 class WsClient {
     private socket: WebSocket | null = null;
@@ -34,7 +37,7 @@ class WsClient {
     private readonly maxReconnectDelayMs = 10000;
 
     private url = "";
-    
+
 
     public connect(url?: string) {
         if (url) {
@@ -64,7 +67,9 @@ class WsClient {
 
         this.socket.onmessage = (event: MessageEvent) => {
             try {
-                console.log(event)
+                if (WS_DEBUG) {
+                    console.debug("[WS] message:", event.data);
+                }
                 this.handleIncoming(event.data);
 
             } catch (error) {
@@ -81,6 +86,12 @@ class WsClient {
         this.socket.onclose = () => {
             console.warn("[WS] Closed");
 
+            if (this.socket) {
+                this.socket.onopen = null;
+                this.socket.onmessage = null;
+                this.socket.onerror = null;
+                this.socket.onclose = null;
+            }
             this.socket = null;
             this.setStatus("disconnected");
 

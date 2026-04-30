@@ -5,6 +5,9 @@ import { log } from "../utility.js";
 import { broadcastAll } from "../ws/wsServer.js";
 
 export class CommandCenterSimulator extends CommandCenter {
+  getSystemState() {
+    throw new Error("Method not implemented.");
+  }
 
   alive: boolean = false;
   aliveTask: NodeJS.Timeout | null = null;

@@ -439,14 +439,6 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
 
     );
 
-    // const commandCenterLockChanged = wsClient.on(
-    //   "commandCenterLockChanged",
-    //   (data: any) => {
-
-        
-    //   }
-    // )
-
     const unsubscribeCommandRejected = wsClient.on(
       "commandRejected",
       (data: any, raw: any) => {
@@ -700,7 +692,7 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
         </AppShell.Main>
 
         <AppShell.Footer>
-          <StatusBar commandCenter={commandCenter} alive={commandCenterAlive} power={commandCenterPower} />
+          <StatusBar />
         </AppShell.Footer>
       </AppShell>
     </>

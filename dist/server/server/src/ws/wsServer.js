@@ -62,10 +62,14 @@ function initCommandCenter(conf) {
             break;
         case "z21":
             log("Starting command center:", "Z21");
-            commandCenter = new Z21CommandCenter("Z21", conf.z21.host, conf.z21.port);
-            commandCenter.start().then(() => {
+            //commandCenter = new Z21CommandCenter("Z21", conf.z21.host!, conf.z21.port!);
+            commandCenter = new Z21CommandCenter("Z21", conf.z21.host, conf.z21.port, broadcastAll);
+            commandCenter
+                .start()
+                .then(() => {
                 log("Command center started:", conf?.type);
-            }).catch(err => {
+            })
+                .catch((err) => {
                 console.error("Failed to start command center:", err);
             });
             break;
@@ -101,11 +105,18 @@ export function setupWebSocketServer(server) {
             type: "ws:welcome",
             data: { message: "Connected" },
         });
-        sendToClient(ws, {
-            type: "commandCenterInfo",
-            data: { alive: false }
-        });
+        // sendToClient(ws, {
+        //   type: "commandCenterInfo",
+        //   data: { alive: false }
+        // } as CommandCenterInfo)
+        if (!commandCenter) {
+            sendToClient(ws, {
+                type: "commandCenterInfo",
+                data: { alive: false },
+            });
+        }
         if (commandCenter) {
+            commandCenter.clientConnected();
             sendToClient(ws, {
                 type: "commandCenterLockChanged",
                 data: {
@@ -222,12 +233,12 @@ export function setupWebSocketServer(server) {
                                 }
                                 else {
                                     // Optionally, broadcast the new loco state to all clients
-                                    commandCenter.getLoco(address).then(loco => {
-                                        broadcast(wss, {
-                                            type: "locoState",
-                                            data: { loco },
-                                        });
-                                    });
+                                    // commandCenter!.getLoco(address).then(loco => {
+                                    //   broadcast(wss, {
+                                    //     type: "locoState",
+                                    //     data: { loco },
+                                    //   });
+                                    // });
                                 }
                             });
                             return;
@@ -369,6 +380,47 @@ export function setupWebSocketServer(server) {
                             });
                             return;
                         }
+                        //==================================
+                        // POWER
+                        //==================================
+                        case "setTrackPower": {
+                            const on = msg.data?.on;
+                            if (typeof on !== "boolean") {
+                                sendToClient(ws, {
+                                    type: "error",
+                                    data: { message: "Invalid setTrackPower payload" },
+                                });
+                                return;
+                            }
+                            commandCenter.setTrackPower(on).then((success) => {
+                                log("Set track power result:", success);
+                                if (!success) {
+                                    broadcast(wss, {
+                                        type: "error",
+                                        data: { message: "Failed to set track power" },
+                                    });
+                                }
+                            });
+                            return;
+                        }
+                        //==================================
+                        // EMERGENCY STOP
+                        //==================================
+                        case "emergencyStop": {
+                            commandCenter.emergencyStop().then((success) => {
+                                log("Emergency stop result:", success);
+                                if (!success) {
+                                    broadcast(wss, {
+                                        type: "error",
+                                        data: { message: "Failed to emergency stop" },
+                                    });
+                                }
+                            });
+                            return;
+                        }
+                        //==================================
+                        // DEFAULT
+                        //==================================
                         default: {
                             logError("Unknown message type:", msg.type);
                             sendToClient(ws, {

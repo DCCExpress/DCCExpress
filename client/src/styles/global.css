@@ -4,3 +4,21 @@
   user-select: none;
   touch-action: none;
 }
+
+.blinkBadge {
+  animation: blinkBadge 0.5s infinite;
+}
+
+@keyframes blinkBadge {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

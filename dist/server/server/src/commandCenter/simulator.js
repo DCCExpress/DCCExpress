@@ -2,6 +2,9 @@ import { CommandCenter } from "./CommandCenter.js";
 import { log } from "../utility.js";
 import { broadcastAll } from "../ws/wsServer.js";
 export class CommandCenterSimulator extends CommandCenter {
+    getSystemState() {
+        throw new Error("Method not implemented.");
+    }
     alive = false;
     aliveTask = null;
     start() {

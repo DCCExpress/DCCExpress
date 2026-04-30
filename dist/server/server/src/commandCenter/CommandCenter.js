@@ -16,6 +16,7 @@ export class CommandCenter {
     turnouts = new Map();
     sensors = new Map();
     accessories = new Map();
+    rbusGroups = new Map();
     locked = false;
     lockOwnerUUID = "";
     constructor(name) {
@@ -70,11 +71,6 @@ export class CommandCenter {
             this.accessories.set(address, accessory);
         }
         return accessory;
-    }
-    setBasicAccessory(address, active) {
-        const accessory = this.getOrCreateAccessory(address);
-        accessory.active = active;
-        return Promise.resolve(true);
     }
     getAccessories() {
         return Array.from(this.accessories.values());

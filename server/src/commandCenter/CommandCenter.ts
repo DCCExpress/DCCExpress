@@ -37,6 +37,22 @@ export interface AccessoryInfo {
   active: boolean;
 }
 
+export type RBusInfo = {
+  group: number;
+  bytes: number[];
+};
+
+export type RBusSensorInfo = {
+  address: number;
+  moduleAddress: number;
+  input: number;
+  on: boolean;
+  group: number;
+  byteIndex: number;
+  bitIndex: number;
+};
+
+
 export abstract class CommandCenter {
   protected name: string;
   protected powerInfo: PowerInfo = {
@@ -45,11 +61,13 @@ export abstract class CommandCenter {
     shortCircuit: false,
     current: 0,
   };
+  
 
   protected locos: Map<number, LocoState> = new Map();
   protected turnouts: Map<number, TurnoutInfo> = new Map();
   protected sensors: Map<number, SensorInfo> = new Map();
   protected accessories: Map<number, AccessoryInfo> = new Map();
+  protected readonly rbusGroups = new Map<number, number[]>();
   public locked: boolean = false;
   public lockOwnerUUID: string | null = "";
 
@@ -135,11 +153,8 @@ export abstract class CommandCenter {
     return accessory;
   }
 
-  setBasicAccessory(address: number, active: boolean): Promise<boolean> {
-    const accessory = this.getOrCreateAccessory(address);
-    accessory.active = active;
-    return Promise.resolve(true);
-  }
+  // 
+  abstract setBasicAccessory(address: number, active: boolean): Promise<boolean>;
 
   getAccessories(): AccessoryInfo[] {
     return Array.from(this.accessories.values());
@@ -149,7 +164,7 @@ export abstract class CommandCenter {
     return Array.from(this.turnouts.values());
   }
 
-
+  abstract getSystemState(): any;
 
 
 

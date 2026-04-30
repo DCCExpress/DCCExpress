@@ -9,8 +9,11 @@ class WebscoketApi {
 
 
   uuid = generateId();
-  constructor() {}
+  constructor() { }
 
+  get clientUuid() {
+    return this.uuid;
+  }
   connect(url: string) {
     wsClient.connect(url);
   };
@@ -23,18 +26,33 @@ class WebscoketApi {
     return wsClient.send({ type, data, uuid: this.uuid });
   };
 
+  // powerOn() {
+  //   return wsClient.send({ type: "powerOn", uuid: this.uuid });
+  // };
+
+  // powerOff() {
+  //   return wsClient.send({ type: "powerOff", uuid: this.uuid });
+  // };
+
+  // emergencyStop() {
+  //   return wsClient.send({ type: "emergencyStop", uuid: this.uuid });
+  // };
+
+  setTrackPower(on: boolean) {
+    this.send("setTrackPower", { on });
+  }
+
   powerOn() {
-    return wsClient.send({ type: "powerOn", uuid: this.uuid });
-  };
+    this.setTrackPower(true);
+  }
 
   powerOff() {
-    return wsClient.send({ type: "powerOff", uuid: this.uuid });
-  };
+    this.setTrackPower(false);
+  }
 
   emergencyStop() {
-    return wsClient.send({ type: "emergencyStop", uuid: this.uuid });
-  };
-
+    this.send("emergencyStop", {});
+  }
   setLoco(locoAddress: number, speed: number, direction: Direction) {
     const data = { locoAddress, speed, direction };
     return wsClient.send({ type: "setLoco", data, uuid: this.uuid });
@@ -44,7 +62,7 @@ class WebscoketApi {
     return wsClient.send({ type: "getLoco", data: { locoAddress }, uuid: this.uuid });
   };
 
-  
+
   setLocoFunction(locoAddress: number, functionNumber: number, active: boolean) {
     const data = { locoAddress, functionNumber, active };
     return wsClient.send({ type: "setLocoFunction", data, uuid: this.uuid });
