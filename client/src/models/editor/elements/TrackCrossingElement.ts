@@ -1,7 +1,7 @@
 
 import { drawTextWithRoundedBackground } from "../../../graphics";
 import { generateId } from "../../../helpers";
-import { AddressedElement } from "../core/AddressedElement";
+import { AddressedElement} from "../core/AddressedElement";
 import { DrawOptions, ELEMENT_TYPES, ITrackCrossingElement } from "../types/EditorTypes";
 
 export class TrackCrossingElement extends AddressedElement implements ITrackCrossingElement {
@@ -56,6 +56,7 @@ export class TrackCrossingElement extends AddressedElement implements ITrackCros
             ctx.beginPath();
             ctx.strokeStyle = this.stateColor
             ctx.lineWidth = this.TrackWidth3;
+
             var dx = this.width / 5
 
             if (this.rotation == 0 || this.rotation == 180) {

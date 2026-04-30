@@ -1,7 +1,7 @@
 
 import { drawTextWithRoundedBackground } from "../../../graphics";
 import { generateId } from "../../../helpers";
-import { AddressedElement } from "../core/AddressedElement";
+import { AddressedElement} from "../core/AddressedElement";
 import { BaseElement } from "../core/BaseElement";
 import { LayerId } from "../core/Layer";
 import { sampleLayout } from "../sample/sampleLayout";

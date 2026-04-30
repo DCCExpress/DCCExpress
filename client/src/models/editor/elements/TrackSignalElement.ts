@@ -114,23 +114,23 @@ export class TrackSignalElement extends BaseElement implements ITrackSignalEleme
 
             switch (this.value) {
                 case this.valueGreen:
-                    this.state = SignalStates.green
+                    this.signalState = SignalStates.green
                     break;
                 case this.valueYellow:
                     if (this.max > 2) {
-                        this.state = SignalStates.yellow
+                        this.signalState = SignalStates.yellow
                     } else {
-                        this.state = SignalStates.red
+                        this.signalState = SignalStates.red
                     }
                     break;
                 case this.valueWhite:
                     if (this.max > 3) {
-                        this.state = SignalStates.white
+                        this.signalState = SignalStates.white
                     } else {
-                        this.state = SignalStates.red
+                        this.signalState = SignalStates.red
                     }
                     break;
-                default: this.state = SignalStates.red
+                default: this.signalState = SignalStates.red
             }
 
             console.log("SIGNAL:", this.name, address, v, this.value)
@@ -139,31 +139,31 @@ export class TrackSignalElement extends BaseElement implements ITrackSignalEleme
     }
 
     get isGreen(): boolean {
-        return this.state == SignalStates.green
+        return this.signalState == SignalStates.green
     }
     get isRed(): boolean {
-        return this.state == SignalStates.red
+        return this.signalState == SignalStates.red
     }
     get isYellow(): boolean {
-        return this.state == SignalStates.yellow
+        return this.signalState == SignalStates.yellow
     }
     get isWhite(): boolean {
-        return this.state == SignalStates.white
+        return this.signalState == SignalStates.white
     }
 
     // Api functions
     setGreen(): void {
-        this.state = SignalStates.green
+        this.signalState = SignalStates.green
     }
 
     setRed(): void {
-        this.state = SignalStates.red
+        this.signalState = SignalStates.red
     }
     setYellow(): void {
-        this.state = SignalStates.yellow
+        this.signalState = SignalStates.yellow
     }
     setWhite(): void {
-        this.state = SignalStates.white
+        this.signalState = SignalStates.white
     }
 
     sendRedIfNotRed() {
@@ -300,7 +300,7 @@ export class TrackSignalElement extends BaseElement implements ITrackSignalEleme
             this.drawCircle(ctx,
                 x, y,
                 r,
-                this.lights[this.state]!.color)
+                this.lights[this.railState]!.color)
         } else {
             for (var i = 0; i < aa; i++) {
 
@@ -313,7 +313,7 @@ export class TrackSignalElement extends BaseElement implements ITrackSignalEleme
                     this.drawCircle(ctx,
                         x + i * d, y,
                         r,
-                        i == this.state ? this.lights[this.state]!.color : 'gray')
+                        i == this.railState ? this.lights[this.railState]!.color : 'gray')
                 }
             }
         }
@@ -327,12 +327,12 @@ export class TrackSignalElement extends BaseElement implements ITrackSignalEleme
         // }
     }
 
-    private _state: SignalStates = SignalStates.red;
-    public get state(): SignalStates {
-        return this._state;
+    private _signalState: SignalStates = SignalStates.red;
+    public get signalState(): SignalStates {
+        return this._signalState;
     }
-    public set state(v: SignalStates) {
-        this._state = v;
+    public set signalState(v: SignalStates) {
+        this._signalState = v;
     }
 
     send(bits: number) {

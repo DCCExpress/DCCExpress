@@ -191,16 +191,6 @@ type ScriptsTabProps = {
 function ScriptsTab(p: ScriptsTabProps) {
   return (
     <Stack gap="xs">
-      <Box>
-        <Text size="sm" fw={700}>
-          Scripts
-        </Text>
-
-        <Text size="xs" c="dimmed">
-          DCCExpress parancsok teszteléshez
-        </Text>
-      </Box>
-
       <Textarea
         label="Script"
         value={p.script}

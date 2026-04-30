@@ -87,7 +87,8 @@ export class TrackCurveElement extends AddressedElement implements ITrackCurveEl
         }
 
         ctx.lineWidth = this.TrackWidth3;
-        ctx.strokeStyle = this.stateColor
+        ctx.strokeStyle = this.stateColor;
+
         var w2 = this.GridSizeX / 3
         ctx.lineDashOffset = -w2 / 3 //w3 / 2.0
         ctx.setLineDash([w2, w2]);

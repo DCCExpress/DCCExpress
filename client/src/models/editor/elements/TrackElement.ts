@@ -4,8 +4,11 @@ import { AddressedElement } from "../core/AddressedElement";
 import { TrackBaseElement } from "../core/TrackBaseElement";
 import { DrawOptions, ELEMENT_TYPES, ITrackElement } from "../types/EditorTypes";
 
+
+
 export class TrackElement extends AddressedElement implements ITrackElement {
     override type: typeof ELEMENT_TYPES.TRACK = ELEMENT_TYPES.TRACK;
+    
     constructor(x: number, y: number) {
         super(x, y);
         this.type = ELEMENT_TYPES.TRACK;
@@ -51,19 +54,8 @@ export class TrackElement extends AddressedElement implements ITrackElement {
                 ctx.stroke();
             }
 
-            //ctx.lineWidth = Globals.TrackWidth3;
-            ctx.lineWidth = 3;
-
-            // var color = Colors.TrackLightColor
-            // switch(this.state) {
-            //     case RailStates.selected : color = Colors.TrackSelectedColor
-            //     break;
-            //     case RailStates.occupied: color = Colors.TrackDangerColor
-            //     break;
-            // }
-
-            //ctx.strokeStyle = this.stateColor
-            ctx.strokeStyle = "yellow";
+            ctx.lineWidth = this.TrackWidth3;
+            ctx.strokeStyle = this.stateColor
 
             var w4 = this.GridSizeX / 4
 

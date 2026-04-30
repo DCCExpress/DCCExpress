@@ -5,6 +5,9 @@ import { DrawOptions, IAddressedElement, IBaseElement } from "../types/EditorTyp
 import { BaseElement } from "./BaseElement";
 import { TrackBaseElement } from "./TrackBaseElement";
 
+
+
+
 export class AddressedElement extends TrackBaseElement implements IAddressedElement {
     address: number = 0;
     

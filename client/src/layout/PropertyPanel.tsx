@@ -699,7 +699,7 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
   }
   return (
     <>
-    <Text>Control Mode</Text>
+    
     <ControlPanel />
     </>
   )

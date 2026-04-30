@@ -1,6 +1,6 @@
 import { drawTextWithRoundedBackground } from "../../../graphics";
 import { generateId } from "../../../helpers";
-import { AddressedElement } from "../core/AddressedElement";
+import { AddressedElement} from "../core/AddressedElement";
 import { BaseElement } from "../core/BaseElement";
 import { sampleLayout } from "../sample/sampleLayout";
 import { DrawOptions, ELEMENT_TYPES, ElementType, ITrackEndElement } from "../types/EditorTypes";
@@ -48,16 +48,8 @@ export class TrackEndElement extends AddressedElement implements ITrackEndElemen
             }
 
             ctx.lineWidth = this.TrackWidth3;
+            ctx.strokeStyle = this.stateColor;
 
-            // var color = Colors.TrackLightColor
-            // switch(this.state) {
-            //     case RailStates.selected : color = Colors.TrackSelectedColor
-            //     break;
-            //     case RailStates.occupied: color = Colors.TrackDangerColor
-            //     break;
-            // }
-
-            ctx.strokeStyle = this.stateColor
 
             const p = this.GridSizeX / 4;
             if (this.rotation % 90 == 0) {

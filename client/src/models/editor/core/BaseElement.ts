@@ -6,6 +6,12 @@ import { DrawOptions, IBaseElement, RotationStep } from "../types/EditorTypes";
 import { LayerId } from "./Layer";
 import { IRect } from "./Rect";
 
+export enum RailStates {
+    free, selected, occupied
+}
+
+export const RailColors = { free: "gray", selected: "yellow", occupied: "red" }
+
 
 export abstract class BaseElement implements IBaseElement {
     id: string = "";
@@ -26,6 +32,8 @@ export abstract class BaseElement implements IBaseElement {
     bg: string = "black";
     fg: string = "white";
     occupied: boolean = false;
+
+    railState: RailStates = RailStates.free;
     //length: number = 1;
 
     constructor(x: number, y: number) {
@@ -110,7 +118,11 @@ export abstract class BaseElement implements IBaseElement {
     }
 
     get stateColor(): string {
-        return "yellow";
+        switch (this.railState) {
+            case RailStates.selected: return RailColors.selected;
+            case RailStates.occupied: return RailColors.occupied;
+        }
+        return RailColors.free;
     }
 
     protected normalizeRotation(value: number): number {
@@ -271,7 +283,7 @@ export abstract class BaseElement implements IBaseElement {
         return this.x == px && this.y == py;
     }
 
-    abstract clone(): BaseElement ;
+    abstract clone(): BaseElement;
 
     getEditableProperties(): IEditableProperty[] {
         return [

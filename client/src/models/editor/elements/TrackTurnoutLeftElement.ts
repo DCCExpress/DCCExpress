@@ -4,7 +4,7 @@ import Api from "../../../api/Api";
 import { drawTextWithRoundedBackground } from "../../../graphics";
 import { generateId } from "../../../helpers";
 import { wsApi } from "../../../services/wsApi";
-import { AddressedElement } from "../core/AddressedElement";
+import { AddressedElement} from "../core/AddressedElement";
 import { BaseElement } from "../core/BaseElement";
 import { ClickableBaseElement } from "../core/ClickableBaseElement";
 import { DrawOptions, ELEMENT_TYPES, ElementType, ITrackCornerElement, ITrackTurnoutLeftElement } from "../types/EditorTypes";
@@ -32,7 +32,7 @@ export class TrackTurnoutLeftElement extends TrackTurnoutElement implements ITra
         this.beginDraw(ctx, options);
         this.drawTurnout(ctx, this.turnoutClosed == this.turnoutClosedValue);
         this.endDraw(ctx);
-        
+
         this.beginDraw(ctx);
         if (options?.showTurnoutAddress) {
             drawTextWithRoundedBackground(ctx, this.posLeft, this.posBottom - 10, "#" + this.turnoutAddress.toString())
@@ -110,13 +110,15 @@ export class TrackTurnoutLeftElement extends TrackTurnoutElement implements ITra
         //     case RailStates.occupied: color = this.TrackDangerColor
         //         break;
         // }
+
+
+        ctx.lineWidth = this.TrackWidth3;
+        ctx.strokeStyle = this.stateColor;
+
         // CLOSED
         if (t1Closed) {
             ctx.beginPath();
 
-
-            ctx.strokeStyle = this.stateColor
-            ctx.lineWidth = this.TrackWidth3;
 
             var dx = this.width / 5
             if (this.rotation == 0) {
@@ -156,8 +158,9 @@ export class TrackTurnoutLeftElement extends TrackTurnoutElement implements ITra
             ctx.stroke();
         } else {
             ctx.beginPath();
-            ctx.strokeStyle = this.stateColor
+
             ctx.lineWidth = this.TrackWidth3;
+            ctx.strokeStyle = this.stateColor;
 
             var dx = this.width / 5
             var dx2 = this.width / 5
