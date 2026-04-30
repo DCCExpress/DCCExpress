@@ -18,6 +18,7 @@ import { RouteButtonElement, RouteTurnoutItem } from "../models/editor/elements/
 import { IconTrash } from "@tabler/icons-react";
 import "../styles/propertypanel.css"
 import { TrackTurnoutElement } from "../models/editor/elements/TrackTurnoutElement";
+import ControlPanel from "../components/ControlPanel";
 
 type PropertyPanelProps = {
   selectedElement: BaseElement | null;
@@ -697,6 +698,9 @@ export default function RightPropertyPanel({ selectedElement, onUpdateSelectedEl
     );
   }
   return (
+    <>
     <Text>Control Mode</Text>
+    <ControlPanel />
+    </>
   )
 }
