@@ -1,13 +1,14 @@
 // src/services/wsApi.ts
 
 import { Direction, SetTurnoutMessage } from "../../../common/src/types";
+import { generateId } from "../helpers";
 import { wsClient } from "./wsClient";
 
 
 class WebscoketApi {
 
 
-  uuid = crypto.randomUUID().toString();
+  uuid = generateId();
   constructor() {}
 
   connect(url: string) {

@@ -40,7 +40,7 @@ const createEmptyLoco = (): Loco => ({
 });
 
 const createDefaultFunction = (nextNumber: number): LocoFunction => ({
-  id: crypto.randomUUID(),
+  id: generateId(),
   number: nextNumber,
   name: `F${nextNumber}`,
   icon: "💡",
