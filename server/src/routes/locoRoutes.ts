@@ -31,7 +31,7 @@ function resolveLocosFilePath() {
   return { candidate1, candidate2 };
 }
 
-async function readLocos(): Promise<Loco[]> {
+export async function readLocos(): Promise<Loco[]> {
   const { candidate1, candidate2 } = resolveLocosFilePath();
 
   try {

@@ -15,8 +15,6 @@ import { TrackTurnoutRightElement } from "./TrackTurnoutRightElement";
 export class TrackTurnoutLeftElement extends TrackTurnoutElement implements ITrackTurnoutLeftElement {
     override type: typeof ELEMENT_TYPES.TRACK_TURNOUT_LEFT = ELEMENT_TYPES.TRACK_TURNOUT_LEFT;
     address: number = 0;
-    turnoutLocked: string | CanvasGradient | CanvasPattern = "yellow";
-    turnoutUnLocked: string | CanvasGradient | CanvasPattern = "red";
     turnoutAddress: number = 0;
     turnoutClosedValue: boolean = false;
     turnoutClosed: boolean = false;
@@ -211,7 +209,7 @@ export class TrackTurnoutLeftElement extends TrackTurnoutElement implements ITra
         ctx.beginPath();
         ctx.lineWidth = 1
         ctx.strokeStyle = "black"
-        ctx.fillStyle = this.locked ? this.turnoutLocked : this.turnoutUnLocked
+        ctx.fillStyle = this.locked ? this.turnoutLockedColor : this.turnoutUnLockedColor
         ctx.arc(this.centerX, this.centerY, 3, 0, 2 * Math.PI)
         ctx.fill()
         ctx.stroke()

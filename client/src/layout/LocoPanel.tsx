@@ -26,6 +26,7 @@ import { Loco, LocoState } from "../../../common/src/types";
 import { wsApi } from "../services/wsApi";
 import { wsClient } from "../services/wsClient";
 import Speedometer from "../components/Speedometer";
+import { useWsStatus } from "../hooks/useWsStatus";
 
 
 // TODO: Ha szerkesztve lett a mozdony újra le kell kérdezni a LocoState-t, 
@@ -54,6 +55,15 @@ export default function LocoPanel({ locos = [] }: LocoPanelProps) {
   const badgeBg = colorScheme == "dark" ? theme.colors.dark[5] : theme.colors.blue[0];
   const badgeBorder = colorScheme == "dark" ? theme.colors.dark[3] : theme.colors.blue[2];
   const badgeText = colorScheme == "dark" ? theme.colors.blue[1] : theme.colors.blue[8];
+
+  // const wsStatus = useWsStatus();
+  // useEffect(() => {
+  //   if(wsStatus == "connected") {
+  //     if(currentLoco) {
+  //      wsApi.getLoco(currentLoco.address);
+  //     }
+  //   }
+  // }, [wsStatus])
 
   useEffect(() => {
 

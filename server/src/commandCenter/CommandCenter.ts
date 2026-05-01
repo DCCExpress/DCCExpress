@@ -1,12 +1,7 @@
-/**
- * Abstract CommandCenter Base Class
- * 
- * All command center implementations (Z21, DCC-EX TCP, DCC-EX Serial) must extend this class.
- * This class defines the interface for controlling model railway hardware.
- */
-
 import { Dir } from "node:fs";
 import { Direction } from "../../../common/src/types.js";
+import { readLocos } from "../routes/locoRoutes.js";
+import { log } from "../utility.js";
 
 export interface PowerInfo {
   trackVoltageOn: boolean;
@@ -61,7 +56,7 @@ export abstract class CommandCenter {
     shortCircuit: false,
     current: 0,
   };
-  
+
 
   protected locos: Map<number, LocoState> = new Map();
   protected turnouts: Map<number, TurnoutInfo> = new Map();
@@ -129,14 +124,14 @@ export abstract class CommandCenter {
     return this.name;
   }
 
-    protected getOrCreateTurnout(address: number): TurnoutInfo {
+  protected getOrCreateTurnout(address: number): TurnoutInfo {
     let turnout = this.turnouts.get(address);
     if (!turnout) {
-       turnout = {
+      turnout = {
         address,
         closed: false,
       };
-      this.turnouts.set(address,turnout );
+      this.turnouts.set(address, turnout);
     }
     return turnout;
   }
@@ -162,6 +157,23 @@ export abstract class CommandCenter {
 
   getTurnouts(): TurnoutInfo[] {
     return Array.from(this.turnouts.values());
+  }
+
+  // Ha csatlakozott a commandcenter a 
+  // locos layout belvasása és lekérni az állapotokat
+  async init() {
+    log("========================================");
+    log("COMMANDCENTER INIT");
+    log("========================================");
+
+    const locos = await readLocos();
+    if (locos) {
+      for (const loco of locos) {
+        log("getLoco:", loco.address);
+        this.getLoco(loco.address);
+      }
+    }
+
   }
 
   abstract getSystemState(): any;

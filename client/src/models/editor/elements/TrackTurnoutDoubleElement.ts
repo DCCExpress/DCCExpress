@@ -6,8 +6,8 @@ export default class TrackTurnoutDoubleElement extends AddressedElement {
     type = ELEMENT_TYPES.TRACK_TURNOUT_DOUBLE;
     name: string = ELEMENT_TYPES.TRACK_TURNOUT_DOUBLE;
     rotationStep: RotationStep = 45;
-    turnoutLocked: string | CanvasGradient | CanvasPattern = "yellow";
-    turnoutUnLocked: string | CanvasGradient | CanvasPattern = "red";
+    turnoutLocked: string | CanvasGradient | CanvasPattern = "red";
+    turnoutUnLocked: string | CanvasGradient | CanvasPattern = "white";
 
     turnout1Address: number = 0;
     turnout2Address: number = 0;

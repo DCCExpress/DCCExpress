@@ -165,6 +165,8 @@ export class Z21CommandCenter extends CommandCenter {
 
             this.startPollingSystemState();
 
+            this.init();
+
             log("Z21 command center started");
 
             return true;
@@ -197,17 +199,6 @@ export class Z21CommandCenter extends CommandCenter {
         } catch (error) {
             logError("Z21 stop failed:", error);
             return false;
-        }
-    }
-
-    clientConnected22(): void {
-        this.broadcastCommandCenterInfo(this.started);
-
-        if (this.lastSystemState) {
-            this.broadcastWs("z21SystemState", this.lastSystemState);
-            this.broadcastWs("powerInfo", this.lastSystemState.powerInfo);
-        } else {
-            void this.getSystemState();
         }
     }
 
@@ -252,16 +243,6 @@ export class Z21CommandCenter extends CommandCenter {
             });
         }
     }
-    //   async setTurnout(address: number, closed: boolean): Promise<boolean> {
-    //     log("Z21 setTurnout not implemented yet:", { address, closed });
-    //     return Promise.resolve(false);
-    //   }
-
-    //   async getTurnout(address: number): Promise<TurnoutInfo | null> {
-    //     log("Z21 getTurnout not implemented yet:", { address });
-    //     return Promise.resolve(null);
-    //   }
-
 
     async setTurnout(address: number, closed: boolean): Promise<boolean> {
         try {
@@ -421,7 +402,6 @@ export class Z21CommandCenter extends CommandCenter {
     ): Promise<boolean> {
         try {
             const { msb, lsb } = this.encodeLocoAddress(address);
-
             const normalizedSpeed = clampInt(speed, 0, 126);
 
             // DCC128:
@@ -587,20 +567,20 @@ export class Z21CommandCenter extends CommandCenter {
             return false;
         }
     }
-    async setTrackPower3(on: boolean): Promise<boolean> {
-        try {
-            const packet = on
-                ? this.buildLanXPacket([0x21, 0x81])
-                : this.buildLanXPacket([0x21, 0x80]);
+    // async setTrackPower3(on: boolean): Promise<boolean> {
+    //     try {
+    //         const packet = on
+    //             ? this.buildLanXPacket([0x21, 0x81])
+    //             : this.buildLanXPacket([0x21, 0x80]);
 
-            await this.udpClient.send(packet);
+    //         await this.udpClient.send(packet);
 
-            return true;
-        } catch (error) {
-            logError("Z21 setTrackPower failed:", error);
-            return false;
-        }
-    }
+    //         return true;
+    //     } catch (error) {
+    //         logError("Z21 setTrackPower failed:", error);
+    //         return false;
+    //     }
+    // }
 
     async setBasicAccessory(address: number, active: boolean): Promise<boolean> {
         try {

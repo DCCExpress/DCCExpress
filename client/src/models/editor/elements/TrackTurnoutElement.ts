@@ -14,8 +14,8 @@ import { TrackTurnoutRightElement } from "./TrackTurnoutRightElement";
 export abstract class  TrackTurnoutElement extends ClickableBaseElement {
     //override type: typeof ELEMENT_TYPES.TRACK_TURNOUT = ELEMENT_TYPES.TRACK_TURNOUT;
     address: number = 0;
-    turnoutLocked: string | CanvasGradient | CanvasPattern = "yellow";
-    turnoutUnLocked: string | CanvasGradient | CanvasPattern = "red";
+    turnoutLockedColor: string | CanvasGradient | CanvasPattern = "red";
+    turnoutUnLockedColor: string | CanvasGradient | CanvasPattern = "white";
     turnoutAddress: number = 0;
     turnoutClosedValue: boolean = false;
     turnoutClosed: boolean = false;

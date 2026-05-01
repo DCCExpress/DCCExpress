@@ -4,21 +4,8 @@ import { EventEmitter } from "node:events";
 export type UdpClientOptions = {
   host: string;
   port: number;
-
-  /**
-   * Ha megadod, erre a helyi portra bindol.
-   * Ha nem adod meg, az OS választ egy szabad portot.
-   */
   localPort?: number;
-
-  /**
-   * Alap timeout sendAndReceive esetén.
-   */
   timeoutMs?: number;
-
-  /**
-   * Debug log.
-   */
   debug?: boolean;
 };
 
