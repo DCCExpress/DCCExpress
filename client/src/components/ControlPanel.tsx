@@ -386,7 +386,7 @@ function CommandCenterTab(p: CommandCenterTabProps) {
           />
         </InfoSection>
 
-        <Group grow mt="xs">
+        {/* <Group grow mt="xs">
           <Button
             size="xs"
             variant="light"
@@ -407,15 +407,15 @@ function CommandCenterTab(p: CommandCenterTabProps) {
           >
             Disconnect
           </Button>
-        </Group>
+        </Group> */}
 
-        <Group justify="flex-end">
+        {/* <Group justify="flex-end">
           <Tooltip label="Állapot frissítése">
             <ActionIcon variant="subtle" onClick={p.onRefresh}>
               <IconRefresh size={18} />
             </ActionIcon>
           </Tooltip>
-        </Group>
+        </Group> */}
       </Stack>
     </ScrollArea.Autosize>
   );

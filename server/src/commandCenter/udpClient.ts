@@ -6,7 +6,7 @@ export type UdpClientOptions = {
   host: string;
   port: number;
   localPort?: number;
-  timeoutMs?: number;
+  timeoutMs: number;
   debug?: boolean;
 };
 
@@ -15,12 +15,12 @@ export type UdpMessage = {
   remote: RemoteInfo;
 };
 
-type PendingRequest = {
-  resolve: (message: UdpMessage) => void;
-  reject: (error: Error) => void;
-  predicate: (message: UdpMessage) => boolean;
-  timer: NodeJS.Timeout;
-};
+// type PendingRequest = {
+//   resolve: (message: UdpMessage) => void;
+//   reject: (error: Error) => void;
+//   predicate: (message: UdpMessage) => boolean;
+//   timer: NodeJS.Timeout;
+// };
 
 export class UdpClient extends EventEmitter {
   private readonly host: string;
@@ -30,8 +30,8 @@ export class UdpClient extends EventEmitter {
   private readonly debug: boolean;
 
   private socket: Socket | undefined;
-  private connected = false;
-  private pendingRequests: PendingRequest[] = [];
+  public lastReceivedMessage = Date.now();
+  //  private pendingRequests: PendingRequest[] = [];
 
   constructor(options: UdpClientOptions) {
     super();
@@ -39,106 +39,90 @@ export class UdpClient extends EventEmitter {
     this.host = options.host;
     this.port = options.port;
     this.localPort = options.localPort;
-    this.timeoutMs = options.timeoutMs ?? 1500;
+    this.timeoutMs = options.timeoutMs;
     this.debug = options.debug ?? false;
+
   }
 
   get isOpen(): boolean {
-    return this.connected;
+    return Date.now() - this.lastReceivedMessage <= this.timeoutMs;
   }
 
-  async open(): Promise<void> {
-    log("=======================================");
-    log("              UDP OPEN");
-    log("=======================================");
+async open(): Promise<void> {
+  log("=======================================");
+  log("              UDP OPEN");
+  log("=======================================");
 
-    if (this.connected) return;
+  if (this.socket) return;
 
-    this.socket = dgram.createSocket("udp4");
+  const socket = dgram.createSocket("udp4");
+  this.socket = socket;
 
-    this.socket.on("listening", () => {
-      console.log("UDP Client Listening!");
-      this.emit("listening");
-    });
+  socket.on("message", (data, remote) => {
+    const message: UdpMessage = { data, remote };
 
-    this.socket.on("message", (data, remote) => {
-      const message: UdpMessage = { data, remote };
+    this.lastReceivedMessage = Date.now();
 
-      if (this.debug) {
-        console.log(
-          `[UDP] <= ${remote.address}:${remote.port} ${bufferToHex(data)}`
-        );
-      }
+    if (this.debug) {
+      console.log(
+        `[UDP] <= ${remote.address}:${remote.port} ${bufferToHex(data)}`
+      );
+    }
 
-      this.handleIncomingMessage(message);
-      this.emit("message", message);
-    });
+    this.emit("message", message);
+  });
 
-    this.socket.on("error", (error) => {
-      this.emit("error", error);
+  socket.on("error", (error) => {
+    if (this.debug) {
+      console.error("[UDP] socket error:", error);
+    }
 
-      if (this.debug) {
-        console.error("[UDP] socket error:", error);
-      }
-    });
+    this.emit("udpError", error);
+  });
 
-    this.socket.on("close", () => {
-      this.connected = false;
-      this.rejectAllPending(new Error("UDP socket closed"));
-      this.emit("close");
+  socket.on("close", () => {
+    if (this.debug) {
+      console.log("[UDP] socket closed");
+    }
 
-      if (this.debug) {
-        console.log("[UDP] socket closed");
-      }
-    });
+    this.emit("close");
+  });
 
-    await new Promise<void>((resolve, reject) => {
-      const socket = this.socket;
-      if (!socket) {
-        reject(new Error("UDP socket was not created"));
-        return;
-      }
+  await new Promise<void>((resolve, reject) => {
+    const onError = (error: Error) => {
+      socket.off("listening", onListening);
+      reject(error);
+    };
 
-      const onError = (error: Error) => {
-        socket.off("listening", onListening);
-        reject(error);
-      };
+    const onListening = () => {
+      socket.off("error", onError);
+      resolve();
+    };
 
-      const onListening = () => {
-        socket.off("error", onError);
-        this.connected = true;
+    socket.once("error", onError);
+    socket.once("listening", onListening);
 
-        if (this.debug) {
-          const address = socket.address();
-          console.log("[UDP] listening:", address);
-        }
+    if (this.localPort !== undefined) {
+      socket.bind(this.localPort);
+    } else {
+      socket.bind();
+    }
+  });
 
-        resolve();
-      };
-
-      socket.once("error", onError);
-      socket.once("listening", onListening);
-
-      if (this.localPort !== undefined) {
-        socket.bind(this.localPort);
-      } else {
-        socket.bind();
-      }
-    });
-  }
-
+}
   close(): void {
-    if (!this.socket) return;
+    // if (this.pollingTask) {
+    //   clearInterval(this.pollingTask);
+    //   this.pollingTask = undefined;
+    // }
 
-    this.rejectAllPending(new Error("UDP client closed"));
-
-    this.socket.close();
-    this.socket = undefined;
-    this.connected = false;
+    if (this.socket) {
+      this.socket.close();
+      this.socket = undefined;
+    }
+    this.lastReceivedMessage = 0;
   }
-
   async send(data: Buffer | Uint8Array | number[]): Promise<void> {
-    await this.ensureOpen();
 
     const buffer = Buffer.isBuffer(data) ? data : Buffer.from(data);
 
@@ -147,91 +131,38 @@ export class UdpClient extends EventEmitter {
     }
 
     await new Promise<void>((resolve, reject) => {
-      const socket = this.socket;
-      if (!socket) {
+      if (!this.socket) {
         reject(new Error("UDP socket is not open"));
         return;
       }
 
-      socket.send(buffer, this.port, this.host, (error) => {
+      this.socket.send(buffer, this.port, this.host, (error) => {
         if (error) reject(error);
         else resolve();
       });
     });
   }
 
-  async sendAndReceive(
-    data: Buffer | Uint8Array | number[],
-    predicate?: (message: UdpMessage) => boolean,
-    timeoutMs = this.timeoutMs
-  ): Promise<UdpMessage> {
-    await this.ensureOpen();
+  // public async LAN_GET_SERIAL_NUMBER(): Promise<void> {
+  //   log("Z21 LAN_GET_SERIAL_NUMBER()");
+  //   await this.send([0x04, 0x00, 0x10, 0x00]);
+  // }
 
-    const responsePromise = this.waitForMessage(
-      predicate ?? (() => true),
-      timeoutMs
-    );
+  // public async LAN_SYSTEMSTATE_GETDATA(): Promise<void> {
+  //   log("Z21 LAN_SYSTEMSTATE_GETDATA()");
+  //   await this.send([0x04, 0x00, 0x85, 0x00]);
+  // }
 
-    await this.send(data);
+  // public async LAN_SET_BROADCASTFLAGS(): Promise<void> {
+  //   log("Z21 LAN_SET_BROADCASTFLAGS()");
+  //   await this.send([
+  //     0x08, 0x00,       // length = 8
+  //     0x50, 0x00,       // LAN_SET_BROADCASTFLAGS
+  //     0x03, 0x01, 0x00, 0x00 // flags = 0x00000103
+  //   ]);
+  // }
 
-    return responsePromise;
-  }
 
-  waitForMessage(
-    predicate: (message: UdpMessage) => boolean,
-    timeoutMs = this.timeoutMs
-  ): Promise<UdpMessage> {
-    return new Promise<UdpMessage>((resolve, reject) => {
-      const request: PendingRequest = {
-        resolve,
-        reject,
-        predicate,
-        timer: setTimeout(() => {
-          this.removePending(request);
-          reject(new Error(`UDP response timeout after ${timeoutMs} ms`));
-        }, timeoutMs),
-      };
-
-      this.pendingRequests.push(request);
-    });
-  }
-
-  private handleIncomingMessage(message: UdpMessage): void {
-    const request = this.pendingRequests.find((pending) => {
-      try {
-        return pending.predicate(message);
-      } catch {
-        return false;
-      }
-    });
-
-    if (!request) return;
-
-    this.removePending(request);
-    request.resolve(message);
-  }
-
-  private removePending(request: PendingRequest): void {
-    clearTimeout(request.timer);
-
-    this.pendingRequests = this.pendingRequests.filter(
-      (pending) => pending !== request
-    );
-  }
-
-  private rejectAllPending(error: Error): void {
-    for (const request of this.pendingRequests) {
-      clearTimeout(request.timer);
-      request.reject(error);
-    }
-
-    this.pendingRequests = [];
-  }
-
-  private async ensureOpen(): Promise<void> {
-    if (this.connected) return;
-    await this.open();
-  }
 }
 
 export function bufferToHex(buffer: Buffer): string {
@@ -239,3 +170,14 @@ export function bufferToHex(buffer: Buffer): string {
     .map((value) => value.toString(16).padStart(2, "0"))
     .join(" ");
 }
+
+const udpClient = new UdpClient({
+  host: "192.168.1.70",
+  port: 21105,
+  timeoutMs: 1500,
+  debug: true,
+});
+
+
+
+

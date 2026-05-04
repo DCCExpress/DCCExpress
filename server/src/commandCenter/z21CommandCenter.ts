@@ -85,27 +85,17 @@ export type Z21SystemState = {
 export class Z21CommandCenter extends CommandCenter {
     ip: string = "";
     port: number = 21105;
-
     udpClient: UdpClient;
-
-    lastSentTime: number = 0;
-
-    taskId: NodeJS.Timeout | undefined = undefined;
-    polingTask: NodeJS.Timeout | undefined = undefined;
     locoSubscribeTask: NodeJS.Timeout | undefined = undefined;
 
     buffer: unknown[] = [];
 
-    private started = false;
-    private starting = false;
-    private stopping = false;
-    private manualStop = false;
-
-    private reconnectTimer: NodeJS.Timeout | undefined = undefined;
-    private reconnectAttempts = 0;
+    public lastMessageReceived: number = Date.now();
+    public pollingTask: NodeJS.Timeout | undefined;
 
     private lastSystemState: Z21SystemState | undefined = undefined;
     private readonly wsBroadcast: WsBroadcaster;
+    timeoutMs: number = 1500;
 
     constructor(
         name: string,
@@ -127,6 +117,7 @@ export class Z21CommandCenter extends CommandCenter {
         });
 
         this.udpClient.on("message", (message: UdpMessage) => {
+            this.lastMessageReceived = Date.now();
             this.onUdpMessage(
                 message.data,
                 message.remote.address,
@@ -136,18 +127,12 @@ export class Z21CommandCenter extends CommandCenter {
 
         this.udpClient.on("error", (error: Error) => {
             logError("Z21 UDP error:", error);
-            this.handleConnectionLost("udp error");
+            //this.handleConnectionLost("udp error");
         });
 
         this.udpClient.on("close", () => {
             log("Z21 UDP closed");
-            this.handleConnectionLost("udp close");
-        });
-
-        this.udpClient.on("listening", () => {
-            this.initZ21Connection();
-
-            log("Z21 Connection Listening");
+            //this.handleConnectionLost("udp close");
         });
     }
 
@@ -156,28 +141,9 @@ export class Z21CommandCenter extends CommandCenter {
     }
 
     async start(): Promise<boolean> {
-        if (this.starting) {
-            log("Z21 start skipped: already starting");
-            return false;
+        if (this.udpClient) {
+            Promise.resolve(true);
         }
-
-        if (this.started) {
-            log("Z21 start skipped: already started");
-
-            try {
-                await this.resubscribeBroadcastFlags();
-                await this.resubscribeLocos();
-            } catch (error) {
-                logError("Z21 resubscribe while already started failed:", error);
-                this.handleConnectionLost("resubscribe failed");
-                return false;
-            }
-
-            return true;
-        }
-
-        this.starting = true;
-        this.manualStop = false;
 
         try {
             log("Starting Z21 command center with config:", {
@@ -190,12 +156,9 @@ export class Z21CommandCenter extends CommandCenter {
 
             await this.initZ21Connection();
 
-            this.started = true;
-            this.reconnectAttempts = 0;
-
             this.broadcastCommandCenterInfo(true);
 
-            this.startPollingSystemState();
+            this.startPollingTask();
             this.startLocoSubscribePolling();
 
             log("Z21 command center started");
@@ -204,42 +167,28 @@ export class Z21CommandCenter extends CommandCenter {
         } catch (error) {
             logError("Z21 start failed:", error);
 
-            this.started = false;
             this.broadcastCommandCenterInfo(false);
-
-            this.stopPollingSystemState();
+           
             this.stopLocoSubscribePolling();
-
-            this.scheduleReconnect("start failed");
 
             return false;
         } finally {
-            this.starting = false;
         }
     }
 
     async stop(): Promise<boolean> {
         try {
-            this.manualStop = true;
-            this.stopping = true;
-
-            if (this.reconnectTimer) {
-                clearTimeout(this.reconnectTimer);
-                this.reconnectTimer = undefined;
-            }
-
             log("Stopping Z21 command center with config:", {
                 name: this.name,
                 ip: this.ip,
                 port: this.port,
             });
 
-            this.stopPollingSystemState();
+            this.stopPollingTask();
             this.stopLocoSubscribePolling();
 
             this.udpClient.close();
 
-            this.started = false;
             this.broadcastCommandCenterInfo(false);
 
             return true;
@@ -247,19 +196,20 @@ export class Z21CommandCenter extends CommandCenter {
             logError("Z21 stop failed:", error);
             return false;
         } finally {
-            this.stopping = false;
+
         }
     }
 
     clientConnected(): void {
-        this.broadcastCommandCenterInfo(this.started);
 
-        if (this.lastSystemState) {
-            this.broadcastWs("z21SystemState", this.lastSystemState);
-            this.broadcastWs("powerInfo", this.lastSystemState.powerInfo);
-        } else if (this.started) {
-            void this.getSystemState();
-        }
+        this.broadcastCommandCenterInfo(this.udpClient.isOpen);
+
+        // if (this.lastSystemState) {
+        //     this.broadcastWs("z21SystemState", this.lastSystemState);
+        //     this.broadcastWs("powerInfo", this.lastSystemState.powerInfo);
+        // } else if (this.started) {
+        //     void this.getSystemState();
+        // }
 
         for (const turnout of this.turnouts.values()) {
             this.broadcastWs("turnoutChanged", {
@@ -294,73 +244,22 @@ export class Z21CommandCenter extends CommandCenter {
     }
 
     private async initZ21Connection(): Promise<void> {
-        await this.resubscribeBroadcastFlags();
+        //await this.resubscribeBroadcastFlags();
 
-        const state = await this.getSystemState(false);
+        //const state = await this.getSystemState(false);
 
-        if (!state) {
-            throw new Error("Z21 did not respond to system state request");
-        }
+        // if (!state) {
+        //     throw new Error("Z21 did not respond to system state request");
+        // }
 
-        await this.getRBusGroup(0);
-        await this.getRBusGroup(1);
+//        await this.getRBusGroup(0);
+//        await this.getRBusGroup(1);
 
         await this.resubscribeLocos();
 
         this.init();
     }
 
-    private handleConnectionLost(reason: string): void {
-        if (this.manualStop || this.stopping) {
-            log("Z21 connection closed by manual stop, reconnect skipped");
-            return;
-        }
-
-        if (!this.started && this.reconnectTimer) {
-            return;
-        }
-
-        log("Z21 connection lost:", reason);
-
-        this.started = false;
-        this.broadcastCommandCenterInfo(false);
-
-        this.stopPollingSystemState();
-        this.stopLocoSubscribePolling();
-
-        this.scheduleReconnect(reason);
-    }
-
-    private scheduleReconnect(reason: string): void {
-        if (this.manualStop || this.stopping) {
-            return;
-        }
-
-        if (this.reconnectTimer) {
-            return;
-        }
-
-        const delay = Math.min(10_000, 1_000 + this.reconnectAttempts * 1_000);
-        this.reconnectAttempts++;
-
-        log("Z21 reconnect scheduled:", {
-            reason,
-            delay,
-            attempt: this.reconnectAttempts,
-        });
-
-        this.reconnectTimer = setTimeout(() => {
-            this.reconnectTimer = undefined;
-
-            if (this.manualStop || this.stopping) {
-                return;
-            }
-
-            log("Z21 reconnecting...");
-
-            void this.start();
-        }, delay);
-    }
 
     async setTurnout(address: number, closed: boolean): Promise<boolean> {
         try {
@@ -456,46 +355,10 @@ export class Z21CommandCenter extends CommandCenter {
                 packet: bufferToHex(packet),
             });
 
-            const response = await this.udpClient.sendAndReceive(
-                packet,
-                (message) => this.containsTurnoutInfoForAddress(message.data, address),
-                2000
-            );
+            const response = await this.udpClient.send(packet);
 
-            const packets = this.splitZ21Packets(response.data);
 
-            const turnoutPacket = packets.find((item) =>
-                this.isTurnoutInfoForAddress(item, address)
-            );
-
-            if (!turnoutPacket) {
-                throw new Error(
-                    `Z21 turnout info not found in response: ${bufferToHex(response.data)}`
-                );
-            }
-
-            const info = this.parseTurnoutInfo(turnoutPacket);
-
-            if (!info) {
-                return null;
-            }
-
-            this.turnouts.set(info.address, {
-                address: info.address,
-                closed: info.closed,
-            });
-
-            this.broadcastWs("turnoutChanged", {
-                address: info.address,
-                closed: info.closed,
-            });
-
-            this.broadcastWs("z21TurnoutInfo", info);
-
-            return {
-                address: info.address,
-                closed: info.closed,
-            };
+            return null;
         } catch (error) {
             logError("Z21 getTurnout failed:", { address, error });
 
@@ -579,33 +442,8 @@ export class Z21CommandCenter extends CommandCenter {
                 packet: bufferToHex(packet),
             });
 
-            const response = await this.udpClient.sendAndReceive(
-                packet,
-                (message) => this.containsLocoInfoForAddress(message.data, address),
-                2000
-            );
-
-            const packets = this.splitZ21Packets(response.data);
-
-            const locoPacket = packets.find((item) =>
-                this.isLocoInfoForAddress(item, address)
-            );
-
-            if (!locoPacket) {
-                throw new Error(
-                    `Z21 loco info not found in response: ${bufferToHex(response.data)}`
-                );
-            }
-
-            const loco = this.parseLocoInfo(locoPacket);
-
-            if (!loco) {
-                return null;
-            }
-
-            this.broadcastLocoState(loco);
-
-            return loco;
+            const response = await this.udpClient.send(packet);
+            return Promise.resolve(null);
         } catch (error) {
             logError("Z21 getLoco failed:", {
                 address,
@@ -741,17 +579,17 @@ export class Z21CommandCenter extends CommandCenter {
 
             await this.udpClient.send(packet);
 
-            this.broadcastWs("powerInfo", {
-                emergencyStop: false,
-                trackVoltageOn: on,
-                trackVoltageOff: !on,
-                shortCircuit: false,
-                programmingModeActive: false,
-            });
+            // this.broadcastWs("powerInfo", {
+            //     emergencyStop: false,
+            //     trackVoltageOn: on,
+            //     trackVoltageOff: !on,
+            //     shortCircuit: false,
+            //     programmingModeActive: false,
+            // });
 
-            setTimeout(() => {
-                void this.getSystemState();
-            }, 200);
+            // setTimeout(() => {
+            //     void this.getSystemState();
+            // }, 200);
 
             return true;
         } catch (error) {
@@ -774,17 +612,17 @@ export class Z21CommandCenter extends CommandCenter {
 
             await this.udpClient.send(packet);
 
-            this.broadcastWs("powerInfo", {
-                emergencyStop: true,
-                trackVoltageOn: true,
-                trackVoltageOff: false,
-                shortCircuit: false,
-                programmingModeActive: false,
-            });
+            // this.broadcastWs("powerInfo", {
+            //     emergencyStop: true,
+            //     trackVoltageOn: true,
+            //     trackVoltageOff: false,
+            //     shortCircuit: false,
+            //     programmingModeActive: false,
+            // });
 
-            setTimeout(() => {
-                void this.getSystemState();
-            }, 200);
+            // setTimeout(() => {
+            //     void this.getSystemState();
+            // }, 200);
 
             return true;
         } catch (error) {
@@ -797,99 +635,99 @@ export class Z21CommandCenter extends CommandCenter {
         return Promise.resolve(this.sensors.get(address) ?? null);
     }
 
-    async getSystemState(reconnectOnFail = true): Promise<Z21SystemState | null> {
-        try {
-            const response = await this.udpClient.sendAndReceive(
-                this.buildZ21Packet(LAN_SYSTEMSTATE_GETDATA),
-                (message) => this.containsZ21Header(
-                    message.data,
-                    LAN_SYSTEMSTATE_DATACHANGED
-                ),
-                2000
-            );
+    // async getSystemState(reconnectOnFail = true): Promise<Z21SystemState | null> {
+    //     try {
+    //         const response = await this.udpClient.sendAndReceive(
+    //             this.buildZ21Packet(LAN_SYSTEMSTATE_GETDATA),
+    //             (message) => this.containsZ21Header(
+    //                 message.data,
+    //                 LAN_SYSTEMSTATE_DATACHANGED
+    //             ),
+    //             2000
+    //         );
 
-            const packets = this.splitZ21Packets(response.data);
-            const systemStatePacket = packets.find((packet) =>
-                this.isZ21Header(packet, LAN_SYSTEMSTATE_DATACHANGED)
-            );
+    //         const packets = this.splitZ21Packets(response.data);
+    //         const systemStatePacket = packets.find((packet) =>
+    //             this.isZ21Header(packet, LAN_SYSTEMSTATE_DATACHANGED)
+    //         );
 
-            if (!systemStatePacket) {
-                throw new Error(
-                    `Z21 system state response not found: ${bufferToHex(response.data)}`
-                );
-            }
+    //         if (!systemStatePacket) {
+    //             throw new Error(
+    //                 `Z21 system state response not found: ${bufferToHex(response.data)}`
+    //             );
+    //         }
 
-            const state = this.parseSystemState(systemStatePacket);
+    //         const state = this.parseSystemState(systemStatePacket);
 
-            this.lastSystemState = state;
+    //         this.lastSystemState = state;
 
-            this.broadcastWs("z21SystemState", state);
-            this.broadcastWs("powerInfo", state.powerInfo);
+    //         this.broadcastWs("z21SystemState", state);
+    //         this.broadcastWs("powerInfo", state.powerInfo);
 
-            log("Z21 system state:", state);
+    //         log("Z21 system state:", state);
 
-            return state;
-        } catch (error) {
-            logError("Z21 getSystemState failed:", error);
+    //         return state;
+    //     } catch (error) {
+    //         logError("Z21 getSystemState failed:", error);
 
-            if (reconnectOnFail) {
-                this.handleConnectionLost("getSystemState failed");
-            }
+    //         if (reconnectOnFail) {
+    //             this.handleConnectionLost("getSystemState failed");
+    //         }
 
-            return null;
-        }
-    }
+    //         return null;
+    //     }
+    // }
 
-    async getRBusGroup(group: number): Promise<RBusInfo | null> {
-        try {
-            if (!Number.isInteger(group) || group < 0 || group > 1) {
-                throw new Error(`Invalid RBUS group index: ${group}`);
-            }
+    // async getRBusGroup(group: number): Promise<RBusInfo | null> {
+    //     try {
+    //         if (!Number.isInteger(group) || group < 0 || group > 1) {
+    //             throw new Error(`Invalid RBUS group index: ${group}`);
+    //         }
 
-            const packet = this.buildZ21Packet(
-                LAN_RMBUS_GETDATA,
-                Buffer.from([group])
-            );
+    //         const packet = this.buildZ21Packet(
+    //             LAN_RMBUS_GETDATA,
+    //             Buffer.from([group])
+    //         );
 
-            log("Z21 getRBusGroup:", {
-                group,
-                packet: bufferToHex(packet),
-            });
+    //         log("Z21 getRBusGroup:", {
+    //             group,
+    //             packet: bufferToHex(packet),
+    //         });
 
-            const response = await this.udpClient.sendAndReceive(
-                packet,
-                (message) => this.containsRBusDataChangedForGroup(message.data, group),
-                2000
-            );
+    //         const response = await this.udpClient.sendAndReceive(
+    //             packet,
+    //             (message) => this.containsRBusDataChangedForGroup(message.data, group),
+    //             2000
+    //         );
 
-            const packets = this.splitZ21Packets(response.data);
+    //         const packets = this.splitZ21Packets(response.data);
 
-            const rbusPacket = packets.find((item) =>
-                this.isRBusDataChangedForGroup(item, group)
-            );
+    //         const rbusPacket = packets.find((item) =>
+    //             this.isRBusDataChangedForGroup(item, group)
+    //         );
 
-            if (!rbusPacket) {
-                throw new Error(
-                    `Z21 RBUS group response not found: ${bufferToHex(response.data)}`
-                );
-            }
+    //         if (!rbusPacket) {
+    //             throw new Error(
+    //                 `Z21 RBUS group response not found: ${bufferToHex(response.data)}`
+    //             );
+    //         }
 
-            return this.parseRBusDataChanged(rbusPacket);
-        } catch (error) {
-            logError("Z21 getRBusGroup failed:", {
-                group,
-                error,
-            });
+    //         return this.parseRBusDataChanged(rbusPacket);
+    //     } catch (error) {
+    //         logError("Z21 getRBusGroup failed:", {
+    //             group,
+    //             error,
+    //         });
 
-            const cachedBytes = this.rbusGroups.get(group);
-            if (!cachedBytes) return null;
+    //         const cachedBytes = this.rbusGroups.get(group);
+    //         if (!cachedBytes) return null;
 
-            return {
-                group,
-                bytes: cachedBytes,
-            };
-        }
-    }
+    //         return {
+    //             group,
+    //             bytes: cachedBytes,
+    //         };
+    //     }
+    // }
 
     private decodeAllRBusSensors(group: number, bytes: number[]): RBusSensorInfo[] {
         const sensors: RBusSensorInfo[] = [];
@@ -1261,24 +1099,47 @@ export class Z21CommandCenter extends CommandCenter {
         });
     }
 
-    private startPollingSystemState(): void {
-        this.stopPollingSystemState();
+    private startPollingTask() {
+        this.stopPollingTask();
 
-        this.polingTask = setInterval(() => {
-            if (!this.started || this.starting || this.stopping) {
-                return;
+        this.LAN_SYSTEMSTATE_GETDATA();
+        this.LAN_SET_BROADCASTFLAGS();
+
+        this.pollingTask = setInterval(() => {
+            const diff = Date.now() - this.lastMessageReceived;
+
+            if (diff > this.timeoutMs) {
+                this.LAN_SYSTEMSTATE_GETDATA();
+                this.LAN_SET_BROADCASTFLAGS();
             }
+        }, 1000);
 
-            void this.getSystemState();
-        }, 50_000);
     }
 
-    private stopPollingSystemState(): void {
-        if (this.polingTask) {
-            clearInterval(this.polingTask);
-            this.polingTask = undefined;
+    private stopPollingTask() {
+        if(this.pollingTask) {
+            clearInterval(this.pollingTask);
+            this.pollingTask = undefined;
         }
     }
+    // private startPollingSystemState(): void {
+    //     this.stopPollingSystemState();
+
+    //     this.polingTask = setInterval(() => {
+    //         if (!this.started || this.starting || this.stopping) {
+    //             return;
+    //         }
+
+    //         void this.getSystemState();
+    //     }, 50_000);
+    // }
+
+    // private stopPollingSystemState(): void {
+    //     if (this.polingTask) {
+    //         clearInterval(this.polingTask);
+    //         this.polingTask = undefined;
+    //     }
+    // }
 
     private startLocoSubscribePolling(): void {
         this.stopLocoSubscribePolling();
@@ -1286,11 +1147,7 @@ export class Z21CommandCenter extends CommandCenter {
         void this.resubscribeLocos();
 
         this.locoSubscribeTask = setInterval(() => {
-            if (!this.started || this.starting || this.stopping) {
-                return;
-            }
-
-            void this.resubscribeLocos();
+            this.resubscribeLocos();
         }, 60_000);
     }
 
@@ -1327,6 +1184,26 @@ export class Z21CommandCenter extends CommandCenter {
             }
         }
     }
+
+  public async LAN_GET_SERIAL_NUMBER(): Promise<void> {
+    log("Z21 LAN_GET_SERIAL_NUMBER()");
+    await this.udpClient.send([0x04, 0x00, 0x10, 0x00]);
+  }
+
+  public async LAN_SYSTEMSTATE_GETDATA(): Promise<void> {
+    log("Z21 LAN_SYSTEMSTATE_GETDATA()");
+    await this.udpClient.send([0x04, 0x00, 0x85, 0x00]);
+  }
+
+  public async LAN_SET_BROADCASTFLAGS(): Promise<void> {
+    log("Z21 LAN_SET_BROADCASTFLAGS()");
+    await this.udpClient.send([
+      0x08, 0x00,       // length = 8
+      0x50, 0x00,       // LAN_SET_BROADCASTFLAGS
+      0x03, 0x01, 0x00, 0x00 // flags = 0x00000103
+    ]);
+  }
+
 
     private buildZ21Packet(header: number, payload?: Buffer): Buffer {
         const data = payload ?? Buffer.alloc(0);

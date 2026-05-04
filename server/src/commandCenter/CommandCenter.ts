@@ -176,7 +176,7 @@ export abstract class CommandCenter {
 
   }
 
-  abstract getSystemState(): any;
+  //abstract getSystemState(): any;
 
 
 
