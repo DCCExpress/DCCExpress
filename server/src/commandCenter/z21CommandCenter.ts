@@ -1,15 +1,12 @@
 import {
     CommandCenter,
-    LocoState,
-    SensorInfo,
-    TurnoutInfo,
-    AccessoryInfo,
     RBusInfo,
     RBusSensorInfo
 } from "./CommandCenter.js";
 
 import { log, logError } from "../utility.js";
 import { UdpClient, bufferToHex, type UdpMessage } from "./udpClient.js";
+import { AccessoryInfo, LocoState, SensorInfo, TurnoutInfo } from "../../../common/src/types.js";
 
 const LAN_X_HEADER = 0x0040;
 

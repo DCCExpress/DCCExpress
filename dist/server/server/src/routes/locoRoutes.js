@@ -1,6 +1,23 @@
 import { Router } from "express";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { notifyLocosChanged } from "../services/locoChangeNotifier.js";
+// type LocoFunction = {
+//   id: string;
+//   number: number;
+//   name: string;
+//   icon: string;
+//   momentary: boolean;
+// };
+// type Loco = {
+//   id: string;
+//   name: string;
+//   address: number;
+//   maxSpeed: number;
+//   invert: boolean;
+//   image?: string;
+//   functions: LocoFunction[];
+// };
 export const locoRoutes = Router();
 function resolveLocosFilePath() {
     const cwd = process.cwd();
@@ -54,6 +71,7 @@ locoRoutes.put("/", async (req, res) => {
             return;
         }
         await writeLocos(locos);
+        await notifyLocosChanged();
         res.json({
             success: true,
             count: locos.length,

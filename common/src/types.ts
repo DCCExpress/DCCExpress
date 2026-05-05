@@ -35,6 +35,12 @@ export type TurnoutChangedMessage = {
   };
 };
 
+export interface TurnoutInfo {
+  address: number;
+  closed: boolean;
+}
+
+
 
 export type AccessoryChangedMessage = {
   type: "accessoryChanged";
@@ -52,6 +58,16 @@ export type SetSensorMessage = {
   };
   uuid: string;
 };
+
+export interface SensorInfo {
+  address: number;
+  active: boolean;
+}
+
+export interface AccessoryInfo {
+  address: number;
+  active: boolean;
+}
 
 export type CommandCenterInfo = {
   type: "commandCenterInfo";
@@ -114,3 +130,9 @@ export interface ICommandCenter {
   //notes?: string;
 }
 
+export interface PowerInfo {
+  trackVoltageOn: boolean;
+  emergencyStop: boolean;
+  shortCircuit: boolean;
+  current: number;
+}

@@ -1,5 +1,6 @@
 import { readLocos } from "../routes/locoRoutes.js";
 import { log } from "../utility.js";
+import { onLocosChanged } from "../services/locoChangeNotifier.js";
 export class CommandCenter {
     name;
     powerInfo = {
@@ -17,6 +18,21 @@ export class CommandCenter {
     lockOwnerUUID = "";
     constructor(name) {
         this.name = name;
+        onLocosChanged(async () => {
+            const llocos = await readLocos();
+            this.setLocos(llocos);
+        });
+    }
+    setLocos(llocos) {
+        this.locos.clear();
+        for (const loco of llocos) {
+            this.locos.set(loco.address, {
+                ...loco,
+                speed: 0,
+                direction: "forward",
+                functions: {},
+            });
+        }
     }
     getOrCreateLoco(address) {
         let loco = this.locos.get(address);
@@ -61,7 +77,7 @@ export class CommandCenter {
         let accessory = this.accessories.get(address);
         if (!accessory) {
             accessory = {
-                address,
+                address: address,
                 active: false,
             };
             this.accessories.set(address, accessory);

@@ -49,7 +49,7 @@ export class CommandCenterSimulator extends CommandCenter {
         throw new Error("Method not implemented.");
     }
     clientConnected() {
-        throw new Error("Method not implemented.");
+        //throw new Error("Method not implemented.");
     }
     setTurnout(address, closed) {
         console.log("Sim: setTurnout", { address, closed });
@@ -97,7 +97,22 @@ export class CommandCenterSimulator extends CommandCenter {
         return Promise.resolve(true);
     }
     setTrackPower(on) {
-        throw new Error("Method not implemented.");
+        const state = {
+            alive: this.alive,
+            power: on,
+            type: "simulator",
+            trackPower: on,
+            powerInfo: {
+                emergencyStop: false,
+                trackVoltageOff: !on,
+                trackVoltageOn: on,
+                shortCircuit: false,
+                programmingModeActive: false
+            },
+        };
+        broadcastAll({ "type": "z21SystemState", "data": state });
+        broadcastAll({ "type": "powerInfo", "data": state.powerInfo });
+        return Promise.resolve(true);
     }
     emergencyStop() {
         throw new Error("Method not implemented.");

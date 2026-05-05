@@ -1,37 +1,37 @@
 import { Dir } from "node:fs";
-import { Direction, Loco, } from "../../../common/src/types.js";
+import { AccessoryInfo, Direction, Loco, LocoState, PowerInfo, SensorInfo, TurnoutInfo, } from "../../../common/src/types.js";
 import { readLocos } from "../routes/locoRoutes.js";
 import { log } from "../utility.js";
 import { onLocosChanged } from "../services/locoChangeNotifier.js";
 
-export interface PowerInfo {
-  trackVoltageOn: boolean;
-  emergencyStop: boolean;
-  shortCircuit: boolean;
-  current: number;
-}
+// export interface PowerInfo {
+//   trackVoltageOn: boolean;
+//   emergencyStop: boolean;
+//   shortCircuit: boolean;
+//   current: number;
+// }
 
-export interface LocoState {
-  address: number;
-  speed: number;
-  direction: Direction;
-  functions: { [fn: number]: boolean };
-}
+// export interface LocoState {
+//   address: number;
+//   speed: number;
+//   direction: Direction;
+//   functions: { [fn: number]: boolean };
+// }
 
-export interface TurnoutInfo {
-  address: number;
-  closed: boolean;
-}
+// export interface TurnoutInfo {
+//   address: number;
+//   closed: boolean;
+// }
 
-export interface SensorInfo {
-  address: number;
-  active: boolean;
-}
+// export interface SensorInfo {
+//   address: number;
+//   active: boolean;
+// }
 
-export interface AccessoryInfo {
-  address: number;
-  active: boolean;
-}
+// export interface AccessoryInfo {
+//   address: number;
+//   active: boolean;
+// }
 
 export type RBusInfo = {
   group: number;
@@ -158,7 +158,7 @@ export abstract class CommandCenter {
     let accessory = this.accessories.get(address);
     if (!accessory) {
       accessory = {
-        address,
+        address: address,
         active: false,
       };
       this.accessories.set(address, accessory);

@@ -423,7 +423,7 @@ export default function LayoutPage({ onGoHome }: LayoutPageProps) {
         for (const e of elements) {
           if (e instanceof TrackSignalElement) {
             const signal = e as TrackSignalElement;
-            if (signal.address >= data.address && signal.lastAddress <= data.address)
+            if (signal.address <= data.address && signal.lastAddress >= data.address)
             {
               signal.setValue(data.address, data.active);
               changed = true;

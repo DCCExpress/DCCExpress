@@ -1,6 +1,6 @@
 import { Console } from "node:console";
-import { AccessoryChangedMessage, Loco, SetLocoFunctionMessage, SetLocoMessage, TurnoutChangedMessage, WsMessage } from "../../../common/src/types.js";
-import { CommandCenter, LocoState, SensorInfo, TurnoutInfo } from "./CommandCenter.js";
+import { AccessoryChangedMessage, Loco, LocoState, SensorInfo, SetLocoFunctionMessage, SetLocoMessage, TurnoutChangedMessage, TurnoutInfo, WsMessage } from "../../../common/src/types.js";
+import { CommandCenter } from "./CommandCenter.js";
 import { log } from "../utility.js";
 import { broadcastAll } from "../ws/wsServer.js";
 
@@ -55,9 +55,9 @@ export class CommandCenterSimulator extends CommandCenter {
     throw new Error("Method not implemented.");
   }
   clientConnected(): void {
-    throw new Error("Method not implemented.");
+    //throw new Error("Method not implemented.");
   }
-  
+
   setTurnout(address: number, closed: boolean): Promise<boolean> {
     console.log("Sim: setTurnout", { address, closed });
     const turnout = this.getOrCreateTurnout(address);
@@ -98,7 +98,7 @@ export class CommandCenterSimulator extends CommandCenter {
     const accessory = this.getOrCreateAccessory(address);
     accessory.active = active;
 
-   const msg: AccessoryChangedMessage = {
+    const msg: AccessoryChangedMessage = {
       type: "accessoryChanged",
       data: {
         address,
@@ -112,7 +112,22 @@ export class CommandCenterSimulator extends CommandCenter {
   }
 
   setTrackPower(on: boolean): Promise<boolean> {
-    throw new Error("Method not implemented.");
+    const state = {
+      alive: this.alive,
+      power: on,
+      type: "simulator",
+      trackPower: on,
+      powerInfo: {
+
+        emergencyStop: false,
+            trackVoltageOff: !on,
+            trackVoltageOn: on,
+            shortCircuit: false,
+            programmingModeActive: false },
+    };
+    broadcastAll({"type": "z21SystemState", "data": state} );
+    broadcastAll({"type": "powerInfo", "data": state.powerInfo});
+    return Promise.resolve(true);
   }
   emergencyStop(): Promise<boolean> {
     throw new Error("Method not implemented.");
