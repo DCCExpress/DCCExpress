@@ -3,7 +3,7 @@ import { SetTurnoutMessage } from "../../../../../common/src/types";
 import { drawTextWithRoundedBackground } from "../../../graphics";
 import { generateId } from "../../../helpers";
 import { wsApi } from "../../../services/wsApi";
-import { AddressedElement} from "../core/AddressedElement";
+import { AddressedElement } from "../core/AddressedElement";
 import { BaseElement } from "../core/BaseElement";
 import { ClickableBaseElement } from "../core/ClickableBaseElement";
 import { DrawOptions, ELEMENT_TYPES, ElementType, ITrackTurnoutLeftElement, ITrackTurnoutRightElement } from "../types/EditorTypes";
@@ -28,6 +28,10 @@ export class TrackTurnoutRightElement extends TrackTurnoutElement implements ITr
         if (!this.visible) return;
 
         this.beginDraw(ctx, options);
+
+        if (this.marked) {
+            this.drawSelectionBox(ctx);
+        }
 
         this.drawTurnout(ctx, this.turnoutClosed == this.turnoutClosedValue);
 
@@ -116,7 +120,7 @@ export class TrackTurnoutRightElement extends TrackTurnoutElement implements ITr
             ctx.beginPath();
 
 
-            
+
             ctx.lineWidth = this.TrackWidth3;
 
             var dx = this.width / 5
@@ -157,7 +161,7 @@ export class TrackTurnoutRightElement extends TrackTurnoutElement implements ITr
             ctx.stroke();
         } else {
             ctx.beginPath();
-            
+
             ctx.lineWidth = this.TrackWidth3;
 
             var dx = this.width / 5

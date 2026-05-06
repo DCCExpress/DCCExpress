@@ -24,8 +24,13 @@ export class TrackElement extends AddressedElement implements ITrackElement {
         this.beginDraw(ctx, options);
 
         {
+            
             //ctx.lineWidth = Globals.TrackWidth7;
             //ctx.strokeStyle = Colors.TrackPrimaryColor
+            if(!this.enabled) {
+                ctx.globalAlpha = this.alpha;
+            }
+
             ctx.lineWidth = 7;
             ctx.strokeStyle = "black"
 

@@ -102,7 +102,7 @@ export class TrackSignalElement extends BaseElement implements ITrackSignalEleme
     }
 
     setValue(address: number, v: boolean) {
-        if (address >= this.address && address <= (this.lastAddress - 1)) {
+        if (address >= this.address && address <= this.lastAddress) {
 
             var i = address - this.address
             var mask = (1 << i)
@@ -112,25 +112,50 @@ export class TrackSignalElement extends BaseElement implements ITrackSignalEleme
                 this.value = (this.value & (~mask)) & 0b0001_1111
             }
 
+            // switch (this.value) {
+            //     case this.valueGreen:
+            //         this.signalState = SignalStates.green
+            //         break;
+            //     case this.valueYellow:
+            //         if (this.aspect > 2) {
+            //             this.signalState = SignalStates.yellow
+            //         } else {
+            //             this.signalState = SignalStates.red
+            //         }
+            //         break;
+            //     case this.valueWhite:
+            //         if (this.aspect > 3) {
+            //             this.signalState = SignalStates.white
+            //         } else {
+            //             this.signalState = SignalStates.red
+            //         }
+            //         break;
+            //     //default: this.signalState = SignalStates.red
+            // }
+
             switch (this.value) {
                 case this.valueGreen:
                     this.signalState = SignalStates.green
                     break;
-                case this.valueYellow:
-                    if (this.max > 2) {
-                        this.signalState = SignalStates.yellow
-                    } else {
+                case this.valueRed:
                         this.signalState = SignalStates.red
-                    }
+                    break;
+                case this.valueYellow:
+                    if (this.aspect > 2) {
+                        this.signalState = SignalStates.yellow
+                     } //else {
+                    //     this.signalState = SignalStates.red
+                    // }
                     break;
                 case this.valueWhite:
-                    if (this.max > 3) {
+                    if (this.aspect > 3) {
                         this.signalState = SignalStates.white
-                    } else {
-                        this.signalState = SignalStates.red
-                    }
+                    } 
+                    // else {
+                    //     this.signalState = SignalStates.red
+                    // }
                     break;
-                default: this.signalState = SignalStates.red
+                //default: this.signalState = SignalStates.red
             }
 
             console.log("SIGNAL:", this.name, address, v, this.value)
@@ -236,7 +261,7 @@ export class TrackSignalElement extends BaseElement implements ITrackSignalEleme
 
         this.drawSignal(ctx)
 
-//        drawTextWithRoundedBackground(ctx, this.posLeft, this.posBottom - 10, "#" + this.address.toString())
+        //        drawTextWithRoundedBackground(ctx, this.posLeft, this.posBottom - 10, "#" + this.address.toString())
         if (options.showSignalAddress) {
             drawTextWithRoundedBackground(ctx, this.posLeft, this.posBottom - 10, "#" + this.address.toString())
         }

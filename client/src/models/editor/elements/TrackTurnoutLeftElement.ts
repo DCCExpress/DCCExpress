@@ -4,7 +4,7 @@ import Api from "../../../api/Api";
 import { drawTextWithRoundedBackground } from "../../../graphics";
 import { generateId } from "../../../helpers";
 import { wsApi } from "../../../services/wsApi";
-import { AddressedElement} from "../core/AddressedElement";
+import { AddressedElement } from "../core/AddressedElement";
 import { BaseElement } from "../core/BaseElement";
 import { ClickableBaseElement } from "../core/ClickableBaseElement";
 import { DrawOptions, ELEMENT_TYPES, ElementType, ITrackCornerElement, ITrackTurnoutLeftElement } from "../types/EditorTypes";
@@ -28,6 +28,11 @@ export class TrackTurnoutLeftElement extends TrackTurnoutElement implements ITra
         if (!this.visible) return;
 
         this.beginDraw(ctx, options);
+
+        if (this.marked) {
+            this.drawSelectionBox(ctx);
+        }
+
         this.drawTurnout(ctx, this.turnoutClosed == this.turnoutClosedValue);
         this.endDraw(ctx);
 
@@ -43,6 +48,7 @@ export class TrackTurnoutLeftElement extends TrackTurnoutElement implements ITra
     public drawTurnout(ctx: CanvasRenderingContext2D, t1Closed: boolean): void {
 
         ctx.beginPath();
+
         ctx.strokeStyle = this.TrackPrimaryColor
         ctx.lineWidth = this.TrackWidth7;
 

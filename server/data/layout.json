@@ -78,10 +78,6 @@
             {
               "turnoutId": "c6bc4282-a7fd-4c70-817a-6b2fe6a2a765",
               "closed": false
-            },
-            {
-              "turnoutId": "489067cf-c95f-4893-9050-8c0e2a7a7d58",
-              "closed": false
             }
           ]
         }
@@ -332,6 +328,46 @@
           "valueRed": 2,
           "valueYellow": 4,
           "valueWhite": 8
+        },
+        {
+          "id": "edfa3c5-0435-4f44-b578-7853e1b4",
+          "type": "tracksignal2",
+          "name": "element",
+          "layerName": "sensors",
+          "x": 18,
+          "y": 10,
+          "rotation": 90,
+          "rotationStep": 45,
+          "bg": "black",
+          "fg": "white",
+          "aspect": 3,
+          "address": 120,
+          "addressLength": 5,
+          "dispalyAsSingleLamp": false,
+          "valueGreen": 1,
+          "valueRed": 2,
+          "valueYellow": 4,
+          "valueWhite": 0
+        },
+        {
+          "id": "9677b0d-a4cb-4e56-bd05-c618cfe1",
+          "type": "tracksignal2",
+          "name": "element",
+          "layerName": "sensors",
+          "x": 17,
+          "y": 10,
+          "rotation": 90,
+          "rotationStep": 45,
+          "bg": "black",
+          "fg": "white",
+          "aspect": 2,
+          "address": 120,
+          "addressLength": 5,
+          "dispalyAsSingleLamp": false,
+          "valueGreen": 1,
+          "valueRed": 2,
+          "valueYellow": 0,
+          "valueWhite": 0
         }
       ]
     },

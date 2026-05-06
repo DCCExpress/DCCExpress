@@ -1,7 +1,7 @@
 
 import { drawTextWithRoundedBackground } from "../../../graphics";
 import { generateId } from "../../../helpers";
-import { AddressedElement} from "../core/AddressedElement";
+import { AddressedElement } from "../core/AddressedElement";
 import { DrawOptions, ELEMENT_TYPES, ITrackCrossingElement } from "../types/EditorTypes";
 
 export class TrackCrossingElement extends AddressedElement implements ITrackCrossingElement {
@@ -21,6 +21,9 @@ export class TrackCrossingElement extends AddressedElement implements ITrackCros
         this.beginDraw(ctx, options);
 
         {
+            if (!this.enabled) {
+                ctx.globalAlpha = this.alpha;
+            }
             ctx.beginPath();
             ctx.strokeStyle = this.TrackPrimaryColor
             ctx.lineWidth = this.TrackWidth7;

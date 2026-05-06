@@ -1,7 +1,7 @@
 
 import { drawTextWithRoundedBackground } from "../../../graphics";
 import { generateId } from "../../../helpers";
-import { AddressedElement} from "../core/AddressedElement";
+import { AddressedElement } from "../core/AddressedElement";
 import { BaseElement } from "../core/BaseElement";
 import { LayerId } from "../core/Layer";
 import { sampleLayout } from "../sample/sampleLayout";
@@ -10,7 +10,7 @@ import { DrawOptions, ITrackCornerElement } from "../types/EditorTypes";
 
 export class TrackCornerElement extends AddressedElement implements ITrackCornerElement {
     override type = ELEMENT_TYPES.TRACK_CORNER;
-    
+
 
     constructor(x: number, y: number) {
         super(x, y);
@@ -25,13 +25,17 @@ export class TrackCornerElement extends AddressedElement implements ITrackCorner
 
         this.beginDraw(ctx, options);
 
+        if (!this.enabled) {
+            ctx.globalAlpha = this.alpha;
+        }
+
         // ctx.translate(this.centerX, this.centerY);
         // ctx.rotate(this.rotation * Math.PI / 180);
         // ctx.translate(-this.centerX, -this.centerY);
 
         var w = this.GridSizeX / 4.0
         var h = this.GridSizeY / 4.0
-        ctx.save()
+        //ctx.save()
 
         ctx.lineWidth = this.TrackWidth7;
         ctx.strokeStyle = this.TrackPrimaryColor

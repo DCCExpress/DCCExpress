@@ -29,6 +29,7 @@ import ElementPreview from "../models/editor/rendering/ElementPreviewRenderer";
 import { wsApi } from "../services/wsApi";
 import { TrackTurnoutElement } from "../models/editor/elements/TrackTurnoutElement";
 import { useCommandCenter } from "../context/CommandCenterContext";
+import { is } from "zod/v4/locales/index.js";
 
 type TrackCanvasProps = {
   editMode?: boolean;
@@ -338,6 +339,14 @@ export default function TrackCanvas({
   }, [editMode]);
 
   useEffect(() => {
+
+    if(selectedElementRef.current && selectedElementRef.current instanceof RouteButtonElement){
+      if(layoutRef.current){
+        const elems = layoutRef.current.getAllElements();
+        elems.forEach(elem => { elem.marked = false; })
+      }
+    }
+
     selectedElementRef.current = selectedElement;
     setHoverGrid(null);
   }, [selectedElement]);
@@ -373,6 +382,8 @@ export default function TrackCanvas({
     }
 
     invalidate();
+
+
   }, [selectedElement, layout]);
 
   useEffect(() => {
@@ -432,6 +443,21 @@ export default function TrackCanvas({
     };
   }, []);
 
+  const setRouteTurnoutsMarked = (rb: RouteButtonElement) => {
+    const elems = layoutRef.current.getAllElements();
+    for (const elem of elems) {
+      if (elem instanceof TrackTurnoutElement) {
+        const found = rb.routeTurnouts.find((e) => e.turnoutId === elem.id);
+        if (found) {
+          elem.marked = true;
+        } else {
+          elem.marked = false;
+        }
+      }
+    }
+    invalidate();
+  };
+
   useEffect(() => {
 
     turnoutSelectionModeRef.current = turnoutSelectionMode;
@@ -446,12 +472,18 @@ export default function TrackCanvas({
             elem.enabled = false;
           }
         }
+
+        setRouteTurnoutsMarked(selectedElementRef.current as RouteButtonElement);
+
       } else {
         for (const elem of elems) {
           elem.enabled = true;
+          elem.marked = false;
         }
       }
     }
+
+
 
   }, [turnoutSelectionMode])
 
@@ -474,6 +506,14 @@ export default function TrackCanvas({
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
 
+
+    //if(turnoutSelectionModeRef.current){
+      if(selectedElementRef.current instanceof RouteButtonElement){
+        setRouteTurnoutsMarked(selectedElementRef.current as RouteButtonElement);
+      }
+    //}
+
+
     drawScene(
       ctx,
       canvasSize.width,
@@ -490,7 +530,7 @@ export default function TrackCanvas({
       dragRef.current.elementId ?? undefined,
       selectedElement ?? undefined,
       getSelectionRect(selectionRef.current),
-
+      turnoutSelectionMode
     );
   }, [canvasSize, editMode, colorScheme, mouseGrid, tool, hoverGrid, currentCursor, layout, drawVersion, selectedElement, settings, turnoutSelectionMode]);
 
@@ -653,6 +693,7 @@ export default function TrackCanvas({
                 const t = hitElement as TrackTurnoutElement;
                 const closed = t.turnoutClosed == t.turnoutClosedValue;
                 rb.addOrUpdateTurnout(hitElement.id, closed);
+                setRouteTurnoutsMarked(selectedElementRef.current as RouteButtonElement);
                 onInvalidate();
               }
             } else {
@@ -1370,7 +1411,7 @@ export default function TrackCanvas({
       canvas.removeEventListener("pointerup", handlePointerUp);
       canvas.removeEventListener("pointercancel", handlePointerCancel);
     };
-  // }, [onLayoutChange, tool, onBeforeLayoutChange]);
+    // }, [onLayoutChange, tool, onBeforeLayoutChange]);
   }, []);
 
   useEffect(() => {
@@ -1468,7 +1509,7 @@ export default function TrackCanvas({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  //}, [onLayoutChange, onBeforeLayoutChange]);
+    //}, [onLayoutChange, onBeforeLayoutChange]);
   }, []);
 
 
@@ -1724,6 +1765,7 @@ function drawScene(
   dragId?: string,
   selected?: BaseElement,
   selectionRect?: SelectionRect | null,
+  turnoutSelectionMode?: boolean,
 ) {
   const isDark = colorScheme !== "light";
 

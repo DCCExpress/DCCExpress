@@ -22,9 +22,13 @@ export class TrackCurveElement extends AddressedElement implements ITrackCurveEl
 
         this.beginDraw(ctx, options);
 
+        if (!this.enabled) {
+            ctx.globalAlpha = this.alpha;
+        }
+
         var w = this.GridSizeX / 2.0
         var h = this.GridSizeY / 2.0
-        ctx.save()
+        //ctx.save()
 
         ctx.lineWidth = this.TrackWidth7;
         ctx.strokeStyle = this.TrackPrimaryColor

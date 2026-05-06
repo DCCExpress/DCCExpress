@@ -1,6 +1,6 @@
 import { drawTextWithRoundedBackground } from "../../../graphics";
 import { generateId } from "../../../helpers";
-import { AddressedElement} from "../core/AddressedElement";
+import { AddressedElement } from "../core/AddressedElement";
 import { BaseElement } from "../core/BaseElement";
 import { sampleLayout } from "../sample/sampleLayout";
 import { DrawOptions, ELEMENT_TYPES, ElementType, ITrackEndElement } from "../types/EditorTypes";
@@ -18,6 +18,10 @@ export class TrackEndElement extends AddressedElement implements ITrackEndElemen
         this.beginDraw(ctx, options);
 
         {
+            if (!this.enabled) {
+                ctx.globalAlpha = this.alpha;
+            }
+
             var h = this.GridSizeY / 4.0
 
 

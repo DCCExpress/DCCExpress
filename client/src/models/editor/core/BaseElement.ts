@@ -26,13 +26,14 @@ export abstract class BaseElement implements IBaseElement {
     rotation: number = 0;
     rotationStep: RotationStep = 0;
     selected: boolean = false;
+    marked: boolean = false; // Pl benne van egy kiválaszási listában...
     enabled: boolean = true;
     locked: boolean = false;
     visible: boolean = true;
     bg: string = "black";
     fg: string = "white";
     occupied: boolean = false;
-
+    alpha: number = 0.5;
     state: RailStates = RailStates.free;
     //length: number = 1;
 
@@ -154,11 +155,13 @@ export abstract class BaseElement implements IBaseElement {
 
     protected drawSelectionBox(ctx: CanvasRenderingContext2D): void {
         ctx.save();
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "#3b82f6";
-        ctx.setLineDash([4, 3]);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#f63bda";
+        ctx.fillStyle = "#f63bda33";
         ctx.strokeRect(this.posLeft, this.posTop, this.width, this.height);
+        ctx.fillRect(this.posLeft, this.posTop, this.width, this.height);
         ctx.restore();
+
     }
 
     protected drawOccupied(ctx: CanvasRenderingContext2D): void {
@@ -196,6 +199,7 @@ export abstract class BaseElement implements IBaseElement {
     }
 
     protected drawEnabled(ctx: CanvasRenderingContext2D): void {
+        return;
         if (!this.enabled) {
             ctx.save();
             ctx.fillStyle = "#6e6e6e67";
